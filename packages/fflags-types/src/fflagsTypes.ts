@@ -21,3 +21,21 @@ export type FeatureFlagsStartingOptions = {
   refreshIntervalInSeconds?: number
   featureFlagsLoader: FeatureFlagsLoader
 };
+
+// eslint-disable-next-line
+type AnyArgs = any[]; // represents any set of arguments passed to a function
+
+// Using as a base for other types
+// eslint-disable-next-line
+export type AnyFunction = (...args: AnyArgs) => any; // signature of any function
+
+export type FeatureFunction<Args extends AnyArgs, Result> = (...args: Args) => Result;
+
+// contains the informationo we need to choose between two features depending on the flag status
+// i.e. `on` for enabled, `off` for disabled
+export type FeatureFlagSwitchParams<F extends AnyFunction> = {
+  flagName: FlagName
+  userGroupName: UserGroupName
+  on: FeatureFunction<Parameters<F>, ReturnType<F>>
+  off: FeatureFunction<Parameters<F>, ReturnType<F>>
+}
