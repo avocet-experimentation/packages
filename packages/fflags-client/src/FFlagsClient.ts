@@ -17,7 +17,7 @@
     Implement loader outside our class and then inject it into the constructor using dependency injection.
 */
 
-import { EnvironmentName, FeatureFlagsLoader, FeatureFlags, FlagName, UserGroups, FeatureFlagsStartingOptions, UserGroupName, FeatureFlagContent } from '@fflags/types';
+import { EnvironmentName, FeatureFlagsLoader, FeatureFlags, FlagName, UserGroups, FeatureFlagsStartingOptions, UserGroupName, FeatureFlagContent, AnyFunction, FeatureFlagSwitchParams } from '@fflags/types';
 
 const DEFAULT_DURATION = 5 * 60; // 5 min
 
@@ -60,6 +60,17 @@ export class FFlagsClient {
   isFlagEnabled(flagName: FlagName, userGroupName: UserGroupName): boolean {
     const flag = this.getFlag(flagName, userGroupName);
     return !flag ? false : flag.enabled; // by default, return `false` if flag does not exist
+  }
+  
+  // returns the function declared in the `on` or `off` properties, depending on the flag status
+  // if the flag does not exist, it returns the `off` function
+  getFeature<F extends AnyFunction>(params: FeatureFlagSwitchParams<F>) {
+    return (...args: Parameters<F>): ReturnType<F> => {
+      const { flagName, userGroupName, on, off } = params;
+      const flag = this.getFlag(flagName, userGroupName);
+      if (!flag) return off(...args);
+      return flag.enabled ? on(...args) : off(...args);
+    };
   }
 
   private constructor(options: FeatureFlagsStartingOptions) {
