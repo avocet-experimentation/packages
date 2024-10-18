@@ -1,6 +1,6 @@
 import { describe, test, beforeAll, vi, afterAll, expect, afterEach, beforeEach } from "vitest";
 import { FFlagsClient } from '../src/index.js';
-import { EnvironmentName, FeatureFlags, FlagName, UserGroups } from "@fflags/types";
+import { EnvironmentName, FeatureFlags, FeatureFlagSwitchParams, FlagName, UserGroups } from "@fflags/types";
 
 describe('FFlagsClient', () => {
   describe('Refresh Interval', () => {
@@ -128,6 +128,76 @@ describe('FFlagsClient', () => {
       test('Should return false when the flag does not exist', () => {
         const actual = client.isFlagEnabled('flag', 'newFeatureAccess');
         expect(actual).false;
+      });
+    });
+
+    describe('Switching features', () => {
+      const newFeature = (a: string, b: number): string => `new ${a}, ${b}`;
+
+      const oldFeature = (a: string, b: number): string => `old ${a}, ${b}`;
+
+      describe('getFeature', () => {
+        test('Should return the new feature function', () => {
+          // using `typeof oldFeature` in our type parameter to ensure that `on` and `off` functions have its same signature
+          const switchParams: FeatureFlagSwitchParams<typeof oldFeature> = {
+            flagName: 'flagOne',
+            userGroupName: 'newFeatureAccess',
+            on: newFeature,
+            off: oldFeature
+          };
+          const feature = client.getFeature(switchParams);
+          const actual = feature('test', 123);
+          const expected = 'new test, 123';
+          expect(actual).eq(expected);
+        });
+
+      test('Should return the old feature function', () => {
+          // using `typeof oldFeature` in our type parameter to ensure that `on` and `off` functions have its same signature
+          const switchParams: FeatureFlagSwitchParams<typeof oldFeature> = {
+            flagName: 'flagTwo',
+            userGroupName: 'oldFeatureAccess',
+            on: oldFeature,
+            off: newFeature
+          };
+          const feature = client.getFeature(switchParams);
+          const actual = feature('test', 123);
+          const expected = 'old test, 123';
+          expect(actual).eq(expected);
+        });
+      });
+
+      describe('getAsyncFeature', async () => {
+        const newFeature = async (a: string, b: number): Promise<string> => `new ${a}, ${b}`;
+
+        const oldFeature = async (a: string, b: number): Promise<string> => `old ${a}, ${b}`;
+
+        test('Should return the new feature function', async () => {
+          // using `typeof oldFeature` in our type parameter to ensure that `on` and `off` functions have its same signature
+          const switchParams: FeatureFlagSwitchParams<typeof oldFeature> = {
+            flagName: 'flagOne',
+            userGroupName: 'newFeatureAccess',
+            on: newFeature,
+            off: oldFeature
+          };
+          const feature = client.getFeature(switchParams);
+          const actual = await feature('test', 123);
+          const expected = 'new test, 123';
+          expect(actual).eq(expected);
+        });
+
+      test('Should return the old feature function', async () => {
+          // using `typeof oldFeature` in our type parameter to ensure that `on` and `off` functions have its same signature
+          const switchParams: FeatureFlagSwitchParams<typeof oldFeature> = {
+            flagName: 'flagTwo',
+            userGroupName: 'oldFeatureAccess',
+            on: oldFeature,
+            off: newFeature
+          };
+          const feature = client.getFeature(switchParams);
+          const actual = await feature('test', 123);
+          const expected = 'old test, 123';
+          expect(actual).eq(expected);
+        });
       });
     });
   });

@@ -64,6 +64,7 @@ export class FFlagsClient {
   
   // returns the function declared in the `on` or `off` properties, depending on the flag status
   // if the flag does not exist, it returns the `off` function
+  // can easily be used to switch between different versions of the same feature without breaking
   getFeature<F extends AnyFunction>(params: FeatureFlagSwitchParams<F>) {
     return (...args: Parameters<F>): ReturnType<F> => {
       const { flagName, userGroupName, on, off } = params;
