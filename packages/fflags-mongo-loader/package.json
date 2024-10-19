@@ -1,0 +1,28 @@
+{
+  "name": "@fflags/mongo-loader",
+  "version": "0.0.1",
+  "description": "Flag's loader for mongoDB",
+  "author": "Adnan Shihabi <adnan@ashihabi.me>",
+  "homepage": "https://github.com/sadonyx/feature-flags#readme",
+  "license": "ISC",
+  "main": "dist/index.js",
+  "module": "dist/index.d.ts",
+  "directories": {
+    "lib": "dist",
+    "test": "__tests__"
+  },
+  "files": [
+    "dist"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sadonyx/feature-flags.git"
+  },
+  "scripts": {
+    "test": "node ./__tests__/fflags-mongo-loader.test.js"
+  },
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/sadonyx/feature-flags/issues"
+  }
+}
