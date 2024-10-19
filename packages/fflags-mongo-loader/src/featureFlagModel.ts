@@ -4,10 +4,7 @@ import {
   FlagName,
   UserGroupName,
 } from "@fflags/types";
-
 import { Model, model, Schema } from "mongoose";
-
-// types
 
 export type FeatureFlagContentInDB = FeatureFlagContent;
 
@@ -16,19 +13,17 @@ export type UserGroupsInDB = {
 };
 
 export type FeatureFlagInDB = {
+  id: string;
   name: FlagName;
   description: string;
   environments: Map<EnvironmentName, UserGroupsInDB>;
+  createdAt: Date;
+  updatedAt: Date;
 };
 
-export type FeatureFlagDocument = FeatureFlagInDB & Document;
-
-// schemas
-
-// use generics to enforce that this schema is type checked
-const flagContentScheme = new Schema<FeatureFlagContentInDB>(
+const flagContentSchema = new Schema<FeatureFlagContentInDB>(
   {
-    enabled: { type: Boolean, defaul: false },
+    enabled: { type: Boolean, default: false },
     value: { type: Object },
   },
   {
@@ -39,8 +34,8 @@ const flagContentScheme = new Schema<FeatureFlagContentInDB>(
 const userGroupsSchema = new Schema<UserGroupsInDB>(
   {
     userGroups: {
-      type: Map, // database will have a unique property key for each flag's content => when reading, mongoose creates a hashmap of this object for us
-      of: flagContentScheme,
+      type: Map,
+      of: flagContentSchema,
     },
   },
   {
@@ -48,9 +43,16 @@ const userGroupsSchema = new Schema<UserGroupsInDB>(
   }
 );
 
+const transform = (doc: any, ret: any): FeatureFlagInDB => {
+  ret.id = ret._id.toString();
+  delete ret._id;
+  delete ret.__v;
+  return ret;
+};
+
 const fflagsSchema = new Schema<FeatureFlagInDB>(
   {
-    name: { type: String, required: true },
+    name: { type: String, unique: true, required: true },
     description: { type: String, required: true },
     environments: {
       type: Map,
@@ -59,9 +61,12 @@ const fflagsSchema = new Schema<FeatureFlagInDB>(
   },
   {
     _id: true,
-    timestamps: true, // of both creation and latest update
+    timestamps: true,
+    toJSON: { transform },
   }
 );
+
+export type FeatureFlagDocument = FeatureFlagInDB & Document;
 
 export const FFlagModel: Model<FeatureFlagDocument> =
   model<FeatureFlagDocument>("fflags", fflagsSchema);
