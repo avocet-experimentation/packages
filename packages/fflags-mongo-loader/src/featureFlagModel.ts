@@ -4,7 +4,10 @@ import {
   FlagName,
   UserGroupName,
 } from "@fflags/types";
+
 import { Model, model, Schema } from "mongoose";
+
+// types
 
 export type FeatureFlagContentInDB = FeatureFlagContent;
 
@@ -21,6 +24,11 @@ export type FeatureFlagInDB = {
   updatedAt: Date;
 };
 
+export type FeatureFlagDocument = FeatureFlagInDB & Document;
+
+// schemas
+
+// use generics to enforce that this schema is type checked
 const flagContentSchema = new Schema<FeatureFlagContentInDB>(
   {
     enabled: { type: Boolean, default: false },
@@ -34,7 +42,7 @@ const flagContentSchema = new Schema<FeatureFlagContentInDB>(
 const userGroupsSchema = new Schema<UserGroupsInDB>(
   {
     userGroups: {
-      type: Map,
+      type: Map, // database will have a unique property key for each flag's content => when reading, mongoose creates a hashmap of this object for us
       of: flagContentSchema,
     },
   },
@@ -61,12 +69,10 @@ const fflagsSchema = new Schema<FeatureFlagInDB>(
   },
   {
     _id: true,
-    timestamps: true,
+    timestamps: true, // of both creation and latest update
     toJSON: { transform },
   }
 );
-
-export type FeatureFlagDocument = FeatureFlagInDB & Document;
 
 export const FFlagModel: Model<FeatureFlagDocument> =
   model<FeatureFlagDocument>("fflags", fflagsSchema);
