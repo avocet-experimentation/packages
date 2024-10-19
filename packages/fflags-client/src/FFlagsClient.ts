@@ -17,14 +17,25 @@
     Implement loader outside our class and then inject it into the constructor using dependency injection.
 */
 
-import { EnvironmentName, FeatureFlagsLoader, FeatureFlags, FlagName, UserGroups, FeatureFlagsStartingOptions, UserGroupName, FeatureFlagContent, AnyFunction, FeatureFlagSwitchParams } from '@fflags/types';
+import {
+  EnvironmentName,
+  FeatureFlagsLoader,
+  FeatureFlags,
+  FlagName,
+  UserGroups,
+  FeatureFlagsStartingOptions,
+  UserGroupName,
+  FeatureFlagContent,
+  AnyFunction,
+  FeatureFlagSwitchParams,
+} from "@fflags/types";
 
 const DEFAULT_DURATION = 5 * 60; // 5 min
 
 export class FFlagsClient {
   private readonly environmentName: EnvironmentName;
   private readonly loader: FeatureFlagsLoader; // store to call inside `refresh` method
-  private flags: FeatureFlags = new Map<FlagName, UserGroups>; // represents cached data in memory
+  private flags: FeatureFlags = new Map<FlagName, UserGroups>(); // represents cached data in memory
   private intervalId: NodeJS.Timeout | undefined; // necessary for setting/clearing interval
 
   /*
@@ -32,7 +43,9 @@ export class FFlagsClient {
       - Allows for more meaningful name when creating the object
       - Async operations, as our loader function will be reading from an external data store
   */
-  static async start(options: FeatureFlagsStartingOptions): Promise<FFlagsClient> {
+  static async start(
+    options: FeatureFlagsStartingOptions
+  ): Promise<FFlagsClient> {
     const client = new FFlagsClient(options);
     await client.refresh();
     return client;
@@ -48,10 +61,13 @@ export class FFlagsClient {
     this.flags = await this.loader(this.environmentName);
   }
 
-  getFlag(flagName: FlagName, userGroupName: UserGroupName): FeatureFlagContent | undefined {
+  getFlag(
+    flagName: FlagName,
+    userGroupName: UserGroupName
+  ): FeatureFlagContent | undefined {
     const userGroups = this.flags.get(flagName);
     if (!userGroups) return;
-    const flag = userGroups[userGroupName]
+    const flag = userGroups[userGroupName];
     if (!flag) return;
     return JSON.parse(JSON.stringify(flag)) as FeatureFlagContent; // clone flag to return value (not reference)
   }
@@ -61,16 +77,27 @@ export class FFlagsClient {
     const flag = this.getFlag(flagName, userGroupName);
     return !flag ? false : flag.enabled; // by default, return `false` if flag does not exist
   }
-  
+
   // returns the function declared in the `on` or `off` properties, depending on the flag status
   // if the flag does not exist, it returns the `off` function
   // can easily be used to switch between different versions of the same feature without breaking
   getFeature<F extends AnyFunction>(params: FeatureFlagSwitchParams<F>) {
     return (...args: Parameters<F>): ReturnType<F> => {
-      const { flagName, userGroupName, on, off } = params;
+      const { flagName, userGroupName, on, off, override } = params;
       const flag = this.getFlag(flagName, userGroupName);
       if (!flag) return off(...args);
-      return flag.enabled ? on(...args) : off(...args);
+      const enabled = override ? override(flag, ...args) : flag.enabled; // override (if available), then status check
+      return enabled ? on(...args) : off(...args);
+    };
+  }
+
+  getAsyncFeature<F extends AnyFunction>(params: FeatureFlagSwitchParams<F>) {
+    return async (...args: Parameters<F>): Promise<ReturnType<F>> => {
+      const { flagName, userGroupName, on, off, override } = params;
+      const flag = this.getFlag(flagName, userGroupName);
+      if (!flag) return off(...args);
+      const enabled = override ? await override(flag, ...args) : flag.enabled; // override (if available), then status check
+      return enabled ? on(...args) : off(...args);
     };
   }
 
@@ -84,6 +111,9 @@ export class FFlagsClient {
 
   private startPolling(intervalInSeconds: number) {
     // setInterval delay expects value in ms
-    this.intervalId = setInterval(() => void this.refresh(), intervalInSeconds * 1000);
+    this.intervalId = setInterval(
+      () => void this.refresh(),
+      intervalInSeconds * 1000
+    );
   }
 }

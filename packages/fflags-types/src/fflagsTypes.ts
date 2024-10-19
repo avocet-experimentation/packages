@@ -31,6 +31,8 @@ export type AnyFunction = (...args: AnyArgs) => any; // signature of any functio
 
 export type FeatureFunction<Args extends AnyArgs, Result> = (...args: Args) => Result;
 
+export type OverrideFuction<F extends AnyFunction> = (flag: FeatureFlagContent, ...args: Parameters<F>) => boolean | Promise<boolean>
+
 // contains the informationo we need to choose between two features depending on the flag status
 // i.e. `on` for enabled, `off` for disabled
 export type FeatureFlagSwitchParams<F extends AnyFunction> = {
@@ -38,4 +40,5 @@ export type FeatureFlagSwitchParams<F extends AnyFunction> = {
   userGroupName: UserGroupName
   on: FeatureFunction<Parameters<F>, ReturnType<F>>
   off: FeatureFunction<Parameters<F>, ReturnType<F>>
+  override?: OverrideFuction<F>
 }
