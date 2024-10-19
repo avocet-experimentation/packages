@@ -19,7 +19,8 @@
     "url": "git+https://github.com/sadonyx/feature-flags.git"
   },
   "scripts": {
-    "test": "node ./__tests__/fflags-mongo-loader.test.js"
+    "build": "rm -rf ./dist && tsc",
+    "test": "vitest run"
   },
   "type": "module",
   "bugs": {
@@ -27,9 +28,9 @@
   },
   "dependencies": {
     "@fflags/types": "*",
-    "mongoose": "^8.7.2"
+    "mongoose": ">=7.2.1"
   },
   "devDependencies": {
-    "mongodb-memory-server": "^10.1.2"
+    "mongodb-memory-server": "^8.12.2"
   }
 }
