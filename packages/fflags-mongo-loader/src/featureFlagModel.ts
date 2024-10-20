@@ -51,6 +51,19 @@ const userGroupsSchema = new Schema<UserGroupsInDB>(
   }
 );
 
+/*
+Description:
+  In mongoose, a `transform` function is used to modify the representation of a document
+  when it is converted to JSON
+Parameters:
+  - `doc` => represents the Mongoose document being transformed
+    - gives access to document's properties and methods
+  - `ret` => represents the transformed object that will be returned
+    - we can pass parameters to the `ret` object to shape the final transformed output
+Function:
+  Used to have a more readable object by changing the identifier type and
+  removing the internal version field.
+*/
 const transform = (doc: any, ret: any): FeatureFlagInDB => {
   ret.id = ret._id.toString();
   delete ret._id;
@@ -60,7 +73,7 @@ const transform = (doc: any, ret: any): FeatureFlagInDB => {
 
 const fflagsSchema = new Schema<FeatureFlagInDB>(
   {
-    name: { type: String, unique: true, required: true },
+    name: { type: String, unique: true, required: true }, // unique constraint ensures no two flags with the same name
     description: { type: String, required: true },
     environments: {
       type: Map,
