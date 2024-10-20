@@ -5,7 +5,7 @@ import {
   UserGroupName,
 } from "@fflags/types";
 
-import { Model, model, Schema } from "mongoose";
+import { Model, model, Schema, Document } from "mongoose";
 
 // types
 
@@ -74,5 +74,7 @@ const fflagsSchema = new Schema<FeatureFlagInDB>(
   }
 );
 
-export const FFlagModel: Model<FeatureFlagDocument> =
-  model<FeatureFlagDocument>("fflags", fflagsSchema);
+export const FFlagModel: Model<FeatureFlagInDB> = model<FeatureFlagInDB>(
+  "fflags",
+  fflagsSchema
+);
