@@ -18,5 +18,6 @@
     "build": "rm -rf ./dist && tsc",
     "test": "vitest run"
   },
-  "type": "module"
+  "type": "module",
+  "gitHead": "2626105323f638a5514b1abd7c9471b4fcda19ea"
 }
