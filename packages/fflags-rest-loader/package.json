@@ -24,6 +24,6 @@
   },
   "type": "module",
   "dependencies": {
-    "@fflags/types": "^0.0.7"
+    "@fflags/types": "^0.0.8"
   }
 }
