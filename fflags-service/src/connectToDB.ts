@@ -1,15 +1,19 @@
 import mongoose from "mongoose";
+import envConfig from "./envConfig.js";
 
 export const connectToDB = async () => {
-  const uri: string | undefined = process.env.MONGO_URI;
+  const uri: string | undefined = envConfig ? envConfig.MONGO_URI : undefined;
   const options = {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    authSource: "fflags",
     directConnection: true,
     autoIndex: true,
     maxPoolSize: 10,
-    serverSelectionTimoutMS: 5000,
+    serverSelectionTimeoutMS: 5000,
     socketTimeoutMS: 45000,
   };
-  if (typeof uri === "string") {
+  if (uri) {
     await mongoose.connect(uri, options);
     console.log("Connected to Mongo");
   } else {
