@@ -26,6 +26,8 @@ export class RestLoader {
         this.handleError(new Error("Empty flags"));
         return;
       }
+
+      // map flag structure
       const cachedFlags: FeatureFlags = new Map<FlagName, UserGroups>();
       for (const fflagName in fflags) {
         cachedFlags.set(fflagName, fflags[fflagName]);
