@@ -1,6 +1,6 @@
 {
   "name": "@fflags/client",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "Client access for feature flags",
   "author": "Adnan Shihabi <adnan@ashihabi.me>",
   "homepage": "",
