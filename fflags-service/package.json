@@ -21,8 +21,8 @@
     "vitest": "^0.32.0"
   },
   "dependencies": {
-    "@fflags/mongo-loader": "^0.0.3",
-    "@fflags/types": "^0.0.3",
+    "@fflags/mongo-loader": "^0.0.4",
+    "@fflags/types": "^0.0.4",
     "fastify": "^4.17.0",
     "mongoose": "^7.2.2"
   }
