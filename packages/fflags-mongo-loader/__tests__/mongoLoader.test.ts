@@ -1,25 +1,11 @@
-import { afterAll, beforeAll, describe, expect, test } from "vitest";
-import { MongoMemoryServer } from "mongodb-memory-server"; // great for using all mongo features without mocking
-import * as mongoose from "mongoose";
-import { mockedFeatureFlagsInDB, populateMockDB } from "./featureFlags.mock";
+import { describe, expect, test } from "vitest";
+import { mockedFeatureFlagsInDB } from "./featureFlags.mock";
 import { FeatureFlags, UserGroups } from "@fflags/types";
 import { MongoDBLoader } from "../src";
+import { useMockDB } from "./useMockedDB.mock";
 
 describe("MongoDBLoader (retrieve data from mocked environment)", async () => {
-  let mongoServer: MongoMemoryServer;
-
-  beforeAll(async () => {
-    mongoServer = await MongoMemoryServer.create();
-    await mongoose.connect(mongoServer.getUri());
-    await populateMockDB();
-  });
-
-  afterAll(async () => {
-    await mongoose.disconnect();
-    if (mongoServer) {
-      await mongoServer.stop();
-    }
-  });
+  useMockDB();
 
   /*
     each test will load the flags using the given environment and test the loaded content with the mocked data
