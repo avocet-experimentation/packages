@@ -11,6 +11,8 @@ import {
 } from "./fflags.types.js";
 import * as fflagService from "./fflags.service.js";
 
+// Note: `Params` field in the generics of the request object represent the path parameters we will extract from the URL
+
 export const createFFlagHandler = async (
   request: FastifyRequest<{ Body: CreateFFlagBodyRequest }>,
   reply: FastifyReply
@@ -19,7 +21,7 @@ export const createFFlagHandler = async (
   if (!fflag) {
     return reply
       .code(409)
-      .send({ error: { code: 409, message: "flag already exists" } });
+      .send({ error: { code: 409, message: "flag already exists" } }); // return null due to duplicate key (name) error
   }
   return reply.code(201).send(fflag);
 };

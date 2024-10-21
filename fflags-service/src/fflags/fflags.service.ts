@@ -8,11 +8,13 @@ import {
 } from "./fflags.types.js";
 import { FFlagModel, MongoDBLoader } from "@fflags/mongo-loader";
 
+// unaware of req/res => strictly handling input and generating output (abstraction)
+// next implementation requires us to think about robust validations!
 export const createFFlag = async (
   fflagBody: CreateFFlagBodyRequest
 ): Promise<CreateFFlagBodyResponse | undefined | null> => {
   try {
-    const newFFlag = await FFlagModel.create(fflagBody);
+    const newFFlag = await FFlagModel.create(fflagBody); // use mongo-loader's model to create flag
     return newFFlag.toJSON();
   } catch (err: any) {
     if (err.code === 11000) return null; // MongoServerError: duplicate key
@@ -41,6 +43,7 @@ export const getFFlagById = async (
   return fflag ? fflag.toJSON() : null;
 };
 
+// return the structure of the application to cache the flags in memory
 export const getAllFFlagsForCaching = async (
   environmentName: string
 ): Promise<FFlags | null> => {

@@ -1,5 +1,5 @@
 import { fastify, FastifyInstance } from "fastify";
-import { getFFlagsRouts } from "./fflags/fflags.routs.js";
+import { getFFlagsRoutes } from "./fflags/fflags.routes.js";
 
 export const buildServer = async (): Promise<FastifyInstance> => {
   const server = fastify({
@@ -8,6 +8,6 @@ export const buildServer = async (): Promise<FastifyInstance> => {
   // check if service is up during deployment; check on regular frequency
   server.get("/healthcheck", async () => ({ status: "OK" }));
   // register routes for out flag entity
-  await server.register(getFFlagsRouts, { prefix: "api/fflags" });
+  await server.register(getFFlagsRoutes, { prefix: "api/fflags" });
   return server;
 };
