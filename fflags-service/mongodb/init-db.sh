@@ -1,6 +1,7 @@
 #!/bin/bash
 
-docker exec -it mongodb mongosh --quiet \
+# Connect to the MongoDB container without authentication
+docker exec -it mongodb-fflags mongosh --quiet \
   --eval 'use admin' \
   --eval 'db.auth({ user: "root", pwd: "1234" })' \
   --eval 'use fflags' \

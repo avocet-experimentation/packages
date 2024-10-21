@@ -1,12 +1,12 @@
 services:
   mongo:
     image: mongo
-    container_name: mongodb
+    container_name: mongodb-fflags
     restart: always
     ports:
-      - "0.0.0.0:27017:27017"
+      - "27017:27017"
     volumes:
-      - ~/dev/data/mongodb:/data/db
+      - ${HOME}/dev/data/mongodb:/data/db
     logging:
       driver: "local"
       options:
