@@ -21,6 +21,7 @@
     "vitest": "^0.32.0"
   },
   "dependencies": {
+    "@fastify/cors": "^8.0.0",
     "@fflags/mongo-loader": "^0.0.8",
     "@fflags/types": "^0.0.8",
     "dotenv": "^16.4.5",
