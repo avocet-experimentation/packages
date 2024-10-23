@@ -12,7 +12,6 @@ export class RestLoader {
   // this loader can work with any REST service
   constructor(baseUrl: string) {
     this.baseUrl = baseUrl;
-    this.handleError.bind(this);
   }
 
   async load(
@@ -39,7 +38,7 @@ export class RestLoader {
     }
   }
 
-  handleError(error: any): void {
+  handleError = (error: any): void => {
     console.log(`${new Date()}: ${error}`);
-  }
+  };
 }
