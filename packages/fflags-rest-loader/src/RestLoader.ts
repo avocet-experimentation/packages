@@ -12,6 +12,7 @@ export class RestLoader {
   // this loader can work with any REST service
   constructor(baseUrl: string) {
     this.baseUrl = baseUrl;
+    this.handleError.bind(this);
   }
 
   async load(
