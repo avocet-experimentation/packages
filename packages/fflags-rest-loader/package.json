@@ -1,6 +1,6 @@
 {
   "name": "@fflags/rest-loader",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "description": "Feature flags loader for our REST service",
   "author": "Adnan Shihabi <adnan@ashihabi.me>",
   "homepage": "",

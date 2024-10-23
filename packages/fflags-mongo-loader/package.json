@@ -1,6 +1,6 @@
 {
   "name": "@fflags/mongo-loader",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "description": "Flag's loader for mongoDB",
   "author": "Adnan Shihabi <adnan@ashihabi.me>",
   "homepage": "https://github.com/sadonyx/feature-flags#readme",
