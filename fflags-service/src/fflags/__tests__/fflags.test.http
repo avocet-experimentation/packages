@@ -4,7 +4,8 @@
 POST http://{{baseUrl}} HTTP/1.1
 Content-Type: application/json
 
-< ./fflagOne.json
+< ./fflagTwo.json
+### id: 6716b23a14d303db95a4f94f
 
 ### Updates flag using its id
 PUT http://{{baseUrl}}/648d2d5c14ca747a5c10dc84
@@ -53,7 +54,7 @@ Accept: text/json
 %}
 
 ### Returns flag by its id
-GET http://{{baseUrl}}/648d2e2c14ca747a5c10dc8a
+GET http://{{baseUrl}}/6716b23a14d303db95a4f94f
 Accept: application/json
 
 > {%
