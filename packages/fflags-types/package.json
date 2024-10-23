@@ -1,6 +1,6 @@
 {
   "name": "@fflags/types",
-  "version": "0.0.9",
+  "version": "0.0.10",
   "description": "Types for feature flags",
   "author": "Adnan Shihabi <adnan@ashihabi.me>",
   "homepage": "",
