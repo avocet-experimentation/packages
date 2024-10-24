@@ -5,6 +5,7 @@ import {
   deleteFFlagHandler,
   getAllFFlagsForCachingHandler,
   getFFlagByIdHandler,
+  getFFlagByNameHandler,
   updateFFlagHandler,
 } from "./fflags.controller.js";
 
@@ -30,7 +31,11 @@ export const getFFlagsRoutes = async (
   server.post("/", createFFlagHandler); // create new flag, including its environment and respective user groups
   server.put("/:fflagId", updateFFlagHandler); // update entire flag (do we need a patch method?)
   server.delete("/:fflagId", deleteFFlagHandler); // physically remove entire flag
-  server.get("/:fflagId", getFFlagByIdHandler); // return flag by its id
-  server.get("/caching/:environmentName", getAllFFlagsForCachingHandler); // used by REST loader; return flags in structure we are using to cache them in memory
+  server.get("id/:fflagId", getFFlagByIdHandler); // return flag by its id
+  server.get("name/:fflagName", getFFlagByNameHandler); // return flag by its name
+  server.get(
+    "/caching/:environmentName&:stateName",
+    getAllFFlagsForCachingHandler
+  ); // used by REST loader; return flags in structure we are using to cache them in memory
   return server;
 };
