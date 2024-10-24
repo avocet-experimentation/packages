@@ -1,6 +1,11 @@
 {
-  "name": "newFlagStructure",
+  "name": "officialFlagStructure",
   "description": "This is a C/D test.",
+  "metrics": {
+    "primary": "conversion_rate",
+    "secondary": "user_engagement"
+  },
+  "state": "in_test",
   "environments": {
     "testing": {
       "rollout": 100,

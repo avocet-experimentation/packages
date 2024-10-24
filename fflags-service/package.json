@@ -22,8 +22,8 @@
   },
   "dependencies": {
     "@fastify/cors": "^8.0.0",
-    "@fflags/mongo-loader": "^0.0.9",
-    "@fflags/types": "^0.0.9",
+    "@fflags/mongo-loader": "^0.0.12",
+    "@fflags/types": "^0.0.12",
     "dotenv": "^16.4.5",
     "fastify": "^4.17.0",
     "mongoose": "^7.2.2"

@@ -1,4 +1,5 @@
 import { EnvironmentName, FlagName, UserGroups } from "@fflags/types";
+import {} from "@fflags/mongo-loader";
 
 // Outer-scope feature flag properties;
 // these props will act as the configuration of how the test groups are tested, recorded, and distributed.

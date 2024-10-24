@@ -1,6 +1,6 @@
 {
   "name": "@fflags/rest-loader",
-  "version": "0.0.12",
+  "version": "0.0.13",
   "description": "Feature flags loader for our REST service",
   "author": "Adnan Shihabi <adnan@ashihabi.me>",
   "homepage": "",
@@ -24,7 +24,7 @@
   },
   "type": "module",
   "dependencies": {
-    "@fflags/types": "^0.0.12"
+    "@fflags/types": "^0.0.13"
   },
   "gitHead": "ceabdbee4a43938b1e1ef3bacf38db5f7e890141"
 }
