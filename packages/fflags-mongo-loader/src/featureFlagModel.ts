@@ -3,6 +3,7 @@ import {
   FeatureFlagContent,
   FlagName,
   UserGroupName,
+  State,
 } from "@fflags/types";
 
 import { Model, model, Schema, Document } from "mongoose";
@@ -33,29 +34,20 @@ export type Metrics = {
 export type TrafficAllocation = {};
 
 export type TargetingRules = {
-  geo?: string;
+  geo?: string[];
   segment?: string;
   device?: string;
   trafficAllocation?: TrafficAllocation;
 };
 
-export type State =
-  | "draft"
-  | "active"
-  | "in_test"
-  | "paused"
-  | "completed"
-  | "disabled"
-  | "archived";
-
 export type FeatureFlagInDB = {
   id: string;
   name: FlagName;
   description: string;
-  state: State;
+  state: string; // Map<State, EnvironmentContent>; // search for flags via state (e.g. 'in_test')
   metrics?: Metrics;
   targetingRules?: TargetingRules;
-  environments: Map<EnvironmentName, EnvironmentContent>;
+  environments: Map<EnvironmentName, EnvironmentContent>; // search for flags via environment name (e.g. 'testing')
   createdAt: Date;
   updatedAt: Date;
 };
@@ -120,6 +112,7 @@ const fflagsSchema = new Schema<FeatureFlagInDB>(
       type: Map,
       of: userGroupsSchema,
     },
+    state: { type: String, required: true },
   },
   {
     _id: true,

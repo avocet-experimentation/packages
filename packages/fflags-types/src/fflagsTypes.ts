@@ -31,6 +31,17 @@ export type FeatureFlags = Map<FlagName, UserGroups>;
 
 export type EnvironmentName = string;
 
+export type State =
+  | "draft"
+  | "active"
+  | "in_test"
+  | "paused"
+  | "completed"
+  | "disabled"
+  | "archived";
+
+export type StateName = State;
+
 export type FeatureFlagsLoader = (
   environmentName: EnvironmentName
 ) => Promise<FeatureFlags>;
