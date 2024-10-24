@@ -9,10 +9,12 @@ export const mockedFeatureFlagsInDB = [
         userGroups: {
           newFeatureAccess: {
             enabled: true,
+            trackingEvents: [],
             value: 100,
           },
           oldFeatureAccess: {
             enabled: false,
+            trackingEvents: [],
             value: 200,
           },
         },
@@ -21,10 +23,12 @@ export const mockedFeatureFlagsInDB = [
         userGroups: {
           newFeatureAccess: {
             enabled: false,
+            trackingEvents: [],
             value: 300,
           },
           oldFeatureAccess: {
             enabled: true,
+            trackingEvents: [],
             value: 400,
           },
         },
@@ -39,10 +43,12 @@ export const mockedFeatureFlagsInDB = [
         userGroups: {
           newFeatureAccess: {
             enabled: false,
+            trackingEvents: [],
             value: 400,
           },
           oldFeatureAccess: {
             enabled: true,
+            trackingEvents: [],
             value: 300,
           },
         },
@@ -51,10 +57,12 @@ export const mockedFeatureFlagsInDB = [
         userGroups: {
           newFeatureAccess: {
             enabled: true,
+            trackingEvents: [],
             value: 200,
           },
           oldFeatureAccess: {
             enabled: false,
+            trackingEvents: [],
             value: 100,
           },
         },
