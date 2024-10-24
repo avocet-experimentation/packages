@@ -5,6 +5,7 @@ import {
   CreateFFlagBodyResponse,
   FFlags,
   FlagIdParams,
+  FlagNameParams,
   GetFFlagBodyResponse,
   UpdateFFlagBodyRequest,
   UpdateFFlagBodyResponse,
@@ -74,12 +75,30 @@ export const getFFlagByIdHandler = async (
   return fflag;
 };
 
-export const getAllFFlagsForCachingHandler = async (
+export const getFFlagByNameHandler = async (
+  request: FastifyRequest<{ Params: FlagNameParams }>,
+  reply: FastifyReply
+): Promise<GetFFlagBodyResponse> => {
+  const fflagName = request.params.fflagName;
+  const fflag = await fflagService.getFFlagById(fflagName);
+  if (!fflag) {
+    return reply
+      .code(404)
+      .send({ error: { code: 404, message: "flag not found" } });
+  }
+  return fflag;
+};
+
+export const getAllFFlagsWithFilterHandler = async (
   request: FastifyRequest<{ Params: CachingParams }>,
   reply: FastifyReply
 ): Promise<FFlags> => {
   const environmentName = request.params.environmentName;
-  const fflags = await fflagService.getAllFFlagsForCaching(environmentName);
+  const stateName = request.params.stateName;
+  const fflags = await fflagService.getAllFFlagsWithFilter(
+    environmentName,
+    stateName
+  );
   if (!fflags) {
     return reply
       .code(404)

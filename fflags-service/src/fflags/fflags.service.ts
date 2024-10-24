@@ -43,11 +43,23 @@ export const getFFlagById = async (
   return fflag ? fflag.toJSON() : null;
 };
 
+export const getFFlagByName = async (
+  fflagName: string
+): Promise<GetFFlagBodyResponse | null> => {
+  const fflag = await FFlagModel.findOne({ name: fflagName }).exec();
+  return fflag ? fflag.toJSON() : null;
+};
+
 // return the structure of the application to cache the flags in memory
-export const getAllFFlagsForCaching = async (
-  environmentName: string
+// takes two parametersL environment name and state name, both of which will be used to filter the flag results
+// environment name is required, state name is optional
+export const getAllFFlagsWithFilter = async (
+  environmentName: string,
+  stateName: string | undefined
 ): Promise<FFlags | null> => {
-  const fflags = await MongoDBLoader.load(environmentName);
+  const fflags = stateName
+    ? await MongoDBLoader.load(environmentName, stateName)
+    : await MongoDBLoader.load(environmentName);
   if (fflags.size === 0) return null;
   let fflagsOutput = {};
   for (const fflagEntry of fflags.entries()) {
