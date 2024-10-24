@@ -1,14 +1,32 @@
 export type FeatureFlagContent = {
-  enabled: boolean;
+  enabled: boolean; // true
+  rollout: number;
   value?: unknown; // allow for object, string, or number
+  startDate?: Date; // "2024-10-20"
+  endDate?: Date; // "2024-11-20"
+  goals?: {
+    primary?: string; // "conversion_rate"
+    secondary?: string; // "reduce_bounce_rate"
+  };
+  trackingEvents?: string[]; // ["click", "conversion"]
 };
 
 export type FlagName = string;
 
 export type UserGroupName = string;
 
+/*
+  - Key-value pair
+  - Can be small, since it will only be concerned
+    with holding data for two groups (control & experiment)
+*/
 export type UserGroups = Record<UserGroupName, FeatureFlagContent>;
 
+/*
+  - Hashed data structure (O(1) read time)
+  - Faster than using an object key as an index
+    with holding data for two groups (control & experiment)
+*/
 export type FeatureFlags = Map<FlagName, UserGroups>;
 
 export type EnvironmentName = string;
