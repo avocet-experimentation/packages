@@ -5,14 +5,21 @@ import {
   FlagName,
   UserGroupName,
   UserGroups,
+  StateName,
 } from "@fflags/types";
 import { FFlagModel } from "./featureFlagModel.js";
 
 // use only static methods because we do not need to create an object
 // class acts more as a namespace
 export class MongoDBLoader {
-  static async load(environmentName: EnvironmentName): Promise<FeatureFlags> {
-    const filter = { [`environments.${environmentName}`]: { $exists: true } };
+  static async load(
+    environmentName: EnvironmentName,
+    stateName: StateName = "in_test"
+  ): Promise<FeatureFlags> {
+    const filter = {
+      [`environments.${environmentName}`]: { $exists: true },
+      state: stateName,
+    };
     const projection = `name environments.${environmentName}`;
     const flagsInDB = await FFlagModel.find(filter, projection).exec(); // exec returns a real promise
     const cachedFlags: FeatureFlags = new Map<FlagName, UserGroups>();
