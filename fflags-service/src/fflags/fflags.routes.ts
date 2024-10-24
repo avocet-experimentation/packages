@@ -8,7 +8,7 @@ import {
   updateFFlagHandler,
 } from "./fflags.controller.js";
 
-// security
+// security (disabled for now)
 const corsConfig = {
   origin: (origin, cb) => {
     const hostname = new URL(origin).hostname;
@@ -26,7 +26,7 @@ const corsConfig = {
 export const getFFlagsRoutes = async (
   server: FastifyInstance
 ): Promise<FastifyInstance> => {
-  await server.register(cors, corsConfig);
+  await server.register(cors);
   server.post("/", createFFlagHandler); // create new flag, including its environment and respective user groups
   server.put("/:fflagId", updateFFlagHandler); // update entire flag (do we need a patch method?)
   server.delete("/:fflagId", deleteFFlagHandler); // physically remove entire flag

@@ -1,0 +1,21 @@
+{
+  "name": "newFlagStructure",
+  "description": "This is a C/D test.",
+  "environments": {
+    "testing": {
+      "rollout": 100,
+      "userGroups": {
+        "control": {
+          "rollout": 50,
+          "enabled": false,
+          "value": 100
+        },
+        "treatment": {
+          "rollout": 50,
+          "enabled": true,
+          "value": 200
+        }
+      }
+    }
+  }
+}

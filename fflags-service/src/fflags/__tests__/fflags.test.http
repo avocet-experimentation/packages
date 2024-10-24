@@ -6,6 +6,7 @@ Content-Type: application/json
 
 < ./fflagTwo.json
 ### id: 6716b23a14d303db95a4f94f
+### ABTest => id : 671949c5fa3bd465b5781038
 
 ### Updates flag using its id
 PUT http://{{baseUrl}}/648d2d5c14ca747a5c10dc84
