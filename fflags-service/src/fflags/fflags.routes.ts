@@ -3,7 +3,7 @@ import cors from "@fastify/cors";
 import {
   createFFlagHandler,
   deleteFFlagHandler,
-  getAllFFlagsForCachingHandler,
+  getAllFFlagsWithFilterHandler,
   getFFlagByIdHandler,
   getFFlagByNameHandler,
   updateFFlagHandler,
@@ -35,7 +35,7 @@ export const getFFlagsRoutes = async (
   server.get("name/:fflagName", getFFlagByNameHandler); // return flag by its name
   server.get(
     "/caching/:environmentName&:stateName",
-    getAllFFlagsForCachingHandler
+    getAllFFlagsWithFilterHandler
   ); // used by REST loader; return flags in structure we are using to cache them in memory
   return server;
 };
