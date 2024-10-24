@@ -1,6 +1,6 @@
 {
   "name": "@fflags/client",
-  "version": "0.0.11",
+  "version": "0.0.12",
   "description": "Client access for feature flags",
   "author": "Adnan Shihabi <adnan@ashihabi.me>",
   "homepage": "",
@@ -20,7 +20,7 @@
   },
   "type": "module",
   "dependencies": {
-    "@fflags/types": "^0.0.11"
+    "@fflags/types": "^0.0.12"
   },
-  "gitHead": "2626105323f638a5514b1abd7c9471b4fcda19ea"
+  "gitHead": "ceabdbee4a43938b1e1ef3bacf38db5f7e890141"
 }
