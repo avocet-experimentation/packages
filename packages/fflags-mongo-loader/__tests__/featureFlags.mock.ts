@@ -4,6 +4,7 @@ export const mockedFeatureFlagsInDB = [
   {
     name: "flagOne",
     description: "flagOne",
+    state: "in_test",
     environments: {
       staging: {
         userGroups: {
@@ -38,6 +39,7 @@ export const mockedFeatureFlagsInDB = [
   {
     name: "flagTwo",
     description: "flagTwo",
+    state: "in_test",
     environments: {
       staging: {
         userGroups: {
@@ -64,6 +66,48 @@ export const mockedFeatureFlagsInDB = [
             enabled: false,
             trackingEvents: [],
             value: 100,
+          },
+        },
+      },
+    },
+  },
+  {
+    name: "flagWithStateOne",
+    description: "flagOne",
+    state: "in_test",
+    environments: {
+      testing: {
+        userGroups: {
+          newFeatureAccess: {
+            enabled: true,
+            trackingEvents: [],
+            value: 100,
+          },
+          oldFeatureAccess: {
+            enabled: false,
+            trackingEvents: [],
+            value: 200,
+          },
+        },
+      },
+    },
+  },
+  {
+    name: "flagWithStateTwo",
+    description: "flagTwo",
+    state: "in_test",
+    environments: {
+      testing: {
+        userGroups: {
+          newFeatureAccess: {
+            enabled: false,
+            trackingEvents: [],
+            value: 400,
+          },
+          oldFeatureAccess: {
+            enabled: true,
+            trackingEvents: [],
+            value: 300,
           },
         },
       },

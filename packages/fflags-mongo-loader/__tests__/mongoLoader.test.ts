@@ -46,14 +46,14 @@ describe("MongoDBLoader (retrieve data from mocked environment)", async () => {
   });
 
   test("Should load correctly from staging", async () => {
-    const flags: FeatureFlags = await MongoDBLoader.load("staging");
+    const flags: FeatureFlags = await MongoDBLoader.load("testing", "in_test");
     expect(flags.size).eq(2);
     runGroupTest(
-      flags.get("flagOne"),
+      flags.get("flagWithStateOne"),
       mockedFeatureFlagsInDB[0].environments.staging.userGroups
     );
     runGroupTest(
-      flags.get("flagTwo"),
+      flags.get("flagWithStateTwo"),
       mockedFeatureFlagsInDB[1].environments.staging.userGroups
     );
   });
