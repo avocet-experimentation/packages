@@ -1,3 +1,4 @@
+import { EnvironmentName } from "@fflags/types";
 import {
   CreateFFlagBodyRequest,
   CreateFFlagBodyResponse,
@@ -5,6 +6,7 @@ import {
   GetFFlagBodyResponse,
   UpdateFFlagBodyRequest,
   UpdateFFlagBodyResponse,
+  State,
 } from "./fflags.types.js";
 import { FFlagModel, MongoDBLoader } from "@fflags/mongo-loader";
 
@@ -54,12 +56,10 @@ export const getFFlagByName = async (
 // takes two parametersL environment name and state name, both of which will be used to filter the flag results
 // environment name is required, state name is optional
 export const getAllFFlagsWithFilter = async (
-  environmentName: string,
-  stateName: string | undefined
+  environmentName: EnvironmentName,
+  stateName: State
 ): Promise<FFlags | null> => {
-  const fflags = stateName
-    ? await MongoDBLoader.load(environmentName, stateName)
-    : await MongoDBLoader.load(environmentName);
+  const fflags = await MongoDBLoader.load(environmentName, stateName);
   if (fflags.size === 0) return null;
   let fflagsOutput = {};
   for (const fflagEntry of fflags.entries()) {

@@ -41,7 +41,7 @@ export type StateParams = {
 };
 
 export type CachingParams = {
-  environmentName: EnvironmentName;
+  environmentName?: EnvironmentName;
   stateName?: State;
 };
 

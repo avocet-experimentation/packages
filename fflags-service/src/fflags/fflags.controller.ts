@@ -11,6 +11,7 @@ import {
   UpdateFFlagBodyResponse,
 } from "./fflags.types.js";
 import * as fflagService from "./fflags.service.js";
+import { EnvironmentName, State } from "@fflags/types";
 
 // Note: `Params` field in the generics of the request object represent the path parameters we will extract from the URL
 
@@ -80,7 +81,7 @@ export const getFFlagByNameHandler = async (
   reply: FastifyReply
 ): Promise<GetFFlagBodyResponse> => {
   const fflagName = request.params.fflagName;
-  const fflag = await fflagService.getFFlagById(fflagName);
+  const fflag = await fflagService.getFFlagByName(fflagName);
   if (!fflag) {
     return reply
       .code(404)
@@ -93,8 +94,10 @@ export const getAllFFlagsWithFilterHandler = async (
   request: FastifyRequest<{ Params: CachingParams }>,
   reply: FastifyReply
 ): Promise<FFlags> => {
-  const environmentName = request.params.environmentName;
-  const stateName = request.params.stateName;
+  const { environmentName, stateName } = request.query as {
+    environmentName: EnvironmentName;
+    stateName: State;
+  };
   const fflags = await fflagService.getAllFFlagsWithFilter(
     environmentName,
     stateName
