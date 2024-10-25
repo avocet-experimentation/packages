@@ -40,14 +40,16 @@ export type State =
   | "disabled"
   | "archived";
 
-export type StateName = State;
+export type StateName = State | undefined;
 
 export type FeatureFlagsLoader = (
-  environmentName: EnvironmentName
+  environmentName: EnvironmentName,
+  state?: StateName
 ) => Promise<FeatureFlags>;
 
 export type FeatureFlagsStartingOptions = {
   environmentName: EnvironmentName;
+  stateName?: StateName;
   autoRefresh: boolean;
   refreshIntervalInSeconds?: number;
   featureFlagsLoader: FeatureFlagsLoader;

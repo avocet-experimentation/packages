@@ -28,12 +28,14 @@ import {
   FeatureFlagContent,
   AnyFunction,
   FeatureFlagSwitchParams,
+  StateName,
 } from "@fflags/types";
 
 const DEFAULT_DURATION = 5 * 60; // 5 min
 
 export class FFlagsClient {
   private readonly environmentName: EnvironmentName;
+  private readonly stateName: StateName;
   private readonly loader: FeatureFlagsLoader; // store to call inside `refresh` method
   private flags: FeatureFlags = new Map<FlagName, UserGroups>(); // represents cached data in memory
   private intervalId: NodeJS.Timeout | undefined; // necessary for setting/clearing interval
@@ -58,7 +60,9 @@ export class FFlagsClient {
 
   // must call directly if `autoRefresh` is set to false
   async refresh(): Promise<void> {
-    this.flags = await this.loader(this.environmentName);
+    this.flags = this.stateName
+      ? await this.loader(this.environmentName, this.stateName)
+      : await this.loader(this.environmentName);
   }
 
   getFlag(
@@ -103,6 +107,7 @@ export class FFlagsClient {
 
   private constructor(options: FeatureFlagsStartingOptions) {
     this.environmentName = options.environmentName;
+    this.stateName = options.stateName;
     this.loader = options.featureFlagsLoader;
     if (options.autoRefresh) {
       this.startPolling(options.refreshIntervalInSeconds ?? DEFAULT_DURATION);
