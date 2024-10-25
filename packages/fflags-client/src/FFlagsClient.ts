@@ -60,9 +60,7 @@ export class FFlagsClient {
 
   // must call directly if `autoRefresh` is set to false
   async refresh(): Promise<void> {
-    this.flags = this.stateName
-      ? await this.loader(this.environmentName, this.stateName)
-      : await this.loader(this.environmentName);
+    this.flags = await this.loader(this.environmentName, this.stateName);
   }
 
   getFlag(
