@@ -5,8 +5,10 @@ services:
     restart: always
     ports:
       - "27017:27017"
-    volumes:
-      - ${HOME}/dev/data/mongodb:/data/db
+    tmpfs:
+      - /data/db
+    # volumes:
+    #   - ${HOME}/dev/data/mongodb:/data/db
     logging:
       driver: "local"
       options:
