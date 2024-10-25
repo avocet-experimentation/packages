@@ -14,8 +14,13 @@ import { FFlagModel } from "./featureFlagModel.js";
 export class MongoDBLoader {
   static async load(
     environmentName: EnvironmentName,
-    stateName: StateName = "in_test"
+    stateName: StateName
   ): Promise<FeatureFlags> {
+    // ensure that values are always valid
+    environmentName =
+      typeof environmentName === "string" ? environmentName : "testing";
+    stateName = typeof stateName === "string" ? stateName : "in_test";
+
     const filter = {
       [`environments.${environmentName}`]: { $exists: true },
       state: stateName,

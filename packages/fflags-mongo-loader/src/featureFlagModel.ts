@@ -104,6 +104,7 @@ const transform = (doc: any, ret: any): FeatureFlagInDB => {
   return ret;
 };
 
+// TODO: add `metrics` and `targetingRules`
 const fflagsSchema = new Schema<FeatureFlagInDB>(
   {
     name: { type: String, unique: true, required: true }, // unique constraint ensures no two flags with the same name
@@ -111,6 +112,7 @@ const fflagsSchema = new Schema<FeatureFlagInDB>(
     environments: {
       type: Map,
       of: userGroupsSchema,
+      required: true,
     },
     state: { type: String, required: true },
   },
