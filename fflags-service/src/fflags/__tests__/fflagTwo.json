@@ -1,5 +1,5 @@
 {
-  "name": "finalFlag",
+  "name": "newTestFlag",
   "description": "This is an A/B test.",
   "metrics": {
     "primary": "conversion_rate",

@@ -5,10 +5,7 @@ POST http://{{baseUrl}} HTTP/1.1
 Content-Type: application/json
 
 < ./fflagTwo.json
-### id: 6716b23a14d303db95a4f94f
-### ABTest => id : 671949c5fa3bd465b5781038
-
-### finalFlag = id : 6719f88df5073d30f55be3a4
+### newTestFlag => id : 671abee5278b5ccf56640666
 
 ### Updates flag using its id
 PUT http://{{baseUrl}}/648d2d5c14ca747a5c10dc84
@@ -47,7 +44,7 @@ Content-Type: application/json
 }
 
 ### Physically deletes flag using its id
-DELETE http://{{baseUrl}}/648d2d5c14ca747a5c10dc84
+DELETE http://{{baseUrl}}/6719f88df5073d30f55be3a4
 Accept: text/json
 
 > {%
@@ -57,7 +54,7 @@ Accept: text/json
 %}
 
 ### Returns flag by its id
-GET http://{{baseUrl}}/6716b23a14d303db95a4f94f
+GET http://{{baseUrl}}/671949c5fa3bd465b5781038
 Accept: application/json
 
 > {%
@@ -69,5 +66,5 @@ Accept: application/json
 %}
 
 ### Returns all flags for caching
-GET http://{{baseUrl}}/caching/testing
+GET http://{{baseUrl}}/caching/testing&in_test
 Accept: application/json
