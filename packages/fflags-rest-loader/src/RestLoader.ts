@@ -2,6 +2,7 @@ import {
   EnvironmentName,
   FeatureFlags,
   FlagName,
+  State,
   UserGroups,
 } from "@fflags/types";
 
@@ -15,10 +16,18 @@ export class RestLoader {
   }
 
   async load(
-    environmentName: EnvironmentName
+    environmentName: EnvironmentName,
+    stateName: State
   ): Promise<FeatureFlags | undefined> {
+    // ensure that values are always valid
+    environmentName =
+      typeof environmentName === "string" ? environmentName : "testing";
+    stateName = typeof stateName === "string" ? stateName : "in_test";
+
     try {
-      const response = await fetch(`${this.baseUrl}/${environmentName}`);
+      const response = await fetch(
+        `${this.baseUrl}?environmentName=${environmentName}&stateName=${stateName}`
+      );
       const fflags = await response.json();
 
       // if not flag is found, log an error and return `undefined`
