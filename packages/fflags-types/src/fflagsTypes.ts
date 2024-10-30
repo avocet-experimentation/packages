@@ -14,7 +14,7 @@ export type FeatureFlagContent = {
   targetingRules?: TargetingRule[];
   createdAt: number;
   updatedAt?: number;
-  environments: Environment; // store envName: enabled
+  environment: Environment; // store envName: enabled
 } & ( //indicates the active state when the flag is enabled.
   | { valueType: "boolean"; defaultValue: boolean } //
   | { valueType: "string"; defaultValue: string }
