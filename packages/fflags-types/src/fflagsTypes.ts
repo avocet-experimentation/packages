@@ -1,6 +1,8 @@
 export type FlagName = string;
 
-export type Environment = "prod" | "dev" | "testing";
+export type EnvironmentNames = "prod" | "dev" | "testing";
+
+export type Environment = { [key in EnvironmentNames]: boolean };
 
 export type TargetingRule = string[];
 
@@ -12,7 +14,7 @@ export type FeatureFlagContent = {
   targetingRules?: TargetingRule[];
   createdAt: number;
   updatedAt?: number;
-  environments: { [key in Environment]: boolean }; // store envName: enabled
+  environments: Environment; // store envName: enabled
 } & ( //indicates the active state when the flag is enabled.
   | { valueType: "boolean"; defaultValue: boolean } //
   | { valueType: "string"; defaultValue: string }
