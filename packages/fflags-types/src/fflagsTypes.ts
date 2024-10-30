@@ -2,16 +2,16 @@ export type FlagName = string;
 
 export type Environment = "prod" | "dev" | "testing";
 
-export type TargetingRule = string;
+export type TargetingRule = string[];
 
 export type FeatureFlagContent = {
   name: FlagName;
   description: string;
   enabled: boolean;
   status: Status;
-  targetingRules: TargetingRule[];
+  targetingRules?: TargetingRule[];
   createdAt: number;
-  updatedAt: number;
+  updatedAt?: number;
   environments: { [key in Environment]: boolean }; // store envName: enabled
 } & (
   | { valueType: "boolean"; defaultValue: boolean }
