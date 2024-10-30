@@ -1,6 +1,9 @@
 {
   "name": "root",
   "private": true,
+  "scripts": {
+    "build": "npm run --prefix ./fflags-types build && npm run --prefix ./fflags-client build && npm run --prefix ./fflags-mongo-loader build && npm run --prefix ./fflags-rest-loader build"
+  },
   "workspaces": [
     "packages/*"
   ],

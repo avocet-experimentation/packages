@@ -19,12 +19,12 @@
     "url": "git+https://github.com/sadonyx/feature-flags.git"
   },
   "scripts": {
-    "build": "rm -rf ./dist && tsc",
+    "build": "npm i && rm -rf ./dist && tsc",
     "test": "vitest run"
   },
   "type": "module",
   "dependencies": {
-    "@fflags/types": "^0.0.17"
+    "@fflags/types": "file:../fflags-types"
   },
   "gitHead": "ceabdbee4a43938b1e1ef3bacf38db5f7e890141"
 }
