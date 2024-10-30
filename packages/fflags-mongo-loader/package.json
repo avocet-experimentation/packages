@@ -19,7 +19,7 @@
     "url": "git+https://github.com/sadonyx/feature-flags.git"
   },
   "scripts": {
-    "build": "rm -rf ./dist && tsc",
+    "build": "npm i && rm -rf ./dist && tsc",
     "test": "vitest run"
   },
   "type": "module",
@@ -27,7 +27,7 @@
     "url": "https://github.com/sadonyx/feature-flags/issues"
   },
   "dependencies": {
-    "@fflags/types": "^0.0.17"
+    "@fflags/types": "file:../fflags-types"
   },
   "devDependencies": {
     "mongodb-memory-server": "^8.12.2"
