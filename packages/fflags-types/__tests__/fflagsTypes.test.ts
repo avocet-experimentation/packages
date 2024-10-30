@@ -6,15 +6,16 @@ describe("fflagsTypes", () => {
 
   const mockBooleanFFContent = (
     flagName: string,
-    defaultValue: boolean
+    enabled: boolean
   ): FeatureFlagContent => ({
     name: flagName,
     description: "This is a test!",
+    enabled: enabled,
     status: "in_test",
     createdAt: Number(new Date().toISOString),
     environments: { dev: false, prod: false, testing: true },
-    valueType: "boolean",
-    defaultValue: defaultValue,
+    valueType: "number",
+    defaultValue: 200,
   });
 
   const mockFeatureFlags = (): FeatureFlags => {
@@ -36,8 +37,8 @@ describe("fflagsTypes", () => {
   test("Should retrieve an existing flag from the cached data", () => {
     const actualOne = getFlag("flagOne");
     const actualTwo = getFlag("flagTwo");
-    expect(actualOne?.defaultValue).eql(false);
-    expect(actualTwo?.defaultValue).eql(true);
+    expect(actualOne?.enabled).eql(false);
+    expect(actualTwo?.enabled).eql(true);
   });
 
   test("Should fail to retrieve a non-existing flag from the cached data", () => {

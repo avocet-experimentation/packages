@@ -7,14 +7,14 @@ export type TargetingRule = string[];
 export type FeatureFlagContent = {
   name: FlagName;
   description: string;
-  enabled: boolean;
+  enabled: boolean; // acts as high-level on/off switch
   status: Status;
   targetingRules?: TargetingRule[];
   createdAt: number;
   updatedAt?: number;
   environments: { [key in Environment]: boolean }; // store envName: enabled
-} & (
-  | { valueType: "boolean"; defaultValue: boolean }
+} & ( //indicates the active state when the flag is enabled.
+  | { valueType: "boolean"; defaultValue: boolean } //
   | { valueType: "string"; defaultValue: string }
   | { valueType: "number"; defaultValue: number }
 );
