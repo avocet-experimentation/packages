@@ -1,20 +1,23 @@
 export type FlagName = string;
 
-export type EnvironmentNames = "prod" | "dev" | "testing";
+export type FlagEnvironmentName = "prod" | "dev" | "testing";
 
-export type Environment = { [key in EnvironmentNames]: boolean };
+export type FlagEnvironments = {
+  [key in FlagEnvironmentName]: FlagEnvironment;
+};
 
-export type TargetingRule = string[];
+export type FlagEnvironment = {
+  enabled: boolean;
+  // overrideRules: OverrideRule[];
+};
 
-export type FeatureFlagContent = {
+export type FlagContent = {
+  id: string;
   name: FlagName;
   description: string;
-  enabled: boolean; // acts as high-level on/off switch
-  status: Status;
-  targetingRules?: TargetingRule[];
   createdAt: number;
-  updatedAt?: number;
-  environment: Environment; // store envName: enabled
+  updatedAt: number;
+  environments: FlagEnvironments; // store envName: enabled
 } & ( //indicates the active state when the flag is enabled.
   | { valueType: "boolean"; defaultValue: boolean } //
   | { valueType: "string"; defaultValue: string }
@@ -26,28 +29,17 @@ export type FeatureFlagContent = {
   - Faster than using an object key as an index
     with holding data for two groups (control & experiment)
 */
-export type FeatureFlags = Map<FlagName, FeatureFlagContent>;
+export type FeatureFlags = Map<FlagName, FlagContent>;
 
-export type Status =
-  | "draft"
-  | "active"
-  | "in_test"
-  | "paused"
-  | "completed"
-  | "disabled"
-  | "archived";
-
-export type FeatureFlagsLoader = (
-  environment: Environment,
-  status: Status
+export type FeatureFlagLoader = (
+  environment: FlagEnvironmentName[]
 ) => Promise<FeatureFlags>;
 
-export type FeatureFlagsStartingOptions = {
-  environment: Environment;
-  status: Status;
+export type ConfigOptions = {
+  environments: FlagEnvironmentName[];
   autoRefresh: boolean;
   refreshIntervalInSeconds?: number;
-  featureFlagsLoader: FeatureFlagsLoader;
+  featureFlagsLoader: FeatureFlagLoader;
 };
 
 // eslint-disable-next-line
@@ -62,7 +54,7 @@ export type FeatureFunction<Args extends AnyArgs, Result> = (
 ) => Result;
 
 export type OverrideFuction<F extends AnyFunction> = (
-  flag: FeatureFlagContent,
+  flag: FlagContent,
   ...args: Parameters<F>
 ) => boolean | Promise<boolean>;
 

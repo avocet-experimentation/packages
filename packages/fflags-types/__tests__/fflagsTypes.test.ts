@@ -1,5 +1,5 @@
 import { beforeAll, describe, expect, test } from "vitest";
-import { FeatureFlagContent, FeatureFlags, FlagName } from "../src/index.js";
+import { FlagContent, FeatureFlags, FlagName } from "../src/index.js";
 
 describe("fflagsTypes", () => {
   let flags: FeatureFlags;
@@ -7,25 +7,29 @@ describe("fflagsTypes", () => {
   const mockBooleanFFContent = (
     flagName: string,
     enabled: boolean
-  ): FeatureFlagContent => ({
+  ): FlagContent => ({
+    id: "abc",
     name: flagName,
     description: "This is a test!",
-    enabled: enabled,
-    status: "in_test",
     createdAt: Number(new Date().toISOString),
-    environments: { dev: false, prod: false, testing: true },
+    updatedAt: Number(new Date().toISOString),
+    environments: {
+      dev: { enabled: enabled },
+      prod: { enabled: !enabled },
+      testing: { enabled: !enabled },
+    },
     valueType: "number",
     defaultValue: 200,
   });
 
   const mockFeatureFlags = (): FeatureFlags => {
-    const flags: FeatureFlags = new Map<FlagName, FeatureFlagContent>();
-    flags.set("flagOne", mockBooleanFFContent("flagOne", false));
-    flags.set("flagTwo", mockBooleanFFContent("flagTwo", true));
+    const flags: FeatureFlags = new Map<FlagName, FlagContent>();
+    flags.set("flagOne", mockBooleanFFContent("flagOne", true));
+    flags.set("flagTwo", mockBooleanFFContent("flagTwo", false));
     return flags;
   };
 
-  const getFlag = (flagName: FlagName): FeatureFlagContent | undefined => {
+  const getFlag = (flagName: FlagName): FlagContent | undefined => {
     const flagContent = flags.get(flagName);
     return flagContent ? flagContent : undefined;
   };
@@ -37,8 +41,8 @@ describe("fflagsTypes", () => {
   test("Should retrieve an existing flag from the cached data", () => {
     const actualOne = getFlag("flagOne");
     const actualTwo = getFlag("flagTwo");
-    expect(actualOne?.enabled).eql(false);
-    expect(actualTwo?.enabled).eql(true);
+    expect(actualOne?.environments.dev.enabled).eql(true);
+    expect(actualTwo?.environments.dev.enabled).eql(false);
   });
 
   test("Should fail to retrieve a non-existing flag from the cached data", () => {
