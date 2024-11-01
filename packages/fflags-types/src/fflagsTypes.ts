@@ -2,9 +2,11 @@ export type FlagName = string;
 
 export type FlagEnvironmentName = "prod" | "dev" | "testing";
 
-export type FlagEnvironments = {
-  [key in FlagEnvironmentName]: FlagEnvironment;
-};
+// export type FlagEnvironments = {
+//   [key in FlagEnvironmentName]: FlagEnvironment;
+// };
+
+export type FlagEnvironments = Map<FlagEnvironmentName, FlagEnvironment>;
 
 export type FlagEnvironment = {
   enabled: boolean;
