@@ -18,26 +18,24 @@
 */
 
 import {
-  EnvironmentName,
+  Environment,
   FeatureFlagsLoader,
   FeatureFlags,
   FlagName,
-  UserGroups,
   FeatureFlagsStartingOptions,
-  UserGroupName,
   FeatureFlagContent,
   AnyFunction,
   FeatureFlagSwitchParams,
-  StateName,
+  Status,
 } from "@fflags/types";
 
 const DEFAULT_DURATION = 5 * 60; // 5 min
 
 export class FFlagsClient {
-  private readonly environmentName: EnvironmentName;
-  private readonly stateName: StateName;
+  private readonly environment: Environment;
+  private readonly status: Status;
   private readonly loader: FeatureFlagsLoader; // store to call inside `refresh` method
-  private flags: FeatureFlags = new Map<FlagName, UserGroups>(); // represents cached data in memory
+  private flags: FeatureFlags = new Map<FlagName, FeatureFlagContent>(); // represents cached data in memory
   private intervalId: NodeJS.Timeout | undefined; // necessary for setting/clearing interval
 
   /*
@@ -60,23 +58,18 @@ export class FFlagsClient {
 
   // must call directly if `autoRefresh` is set to false
   async refresh(): Promise<void> {
-    this.flags = await this.loader(this.environmentName, this.stateName);
+    this.flags = await this.loader(this.environment, this.status);
   }
 
-  getFlag(
-    flagName: FlagName,
-    userGroupName: UserGroupName
-  ): FeatureFlagContent | undefined {
-    const userGroups = this.flags.get(flagName);
-    if (!userGroups) return;
-    const flag = userGroups[userGroupName];
-    if (!flag) return;
-    return JSON.parse(JSON.stringify(flag)) as FeatureFlagContent; // clone flag to return value (not reference)
+  getFlag(flagName: FlagName): FeatureFlagContent | undefined {
+    const flagContent = this.flags.get(flagName);
+    if (!flagContent) return;
+    return JSON.parse(JSON.stringify(flagContent)) as FeatureFlagContent; // clone flag to return value (not reference)
   }
 
   // check directly whether or not a flag is enabled => call `getFlag` and return its status
-  isFlagEnabled(flagName: FlagName, userGroupName: UserGroupName): boolean {
-    const flag = this.getFlag(flagName, userGroupName);
+  isFlagEnabled(flagName: FlagName): boolean {
+    const flag = this.getFlag(flagName);
     return !flag ? false : flag.enabled; // by default, return `false` if flag does not exist
   }
 
@@ -85,8 +78,8 @@ export class FFlagsClient {
   // can easily be used to switch between different versions of the same feature without breaking
   getFeature<F extends AnyFunction>(params: FeatureFlagSwitchParams<F>) {
     return (...args: Parameters<F>): ReturnType<F> => {
-      const { flagName, userGroupName, on, off, override } = params;
-      const flag = this.getFlag(flagName, userGroupName);
+      const { flagName, on, off, override } = params;
+      const flag = this.getFlag(flagName);
       if (!flag) return off(...args);
       const enabled = override ? override(flag, ...args) : flag.enabled; // override (if available), then status check
       return enabled ? on(...args) : off(...args);
@@ -95,8 +88,8 @@ export class FFlagsClient {
 
   getAsyncFeature<F extends AnyFunction>(params: FeatureFlagSwitchParams<F>) {
     return async (...args: Parameters<F>): Promise<ReturnType<F>> => {
-      const { flagName, userGroupName, on, off, override } = params;
-      const flag = this.getFlag(flagName, userGroupName);
+      const { flagName, on, off, override } = params;
+      const flag = this.getFlag(flagName);
       if (!flag) return off(...args);
       const enabled = override ? await override(flag, ...args) : flag.enabled; // override (if available), then status check
       return enabled ? on(...args) : off(...args);
@@ -104,8 +97,8 @@ export class FFlagsClient {
   }
 
   private constructor(options: FeatureFlagsStartingOptions) {
-    this.environmentName = options.environmentName;
-    this.stateName = options.stateName;
+    this.environment = options.environment;
+    this.status = options.status;
     this.loader = options.featureFlagsLoader;
     if (options.autoRefresh) {
       this.startPolling(options.refreshIntervalInSeconds ?? DEFAULT_DURATION);

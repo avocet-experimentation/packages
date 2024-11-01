@@ -1,8 +1,9 @@
 import { describe, expect, test } from "vitest";
 import { mockedFeatureFlagsInDB } from "./featureFlags.mock";
-import { FeatureFlags, UserGroups } from "@fflags/types";
+import { FeatureFlagsInDB, FlagContentInDB } from "../src/featureFlagModel.js";
 import { MongoDBLoader } from "../src";
 import { useMockDB } from "./useMockedDB.mock";
+import { FlagEnvironment } from "@fflags/types";
 
 describe("MongoDBLoader (retrieve data from mocked environment)", async () => {
   useMockDB();
@@ -12,14 +13,12 @@ describe("MongoDBLoader (retrieve data from mocked environment)", async () => {
   */
 
   const runGroupTest = (
-    actualGroups: UserGroups,
-    expectedGroups: UserGroups
+    actualGroups: FlagContentInDB,
+    expectedGroups: FlagEnvironment
   ) => {
     expect(actualGroups).toBeDefined();
-    expect(actualGroups.newFeatureAccess).toBeDefined();
-    expect(actualGroups.newFeatureAccess.enabled).eq(
-      expectedGroups.newFeatureAccess.enabled
-    );
+    expect(actualGroups.environments).toBeDefined();
+    expect(actualGroups.environments.enabled).eq(expectedGroups.enabled);
     expect(actualGroups.newFeatureAccess.value).eql(
       expectedGroups.newFeatureAccess.value
     );
@@ -33,21 +32,21 @@ describe("MongoDBLoader (retrieve data from mocked environment)", async () => {
   };
 
   test("Should load correctly from production", async () => {
-    const flags: FeatureFlags = await MongoDBLoader.load("production");
+    const flags: FeatureFlagsInDB = await MongoDBLoader.load("prod");
     console.log(flags);
     expect(flags.size).eq(2);
     runGroupTest(
       flags.get("flagOne"),
-      mockedFeatureFlagsInDB[0].environments.production.userGroups
+      mockedFeatureFlagsInDB[0].environments.prod
     );
     runGroupTest(
       flags.get("flagTwo"),
-      mockedFeatureFlagsInDB[1].environments.production.userGroups
+      mockedFeatureFlagsInDB[1].environments.prod
     );
   });
 
   test("Should load correctly from staging", async () => {
-    const flags: FeatureFlags = await MongoDBLoader.load("testing", "in_test");
+    const flags: FeatureFlagsInDB = await MongoDBLoader.load("testing");
     console.log(flags);
     expect(flags.size).eq(2);
     runGroupTest(
