@@ -4,3 +4,4 @@ dist/
 lerna-debug.log
 .DS_Store
 .git-coauthors
+.*

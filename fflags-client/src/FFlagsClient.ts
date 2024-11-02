@@ -27,6 +27,7 @@ import {
   AnyFunction,
   FeatureFlagSwitchParams,
   Status,
+
 } from "@fflags/types";
 
 const DEFAULT_DURATION = 5 * 60; // 5 min
@@ -36,6 +37,7 @@ export class FFlagsClient {
   private readonly status: Status;
   private readonly loader: FeatureFlagsLoader; // store to call inside `refresh` method
   private flags: FeatureFlags = new Map<FlagName, FeatureFlagContent>(); // represents cached data in memory
+
   private intervalId: NodeJS.Timeout | undefined; // necessary for setting/clearing interval
 
   /*
@@ -80,6 +82,7 @@ export class FFlagsClient {
     return (...args: Parameters<F>): ReturnType<F> => {
       const { flagName, on, off, override } = params;
       const flag = this.getFlag(flagName);
+
       if (!flag) return off(...args);
       const enabled = override ? override(flag, ...args) : flag.enabled; // override (if available), then status check
       return enabled ? on(...args) : off(...args);
@@ -90,6 +93,7 @@ export class FFlagsClient {
     return async (...args: Parameters<F>): Promise<ReturnType<F>> => {
       const { flagName, on, off, override } = params;
       const flag = this.getFlag(flagName);
+      
       if (!flag) return off(...args);
       const enabled = override ? await override(flag, ...args) : flag.enabled; // override (if available), then status check
       return enabled ? on(...args) : off(...args);
@@ -99,6 +103,7 @@ export class FFlagsClient {
   private constructor(options: FeatureFlagsStartingOptions) {
     this.environment = options.environment;
     this.status = options.status;
+
     this.loader = options.featureFlagsLoader;
     if (options.autoRefresh) {
       this.startPolling(options.refreshIntervalInSeconds ?? DEFAULT_DURATION);

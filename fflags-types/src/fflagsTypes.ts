@@ -57,6 +57,7 @@ export type FeatureFunction<Args extends AnyArgs, Result> = (
 
 export type OverrideFuction<F extends AnyFunction> = (
   flag: FlagContent,
+
   ...args: Parameters<F>
 ) => boolean | Promise<boolean>;
 
