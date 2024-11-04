@@ -6,7 +6,7 @@ export type FlagEnvironmentName = "prod" | "dev" | "testing";
 //   [key in FlagEnvironmentName]: FlagEnvironment;
 // };
 
-export type FlagEnvironments = Map<FlagEnvironmentName, FlagEnvironment>;
+export type FlagEnvironments = Record<FlagEnvironmentName, FlagEnvironment>;
 
 export type FlagEnvironment = {
   enabled: boolean;
@@ -55,7 +55,7 @@ export type FeatureFunction<Args extends AnyArgs, Result> = (
   ...args: Args
 ) => Result;
 
-export type OverrideFuction<F extends AnyFunction> = (
+export type OverrideFunction<F extends AnyFunction> = (
   flag: FlagContent,
 
   ...args: Parameters<F>
