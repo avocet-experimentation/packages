@@ -1,56 +1,52 @@
 import { beforeAll, describe, expect, test } from "vitest";
-import { FeatureFlagContent, FeatureFlags, FlagName, UserGroupName, UserGroups } from '../src/index.js';
+import { FlagContent, FeatureFlags, FlagName } from "../src/index.js";
 
-describe('fflagsTypes', () => {
+describe("fflagsTypes", () => {
   let flags: FeatureFlags;
 
-  const mockUserGroups = (newAccess: boolean, oldAccess: boolean): UserGroups => ({
-    newFeatureAccess: {
-      enabled: newAccess,
+  const mockBooleanFFContent = (
+    flagName: string,
+    enabled: boolean
+  ): FlagContent => ({
+    id: "abc",
+    name: flagName,
+    description: "This is a test!",
+    createdAt: Number(new Date().toISOString),
+    updatedAt: Number(new Date().toISOString),
+    environments: {
+      dev: { enabled: enabled },
+      prod: { enabled: !enabled },
+      testing: { enabled: !enabled },
     },
-    oldFeatureAccess: {
-      enabled: oldAccess,
-    },
+    valueType: "number",
+    defaultValue: 200,
   });
 
   const mockFeatureFlags = (): FeatureFlags => {
-    const flags: FeatureFlags = new Map<FlagName, UserGroups>()
-    flags.set('flagOne', mockUserGroups(true, false));
-    flags.set('flagTwo', mockUserGroups(false, true));
+    const flags: FeatureFlags = new Map<FlagName, FlagContent>();
+    flags.set("flagOne", mockBooleanFFContent("flagOne", true));
+    flags.set("flagTwo", mockBooleanFFContent("flagTwo", false));
     return flags;
   };
 
-  const getFlag = (flagName: FlagName, userGroupName: UserGroupName): FeatureFlagContent | undefined => {
-    const groups = flags.get(flagName);
-    return groups ? groups[userGroupName] : undefined;
-  }
+  const getFlag = (flagName: FlagName): FlagContent | undefined => {
+    const flagContent = flags.get(flagName);
+    return flagContent ? flagContent : undefined;
+  };
 
   beforeAll(() => {
     flags = mockFeatureFlags();
   });
 
-  test('Should retrieve an existing flag from the cached data', () => {
-    const actualOne = getFlag('flagOne', 'newFeatureAccess');
-    const actualTwo = getFlag('flagOne', 'oldFeatureAccess');
-    const actualThree = getFlag('flagTwo', 'newFeatureAccess');
-    const actualFour = getFlag('flagTwo', 'oldFeatureAccess');
-    expect(actualOne).eql({ enabled: true });
-    expect(actualTwo).eql({ enabled: false });
-    expect(actualThree).eql({ enabled: false });
-    expect(actualFour).eql({ enabled: true });
+  test("Should retrieve an existing flag from the cached data", () => {
+    const actualOne = getFlag("flagOne");
+    const actualTwo = getFlag("flagTwo");
+    expect(actualOne?.environments.dev.enabled).eql(true);
+    expect(actualTwo?.environments.dev.enabled).eql(false);
   });
 
-  test('Should fail to retrieve a non-existing flag from the cached data', () => {
-    const actualOne = getFlag('flag', 'newFeatureAccess');
-    const actualTwo = getFlag('flag', 'oldFeatureAccess');
-    expect(actualOne).undefined;
-    expect(actualTwo).undefined;
+  test("Should fail to retrieve a non-existing flag from the cached data", () => {
+    const undefinedFlag = getFlag("flag");
+    expect(undefinedFlag).undefined;
   });
-
-  test('Should fail to retrieve a flag using a non-existent group', () => {
-    const actualOne = getFlag('flagOne', 'featureAccess');
-    const actualTwo = getFlag('flagOne', 'featureAccess');
-    expect(actualOne).undefined;
-    expect(actualTwo).undefined;
-  });
-})
+});
