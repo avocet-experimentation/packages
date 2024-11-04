@@ -18,12 +18,12 @@
 */
 
 import {
-  Environment,
+  FlagEnvironmentName,
   FeatureFlagsLoader,
   FeatureFlags,
   FlagName,
-  FeatureFlagsStartingOptions,
-  FeatureFlagContent,
+  ConfigOptions,
+  FeatureFlag,
   AnyFunction,
   FeatureFlagSwitchParams,
   Status,
@@ -33,10 +33,10 @@ import {
 const DEFAULT_DURATION = 5 * 60; // 5 min
 
 export class FFlagsClient {
-  private readonly environment: Environment;
+  private readonly environment: FlagEnvironmentName;
   private readonly status: Status;
   private readonly loader: FeatureFlagsLoader; // store to call inside `refresh` method
-  private flags: FeatureFlags = new Map<FlagName, FeatureFlagContent>(); // represents cached data in memory
+  private flags: FeatureFlags = new Record<FlagName, FeatureFlag>(); // represents cached data in memory
 
   private intervalId: NodeJS.Timeout | undefined; // necessary for setting/clearing interval
 
@@ -46,7 +46,7 @@ export class FFlagsClient {
       - Async operations, as our loader function will be reading from an external data store
   */
   static async start(
-    options: FeatureFlagsStartingOptions
+    options: ConfigOptions
   ): Promise<FFlagsClient> {
     const client = new FFlagsClient(options);
     await client.refresh();
@@ -63,10 +63,10 @@ export class FFlagsClient {
     this.flags = await this.loader(this.environment, this.status);
   }
 
-  getFlag(flagName: FlagName): FeatureFlagContent | undefined {
+  getFlag(flagName: FlagName): FeatureFlag | undefined {
     const flagContent = this.flags.get(flagName);
     if (!flagContent) return;
-    return JSON.parse(JSON.stringify(flagContent)) as FeatureFlagContent; // clone flag to return value (not reference)
+    return JSON.parse(JSON.stringify(flagContent)) as FeatureFlag; // clone flag to return value (not reference)
   }
 
   // check directly whether or not a flag is enabled => call `getFlag` and return its status
@@ -100,7 +100,7 @@ export class FFlagsClient {
     };
   }
 
-  private constructor(options: FeatureFlagsStartingOptions) {
+  private constructor(options: ConfigOptions) {
     this.environment = options.environment;
     this.status = options.status;
 
