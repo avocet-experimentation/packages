@@ -13,7 +13,7 @@ export type FlagEnvironment = {
   // overrideRules: OverrideRule[];
 };
 
-export type FlagContent = {
+export type FeatureFlag = {
   id: string;
   name: FlagName;
   description: string;
@@ -31,7 +31,7 @@ export type FlagContent = {
   - Faster than using an object key as an index
     with holding data for two groups (control & experiment)
 */
-export type FeatureFlags = Map<FlagName, FlagContent>;
+export type FeatureFlags = Record<FlagName, FlagContent>;
 
 export type FeatureFlagLoader = (
   environment: FlagEnvironmentName[]
