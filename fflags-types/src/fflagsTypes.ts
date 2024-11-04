@@ -31,7 +31,7 @@ export type FeatureFlag = {
   - Faster than using an object key as an index
     with holding data for two groups (control & experiment)
 */
-export type FeatureFlags = Record<FlagName, FlagContent>;
+export type FeatureFlags = Record<FlagName, FeatureFlag>;
 
 export type FeatureFlagLoader = (
   environment: FlagEnvironmentName[]
@@ -56,7 +56,7 @@ export type FeatureFunction<Args extends AnyArgs, Result> = (
 ) => Result;
 
 export type OverrideFunction<F extends AnyFunction> = (
-  flag: FlagContent,
+  flag: FeatureFlag,
 
   ...args: Parameters<F>
 ) => boolean | Promise<boolean>;
@@ -67,5 +67,5 @@ export type FeatureFlagSwitchParams<F extends AnyFunction> = {
   flagName: FlagName;
   on: FeatureFunction<Parameters<F>, ReturnType<F>>;
   off: FeatureFunction<Parameters<F>, ReturnType<F>>;
-  override?: OverrideFuction<F>;
+  override?: OverrideFunction<F>;
 };
