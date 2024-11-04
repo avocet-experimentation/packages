@@ -1,58 +1,47 @@
-export type FeatureFlagContent = {
-  enabled: boolean; // true
-  rollout: number;
-  value?: unknown; // allow for object, string, or number
-  startDate?: Date; // "2024-10-20"
-  endDate?: Date; // "2024-11-20"
-  goals?: {
-    primary?: string; // "conversion_rate"
-    secondary?: string; // "reduce_bounce_rate"
-  };
-  trackingEvents?: string[]; // ["click", "conversion"]
-};
-
 export type FlagName = string;
 
-export type UserGroupName = string;
+export type FlagEnvironmentName = "prod" | "dev" | "testing";
 
-/*
-  - Key-value pair
-  - Can be small, since it will only be concerned
-    with holding data for two groups (control & experiment)
-*/
-export type UserGroups = Record<UserGroupName, FeatureFlagContent>;
+// export type FlagEnvironments = {
+//   [key in FlagEnvironmentName]: FlagEnvironment;
+// };
+
+export type FlagEnvironments = Record<FlagEnvironmentName, FlagEnvironment>;
+
+export type FlagEnvironment = {
+  enabled: boolean;
+  // overrideRules: OverrideRule[];
+};
+
+export type FeatureFlag = {
+  id: string;
+  name: FlagName;
+  description: string;
+  createdAt: number;
+  updatedAt: number;
+  environments: FlagEnvironments; // store envName: enabled
+} & ( //indicates the active state when the flag is enabled.
+  | { valueType: "boolean"; defaultValue: boolean } //
+  | { valueType: "string"; defaultValue: string }
+  | { valueType: "number"; defaultValue: number }
+);
 
 /*
   - Hashed data structure (O(1) read time)
   - Faster than using an object key as an index
     with holding data for two groups (control & experiment)
 */
-export type FeatureFlags = Map<FlagName, UserGroups>;
+export type FeatureFlags = Record<FlagName, FlagContent>;
 
-export type EnvironmentName = string;
-
-export type State =
-  | "draft"
-  | "active"
-  | "in_test"
-  | "paused"
-  | "completed"
-  | "disabled"
-  | "archived";
-
-export type StateName = State | undefined;
-
-export type FeatureFlagsLoader = (
-  environmentName: EnvironmentName,
-  state?: StateName
+export type FeatureFlagLoader = (
+  environment: FlagEnvironmentName[]
 ) => Promise<FeatureFlags>;
 
-export type FeatureFlagsStartingOptions = {
-  environmentName: EnvironmentName;
-  stateName?: StateName;
+export type ConfigOptions = {
+  environments: FlagEnvironmentName[];
   autoRefresh: boolean;
   refreshIntervalInSeconds?: number;
-  featureFlagsLoader: FeatureFlagsLoader;
+  featureFlagsLoader: FeatureFlagLoader;
 };
 
 // eslint-disable-next-line
@@ -66,8 +55,9 @@ export type FeatureFunction<Args extends AnyArgs, Result> = (
   ...args: Args
 ) => Result;
 
-export type OverrideFuction<F extends AnyFunction> = (
-  flag: FeatureFlagContent,
+export type OverrideFunction<F extends AnyFunction> = (
+  flag: FlagContent,
+
   ...args: Parameters<F>
 ) => boolean | Promise<boolean>;
 
@@ -75,7 +65,6 @@ export type OverrideFuction<F extends AnyFunction> = (
 // i.e. `on` for enabled, `off` for disabled
 export type FeatureFlagSwitchParams<F extends AnyFunction> = {
   flagName: FlagName;
-  userGroupName: UserGroupName;
   on: FeatureFunction<Parameters<F>, ReturnType<F>>;
   off: FeatureFunction<Parameters<F>, ReturnType<F>>;
   override?: OverrideFuction<F>;

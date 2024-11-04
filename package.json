@@ -5,7 +5,7 @@
     "build": "npm i && npm run --prefix ./fflags-types build && npm run --prefix ./fflags-client build && npm run --prefix ./fflags-mongo-loader build && npm run --prefix ./fflags-rest-loader build"
   },
   "workspaces": [
-    "packages/*"
+    "*"
   ],
   "devDependencies": {
     "@types/node": "^22.7.6",
