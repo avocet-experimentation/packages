@@ -22,7 +22,7 @@ export interface SpanIntAttribute {
 
 export type SpanPrimitiveAttribute = SpanStringAttribute | SpanIntAttribute;
 
-// SpanArrayAttribute is adistributive conditional type. See https://www.typescriptlang.org/docs/handbook/2/conditional-types.html#distributive-conditional-types
+// SpanArrayAttribute is a distributive conditional type. See https://www.typescriptlang.org/docs/handbook/2/conditional-types.html#distributive-conditional-types
 export type ToArray<T> = T extends any ? T[] : never;
 export type SpanArrayAttribute = ToArray<SpanPrimitiveAttribute>;
 
@@ -52,3 +52,17 @@ export interface ResourceSpan {
   };
   scopeSpans: ScopeSpan[];
 }
+
+export interface SpanTransformedAttribute {
+  key: string;
+  type: string;
+  value: string;
+}
+
+export interface TransformedSpan extends Omit<Span, 'attributes'> {
+  parentScope: Scope;
+  attributes: SpanTransformedAttribute[];
+}
+
+// spans, traces, etc
+export type EventTelemetry = TransformedSpan // or potentially more
