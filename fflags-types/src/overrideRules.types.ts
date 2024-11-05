@@ -3,6 +3,10 @@ import { EventTelemetry } from "./telemetry.types.js";
 
 export type ClientAttributeData = 'string' | 'number' | 'boolean';
 
+/**
+ * Keys of the attributes passed into the client SDK when initialized and used for experiment/flag assignment
+ * dataType is used to type-coerce attribute values
+ */
 export type ClientSessionAttribute = {
   name: string;
   dataType: ClientAttributeData;
@@ -24,7 +28,7 @@ export interface OverrideRule {
   startTimestamp?: number; // unix timestamp | undefined if never enabled
   endTimestamp?: number;
   enrollment: {
-    attributes: ClientSessionAttribute[]; // keys for the values sent to the experimentation server and consistently hashed for random assignment
+    attributes: ClientSessionAttribute[];
     proportion: number; // 0 < proportion <= 1
   };
 }

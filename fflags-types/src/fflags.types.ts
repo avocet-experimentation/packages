@@ -1,10 +1,12 @@
+import { OverrideRule } from "./overrideRules.types.js";
+
 export type FlagName = string;
 
 export type FlagEnvironmentName = "prod" | "dev" | "testing";
 
 export interface FlagEnvironment {
   enabled: boolean;
-  // overrideRules: OverrideRule[];
+  overrideRules: OverrideRule[];
 };
 
 export type FlagEnvironments = Record<FlagEnvironmentName, FlagEnvironment>;
@@ -25,7 +27,9 @@ export interface FeatureFlag {
 /**
  * Feature flag data available to the client SDK
  */
-export type FeatureFlagClientData = Pick<FeatureFlag, 'name' | 'valueType' | 'defaultValue'> & { currentValue: string; }
+export interface FeatureFlagClientData extends Pick<FeatureFlag, 'name' | 'valueType' | 'defaultValue'> {
+  currentValue: string;
+}
 
 /**
  * A map of flag names to properties
