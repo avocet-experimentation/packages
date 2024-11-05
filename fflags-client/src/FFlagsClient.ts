@@ -1,52 +1,35 @@
-/*
-  Responsible for:
-    - Loading the feature flags from a data source
-    - Refresh them from time to time
-    - Retrieve a flag using its name and user group name
-
-  Problem:
-    Implementing the loader function inside our class requires us to preemptively decide which data source we want to use and commit to that source. This would require us to implement *different* loaders for *different* data sources.
-
-  Open-closed principle:
-    Avoid modifying our class each time we want to read from a data source.
-
-  Solution:
-    Different loaders for different data sources that are totally independent of the class.
-  
-  Implementation:
-    Implement loader outside our class and then inject it into the constructor using dependency injection.
-*/
-
 import {
   FlagEnvironmentName,
-  FeatureFlagsLoader,
-  FeatureFlags,
   FlagName,
-  ConfigOptions,
-  FeatureFlag,
-  AnyFunction,
-  FeatureFlagSwitchParams,
-  Status,
-
+  FeatureFlagClientData,
+  ClientFlagMapping,
+  Span,
+  clientFlagMappingSchema,
+  ClientSessionAttribute,
 } from "@fflags/types";
+import {
+  Attributes,
+  ClientOptions,
+} from "./clientTypes.js";
 
-const DEFAULT_DURATION = 5 * 60; // 5 min
+const DEFAULT_DURATION = 5 * 60; // 5 minutes
 
 export class FFlagsClient {
+  attributeAssignmentCb?: <SpanType>(span: SpanType, attributes: Attributes) => void;
   private readonly environment: FlagEnvironmentName;
-  private readonly status: Status;
-  private readonly loader: FeatureFlagsLoader; // store to call inside `refresh` method
-  private flags: FeatureFlags = new Record<FlagName, FeatureFlag>(); // represents cached data in memory
-
+  // private readonly clientKey: string; // to replace .environment eventually
+  private flags: ClientFlagMapping = {}; // represents cached data in memory
+  private readonly apiUrl: string;
   private intervalId: NodeJS.Timeout | undefined; // necessary for setting/clearing interval
+  private clientSessionAttributes: ClientSessionAttribute[];
 
-  /*
-    Static factory method (no constructor):
-      - Allows for more meaningful name when creating the object
-      - Async operations, as our loader function will be reading from an external data store
+ /**
+  * Static factory method (no constructor):
+    - Allows for more meaningful name when creating the object
+    - Async operations, as our loader function will be reading from an external data store
   */
   static async start(
-    options: ConfigOptions
+    options: ClientOptions
   ): Promise<FFlagsClient> {
     const client = new FFlagsClient(options);
     await client.refresh();
@@ -58,62 +41,128 @@ export class FFlagsClient {
     clearInterval(this.intervalId);
   }
 
-  // must call directly if `autoRefresh` is set to false
+  /**
+   * Refresh local flag data. Must call manually if `autoRefresh` is set to false
+   */
   async refresh(): Promise<void> {
-    this.flags = await this.loader(this.environment, this.status);
+    this.load(this.environment);
   }
 
-  getFlag(flagName: FlagName): FeatureFlag | undefined {
-    const flagContent = this.flags.get(flagName);
-    if (!flagContent) return;
-    return JSON.parse(JSON.stringify(flagContent)) as FeatureFlag; // clone flag to return value (not reference)
+  /**
+   * Retrieve a copy of cached data for the specified flag
+   */
+  getFlag(flagName: FlagName): FeatureFlagClientData | undefined {
+    const flagContent = this.flags[flagName];
+    return { ...flagContent };
   }
 
-  // check directly whether or not a flag is enabled => call `getFlag` and return its status
-  isFlagEnabled(flagName: FlagName): boolean {
+  /**
+   * @returns a copy of all locally stored flags
+   */
+  getAllFlags(): ClientFlagMapping {
+    return { ...this.flags };
+  }
+
+  /**
+   * Generates an object of attributes for a given flag.
+   * For insertion into telemetry data.
+   */
+  getFlagAttributes(flagName: FlagName): Attributes {
     const flag = this.getFlag(flagName);
-    return !flag ? false : flag.enabled; // by default, return `false` if flag does not exist
-  }
+    if (!flag) throw new Error(`Flag "${flagName}" not found!`);
 
-  // returns the function declared in the `on` or `off` properties, depending on the flag status
-  // if the flag does not exist, it returns the `off` function
-  // can easily be used to switch between different versions of the same feature without breaking
-  getFeature<F extends AnyFunction>(params: FeatureFlagSwitchParams<F>) {
-    return (...args: Parameters<F>): ReturnType<F> => {
-      const { flagName, on, off, override } = params;
-      const flag = this.getFlag(flagName);
-
-      if (!flag) return off(...args);
-      const enabled = override ? override(flag, ...args) : flag.enabled; // override (if available), then status check
-      return enabled ? on(...args) : off(...args);
+    const attributes: Attributes = {
+      featureFlags: [
+        {
+          key: flagName,
+          providerName: 'Field-Trip',
+          valueType: flag.valueType,
+          value: flag.currentValue,
+        },
+      ],
     };
+
+    return attributes;
   }
 
-  getAsyncFeature<F extends AnyFunction>(params: FeatureFlagSwitchParams<F>) {
-    return async (...args: Parameters<F>): Promise<ReturnType<F>> => {
-      const { flagName, on, off, override } = params;
-      const flag = this.getFlag(flagName);
-      
-      if (!flag) return off(...args);
-      const enabled = override ? await override(flag, ...args) : flag.enabled; // override (if available), then status check
-      return enabled ? on(...args) : off(...args);
-    };
+  getAllFlagAttributes(): Attributes[] {
+    const flagNames = Object.keys(this.flags);
+    return flagNames.map((name) => this.getFlagAttributes(name));
   }
 
-  private constructor(options: ConfigOptions) {
+  /**
+   * Get the current value of a flag
+   * @param span a telemetry span object
+   * @returns 
+   */
+  // flagValue(flagName: FlagName)
+  // flagValue<SpanType extends Span>(flagName: FlagName, span: SpanType)
+  flagValue<SpanType extends Span>(flagName: FlagName, span?: SpanType): null | boolean | number | string {
+    const flag = this.getFlag(flagName);
+    if (!flag) return null;
+
+    if (span) {
+      const attributes = this.getFlagAttributes(flagName);
+      this.attributeAssignmentCb?.(span, attributes);
+    }
+    
+    // handle various flag types
+    if (flag.valueType === 'boolean') {
+      return Boolean(flag.currentValue);
+    } else if (flag.valueType === 'number') {
+      return Number(flag.currentValue);
+    } else if (flag.valueType === 'string') {
+      return String(flag.currentValue);
+    }
+
+    return null; // todo: remove this after solving exhaustiveness check error
+  }
+
+  private async load(environmentName: string) {
+    return this.attemptAndHandleError(async () => {
+      const fetchOptions = {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json; charset=utf-8',
+        },
+        body: JSON.stringify({
+          environment: environmentName,
+          clientSessionAttributes: this.clientSessionAttributes,
+        }),
+      };
+
+      const response = await fetch(`${this.apiUrl}`, fetchOptions);
+      const fflags: unknown = await response.json();
+      const parsed = clientFlagMappingSchema.parse(fflags);
+
+      this.flags = { ...this.flags, ...parsed };
+      return true;
+    });
+  }
+
+  private async attemptAndHandleError<O, F extends () => O>(cb: F, cleanupCb?: () => void): Promise<O> {
+    try {
+      return cb();
+    } catch(error) {
+      throw new Error(`${new Date()}: ${error}`);
+    } finally {
+      cleanupCb?.();
+    }
+  }
+
+  private constructor(options: ClientOptions) {
     this.environment = options.environment;
-    this.status = options.status;
-
-    this.loader = options.featureFlagsLoader;
-    if (options.autoRefresh) {
+    this.apiUrl = options.apiUrl;
+    this.attributeAssignmentCb = options.attributeAssignmentCb;
+    this.clientSessionAttributes = options.clientSessionAttributes;
+    if (options.autoRefresh === true) {
       this.startPolling(options.refreshIntervalInSeconds ?? DEFAULT_DURATION);
     }
   }
 
   private startPolling(intervalInSeconds: number) {
-    // setInterval delay expects value in ms
     this.intervalId = setInterval(
-      () => void this.refresh(),
+      () => this.refresh(),
       intervalInSeconds * 1000
     );
   }
