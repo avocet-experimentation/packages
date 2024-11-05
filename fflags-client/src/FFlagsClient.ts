@@ -22,7 +22,6 @@ import {
   FlagName,
   FeatureFlagClientData,
   Span,
-
 } from "@fflags/types";
 import {
   Attributes,
@@ -34,7 +33,7 @@ const DEFAULT_DURATION = 5 * 60; // 5 min
 
 export class FFlagsClient {
   // autoAddSpanAttributes: boolean;
-  attributeAssignmentCb?: <SpanType>(span: SpanType) => void;
+  attributeAssignmentCb?: <SpanType>(span: SpanType, attributes: Attributes) => void;
   private readonly environment: FlagEnvironmentName;
   // private readonly clientKey: string; // to replace .environment eventually
   private flags: ClientFlagMapping = {}; // represents cached data in memory
@@ -111,7 +110,7 @@ export class FFlagsClient {
 
     if (span) {
       const attributes = this.getFlagAttributes(flagName);
-      this.attributeAssignmentCb?.(attributes);
+      this.attributeAssignmentCb?.(span, attributes);
     }
     
     // handle various flag types
@@ -123,33 +122,8 @@ export class FFlagsClient {
       return String(flag.currentValue);
     }
 
-    return null; // todo: remove this
+    return null; // todo: remove this after solving exhaustiveness check error
   }
-
-  // // returns the function declared in the `on` or `off` properties, depending on the flag status
-  // // if the flag does not exist, it returns the `off` function
-  // // can easily be used to switch between different versions of the same feature without breaking
-  // getFeature<F extends AnyFunction>(params: FeatureFlagSwitchParams<F>) {
-  //   return (...args: Parameters<F>): ReturnType<F> => {
-  //     const { flagName, on, off, override } = params;
-  //     const flag = this.getFlag(flagName);
-
-  //     if (!flag) return off(...args);
-  //     const enabled = override ? override(flag, ...args) : flag.enabled; // override (if available), then status check
-  //     return enabled ? on(...args) : off(...args);
-  //   };
-  // }
-
-  // getAsyncFeature<F extends AnyFunction>(params: FeatureFlagSwitchParams<F>) {
-  //   return async (...args: Parameters<F>): Promise<ReturnType<F>> => {
-  //     const { flagName, on, off, override } = params;
-  //     const flag = this.getFlag(flagName);
-      
-  //     if (!flag) return off(...args);
-  //     const enabled = override ? await override(flag, ...args) : flag.enabled; // override (if available), then status check
-  //     return enabled ? on(...args) : off(...args);
-  //   };
-  // }
 
   private async load(environmentName: string) {
     return this.attemptAndHandleError(async () => {
