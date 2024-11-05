@@ -16,15 +16,13 @@ export interface SpanStringAttribute {
 export interface SpanIntAttribute {
   key: string; // e.g., http.route
   value: {
-	intValue: string; // e.g., '/'
+	  intValue: string; // e.g., '/'
   }
 }
 
 export type SpanPrimitiveAttribute = SpanStringAttribute | SpanIntAttribute;
 
-// SpanArrayAttribute is a distributive conditional type. See https://www.typescriptlang.org/docs/handbook/2/conditional-types.html#distributive-conditional-types
-export type ToArray<T> = T extends any ? T[] : never;
-export type SpanArrayAttribute = ToArray<SpanPrimitiveAttribute>;
+export type SpanArrayAttribute = SpanStringAttribute[] | SpanIntAttribute[];
 
 export type SpanAttribute = SpanArrayAttribute | SpanPrimitiveAttribute;
 
@@ -65,4 +63,4 @@ export interface TransformedSpan extends Omit<Span, 'attributes'> {
 }
 
 // spans, traces, etc
-export type EventTelemetry = TransformedSpan // or potentially more
+export type EventTelemetry = TransformedSpan; // or potentially more
