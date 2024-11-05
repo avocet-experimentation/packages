@@ -44,7 +44,7 @@ export const spanSchema = z.object({
   startTimeUnixNano: z.string(),
   endTimeUnixNano: z.string(),
   attributes: z.array(spanAttributeSchema),
-  status: z.any(), // placeholder
+  status: z.object({}), // placeholder
 });
 
 export const scopeSpanSchema = z.object({

@@ -1,38 +1,19 @@
-/*
-  Responsible for:
-    - Loading the feature flags from a data source
-    - Refresh them from time to time
-    - Retrieve a flag using its name and user group name
-
-  Problem:
-    Implementing the loader function inside our class requires us to preemptively decide which data source we want to use and commit to that source. This would require us to implement *different* loaders for *different* data sources.
-
-  Open-closed principle:
-    Avoid modifying our class each time we want to read from a data source.
-
-  Solution:
-    Different loaders for different data sources that are totally independent of the class.
-  
-  Implementation:
-    Implement loader outside our class and then inject it into the constructor using dependency injection.
-*/
-
 import {
   FlagEnvironmentName,
   FlagName,
   FeatureFlagClientData,
+  ClientFlagMapping,
   Span,
+  clientFlagMappingSchema,
 } from "@fflags/types";
 import {
   Attributes,
   ClientOptions,
-  ClientFlagMapping,
 } from "./clientTypes.js";
 
-const DEFAULT_DURATION = 5 * 60; // 5 min
+const DEFAULT_DURATION = 5 * 60; // 5 minutes
 
 export class FFlagsClient {
-  // autoAddSpanAttributes: boolean;
   attributeAssignmentCb?: <SpanType>(span: SpanType, attributes: Attributes) => void;
   private readonly environment: FlagEnvironmentName;
   // private readonly clientKey: string; // to replace .environment eventually
@@ -147,9 +128,9 @@ export class FFlagsClient {
 
       const response = await fetch(`${this.apiUrl}`, fetchOptions);
       const fflags: unknown = await response.json();
-      this.assertFlagMapping(fflags); // placeholder runtime type validation
+      const parsed = clientFlagMappingSchema.parse(fflags);
 
-      this.flags = { ...this.flags, ...fflags };
+      this.flags = { ...this.flags, ...parsed };
       return true;
     });
   }
@@ -167,28 +148,16 @@ export class FFlagsClient {
   private constructor(options: ClientOptions) {
     this.environment = options.environment;
     this.apiUrl = options.apiUrl;
-    // this.autoAddSpanAttributes = options.autoAddSpanAttributes;
     this.attributeAssignmentCb = options.attributeAssignmentCb;
-    if (options.autoRefresh) {
+    if (options.autoRefresh === true) {
       this.startPolling(options.refreshIntervalInSeconds ?? DEFAULT_DURATION);
     }
   }
 
   private startPolling(intervalInSeconds: number) {
-    // setInterval delay expects value in ms
     this.intervalId = setInterval(
-      () => void this.refresh(),
+      () => this.refresh(),
       intervalInSeconds * 1000
     );
-  }
-  
-  // placeholder
-  private assertFlagMapping(arg: unknown): asserts arg is ClientFlagMapping {
-    if (!arg 
-      || typeof arg !== 'object' 
-      || Array.isArray(arg)
-    ) {
-      throw new TypeError(`Arg ${arg} is not a ClientFlagMapping`);
-    }
   }
 }

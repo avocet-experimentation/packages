@@ -10,13 +10,16 @@ import {
 } from "vitest";
 import { FFlagsClient } from "../src/index.js";
 import {
-  EnvironmentName,
-  FeatureFlagContent,
   FeatureFlags,
-  FeatureFlagSwitchParams,
   FlagName,
-  UserGroups,
 } from "@fflags/types";
+
+/**
+ * todo:
+ * - mock the server using MSW
+ * - update tests to reflect new client interface
+ * - check for coverage
+ */
 
 describe("FFlagsClient", () => {
   describe("Refresh Interval", () => {
@@ -44,10 +47,9 @@ describe("FFlagsClient", () => {
 
     test("Should call the loader according to the provided interval", async () => {
       const client = await FFlagsClient.start({
-        environmentName: "staging",
+        environment: "staging",
         autoRefresh: true,
         refreshIntervalInSeconds: 5,
-        featureFlagsLoader: mockLoader,
       });
       expect(mockLoader.mock.calls.length).eq(1); // vitest mock calls is an array of arrays containing all the arguments used for each call
       vi.advanceTimersByTime(FIVE_SECONDS);
@@ -59,9 +61,8 @@ describe("FFlagsClient", () => {
 
     test("Should call the loader just once", async () => {
       const client = await FFlagsClient.start({
-        environmentName: "staging",
+        environment: "staging",
         autoRefresh: false,
-        featureFlagsLoader: mockLoader,
       });
       expect(mockLoader.mock.calls.length).eq(1);
       vi.advanceTimersByTime(FIVE_SECONDS);
