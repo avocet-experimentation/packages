@@ -74,6 +74,13 @@ export class FFlagsClient {
   }
 
   /**
+   * @returns a copy of all locally stored flags
+   */
+  getAllFlags(): ClientFlagMapping {
+    return { ...this.flags };
+  }
+
+  /**
    * Generates an object of attributes for a given flag.
    * For insertion into telemetry data.
    */
@@ -95,10 +102,13 @@ export class FFlagsClient {
     return attributes;
   }
 
+  getAllFlagAttributes(): Attributes[] {
+    const flagNames = Object.keys(this.flags);
+    return flagNames.map((name) => this.getFlagAttributes(name));
+  }
+
   /**
-   * 
-   * @param flagName 
-   * @param userGroupName 
+   * Get the current value of a flag
    * @param span a telemetry span object
    * @returns 
    */
@@ -144,7 +154,7 @@ export class FFlagsClient {
     });
   }
 
-  async attemptAndHandleError<O, F extends () => O>(cb: F, cleanupCb?: () => void): Promise<O> {
+  private async attemptAndHandleError<O, F extends () => O>(cb: F, cleanupCb?: () => void): Promise<O> {
     try {
       return cb();
     } catch(error) {
