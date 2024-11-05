@@ -9,6 +9,7 @@ export const clientAttributeDataSchema = z.union([
 export const clientSessionAttributeSchema = z.object({
   name: z.string(),
   dataType: clientAttributeDataSchema,
+  value: z.string(),
 });
 
 export const ruleStatusSchema = z.union([

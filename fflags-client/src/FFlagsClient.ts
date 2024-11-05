@@ -5,6 +5,7 @@ import {
   ClientFlagMapping,
   Span,
   clientFlagMappingSchema,
+  ClientSessionAttribute,
 } from "@fflags/types";
 import {
   Attributes,
@@ -20,6 +21,7 @@ export class FFlagsClient {
   private flags: ClientFlagMapping = {}; // represents cached data in memory
   private readonly apiUrl: string;
   private intervalId: NodeJS.Timeout | undefined; // necessary for setting/clearing interval
+  private clientSessionAttributes: ClientSessionAttribute[];
 
  /**
   * Static factory method (no constructor):
@@ -123,7 +125,10 @@ export class FFlagsClient {
         headers: {
           'Content-Type': 'application/json; charset=utf-8',
         },
-        body: JSON.stringify({ environment: environmentName }),
+        body: JSON.stringify({
+          environment: environmentName,
+          clientSessionAttributes: this.clientSessionAttributes,
+        }),
       };
 
       const response = await fetch(`${this.apiUrl}`, fetchOptions);
@@ -149,6 +154,7 @@ export class FFlagsClient {
     this.environment = options.environment;
     this.apiUrl = options.apiUrl;
     this.attributeAssignmentCb = options.attributeAssignmentCb;
+    this.clientSessionAttributes = options.clientSessionAttributes;
     if (options.autoRefresh === true) {
       this.startPolling(options.refreshIntervalInSeconds ?? DEFAULT_DURATION);
     }
