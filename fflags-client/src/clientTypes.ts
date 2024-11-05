@@ -1,4 +1,4 @@
-import { FeatureFlag, FeatureFlagClientData, FlagEnvironmentName, FlagName } from "@fflags/types"
+import { ClientSessionAttribute, FeatureFlag, FeatureFlagClientData, FlagEnvironmentName, FlagName } from "@fflags/types"
 
 /**
  * For embedding in telemetry data. See https://opentelemetry.io/docs/specs/semconv/general/attribute-requirement-level/
@@ -25,4 +25,5 @@ export type ClientOptions = {
   refreshIntervalInSeconds?: number;
   attributeAssignmentCb?: <SpanType>(span: SpanType, attributes: Attributes) => void;
   apiUrl: string;
+  clientSessionAttributes: ClientSessionAttribute[];
 };

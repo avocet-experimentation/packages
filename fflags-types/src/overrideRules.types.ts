@@ -10,6 +10,7 @@ export type ClientAttributeData = 'string' | 'number' | 'boolean';
 export type ClientSessionAttribute = {
   name: string;
   dataType: ClientAttributeData;
+  value: string;
 }
 
 export type RuleStatus =
