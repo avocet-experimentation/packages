@@ -1,5 +1,5 @@
 import { describe, expect, Mock, test, vi } from "vitest";
-import { RestLoader } from "../src/index.js";
+import { RestLoader } from "../../fflags-rest-loader/src/index.js";
 
 describe("RestLoader", () => {
   const BASE_URL = "http://localhost:3524/api/fflags/caching";

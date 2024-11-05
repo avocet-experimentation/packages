@@ -13,18 +13,23 @@ export type FlagEnvironment = {
   // overrideRules: OverrideRule[];
 };
 
-export type FeatureFlag = {
+/**
+ * Flag objects available in the backend
+ */
+export interface FeatureFlag {
   id: string;
   name: FlagName;
   description: string;
   createdAt: number;
   updatedAt: number;
   environments: FlagEnvironments; // store envName: enabled
-} & ( //indicates the active state when the flag is enabled.
-  | { valueType: "boolean"; defaultValue: boolean } //
-  | { valueType: "string"; defaultValue: string }
-  | { valueType: "number"; defaultValue: number }
-);
+  valueType: 'boolean' | 'string' | 'number';
+  defaultValue: string;
+}
+/**
+ * Feature flag data available to the client SDK
+ */
+export type FeatureFlagClientData = Pick<FeatureFlag, 'name' | 'valueType' | 'defaultValue'> & { currentValue: string; }
 
 /*
   - Hashed data structure (O(1) read time)
@@ -36,13 +41,6 @@ export type FeatureFlags = Record<FlagName, FeatureFlag>;
 export type FeatureFlagLoader = (
   environment: FlagEnvironmentName[]
 ) => Promise<FeatureFlags>;
-
-export type ConfigOptions = {
-  environments: FlagEnvironmentName[];
-  autoRefresh: boolean;
-  refreshIntervalInSeconds?: number;
-  featureFlagsLoader: FeatureFlagLoader;
-};
 
 // eslint-disable-next-line
 type AnyArgs = any[]; // represents any set of arguments passed to a function

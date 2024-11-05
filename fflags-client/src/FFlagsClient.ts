@@ -19,34 +19,35 @@
 
 import {
   FlagEnvironmentName,
-  FeatureFlagsLoader,
-  FeatureFlags,
   FlagName,
-  ConfigOptions,
-  FeatureFlag,
-  AnyFunction,
-  FeatureFlagSwitchParams,
-  Status,
+  FeatureFlagClientData,
+  Span,
 
 } from "@fflags/types";
+import {
+  Attributes,
+  ClientOptions,
+  ClientFlagMapping,
+} from "./clientTypes.js";
 
 const DEFAULT_DURATION = 5 * 60; // 5 min
 
 export class FFlagsClient {
+  // autoAddSpanAttributes: boolean;
+  attributeAssignmentCb?: <SpanType>(span: SpanType) => void;
   private readonly environment: FlagEnvironmentName;
-  private readonly status: Status;
-  private readonly loader: FeatureFlagsLoader; // store to call inside `refresh` method
-  private flags: FeatureFlags = new Record<FlagName, FeatureFlag>(); // represents cached data in memory
-
+  // private readonly clientKey: string; // to replace .environment eventually
+  private flags: ClientFlagMapping = {}; // represents cached data in memory
+  private readonly apiUrl: string;
   private intervalId: NodeJS.Timeout | undefined; // necessary for setting/clearing interval
 
-  /*
-    Static factory method (no constructor):
-      - Allows for more meaningful name when creating the object
-      - Async operations, as our loader function will be reading from an external data store
+ /**
+  * Static factory method (no constructor):
+    - Allows for more meaningful name when creating the object
+    - Async operations, as our loader function will be reading from an external data store
   */
   static async start(
-    options: ConfigOptions
+    options: ClientOptions
   ): Promise<FFlagsClient> {
     const client = new FFlagsClient(options);
     await client.refresh();
@@ -58,53 +59,132 @@ export class FFlagsClient {
     clearInterval(this.intervalId);
   }
 
-  // must call directly if `autoRefresh` is set to false
+  /**
+   * Refresh local flag data. Must call manually if `autoRefresh` is set to false
+   */
   async refresh(): Promise<void> {
-    this.flags = await this.loader(this.environment, this.status);
+    this.load(this.environment);
   }
 
-  getFlag(flagName: FlagName): FeatureFlag | undefined {
-    const flagContent = this.flags.get(flagName);
-    if (!flagContent) return;
-    return JSON.parse(JSON.stringify(flagContent)) as FeatureFlag; // clone flag to return value (not reference)
+  /**
+   * Retrieve a copy of cached data for the specified flag
+   */
+  getFlag(flagName: FlagName): FeatureFlagClientData | undefined {
+    const flagContent = this.flags[flagName];
+    return { ...flagContent };
   }
 
-  // check directly whether or not a flag is enabled => call `getFlag` and return its status
-  isFlagEnabled(flagName: FlagName): boolean {
+  /**
+   * Generates an object of attributes for a given flag.
+   * For insertion into telemetry data.
+   */
+  getFlagAttributes(flagName: FlagName): Attributes {
     const flag = this.getFlag(flagName);
-    return !flag ? false : flag.enabled; // by default, return `false` if flag does not exist
-  }
+    if (!flag) throw new Error(`Flag "${flagName}" not found!`);
 
-  // returns the function declared in the `on` or `off` properties, depending on the flag status
-  // if the flag does not exist, it returns the `off` function
-  // can easily be used to switch between different versions of the same feature without breaking
-  getFeature<F extends AnyFunction>(params: FeatureFlagSwitchParams<F>) {
-    return (...args: Parameters<F>): ReturnType<F> => {
-      const { flagName, on, off, override } = params;
-      const flag = this.getFlag(flagName);
-
-      if (!flag) return off(...args);
-      const enabled = override ? override(flag, ...args) : flag.enabled; // override (if available), then status check
-      return enabled ? on(...args) : off(...args);
+    const attributes: Attributes = {
+      featureFlags: [
+        {
+          key: flagName,
+          providerName: 'Field-Trip',
+          valueType: flag.valueType,
+          value: flag.currentValue,
+        },
+      ],
     };
+
+    return attributes;
   }
 
-  getAsyncFeature<F extends AnyFunction>(params: FeatureFlagSwitchParams<F>) {
-    return async (...args: Parameters<F>): Promise<ReturnType<F>> => {
-      const { flagName, on, off, override } = params;
-      const flag = this.getFlag(flagName);
+  /**
+   * 
+   * @param flagName 
+   * @param userGroupName 
+   * @param span a telemetry span object
+   * @returns 
+   */
+  // flagValue(flagName: FlagName)
+  // flagValue<SpanType extends Span>(flagName: FlagName, span: SpanType)
+  flagValue<SpanType extends Span>(flagName: FlagName, span?: SpanType): null | boolean | number | string {
+    const flag = this.getFlag(flagName);
+    if (!flag) return null;
+
+    if (span) {
+      const attributes = this.getFlagAttributes(flagName);
+      this.attributeAssignmentCb?.(attributes);
+    }
+    
+    // handle various flag types
+    if (flag.valueType === 'boolean') {
+      return Boolean(flag.currentValue);
+    } else if (flag.valueType === 'number') {
+      return Number(flag.currentValue);
+    } else if (flag.valueType === 'string') {
+      return String(flag.currentValue);
+    }
+
+    return null; // todo: remove this
+  }
+
+  // // returns the function declared in the `on` or `off` properties, depending on the flag status
+  // // if the flag does not exist, it returns the `off` function
+  // // can easily be used to switch between different versions of the same feature without breaking
+  // getFeature<F extends AnyFunction>(params: FeatureFlagSwitchParams<F>) {
+  //   return (...args: Parameters<F>): ReturnType<F> => {
+  //     const { flagName, on, off, override } = params;
+  //     const flag = this.getFlag(flagName);
+
+  //     if (!flag) return off(...args);
+  //     const enabled = override ? override(flag, ...args) : flag.enabled; // override (if available), then status check
+  //     return enabled ? on(...args) : off(...args);
+  //   };
+  // }
+
+  // getAsyncFeature<F extends AnyFunction>(params: FeatureFlagSwitchParams<F>) {
+  //   return async (...args: Parameters<F>): Promise<ReturnType<F>> => {
+  //     const { flagName, on, off, override } = params;
+  //     const flag = this.getFlag(flagName);
       
-      if (!flag) return off(...args);
-      const enabled = override ? await override(flag, ...args) : flag.enabled; // override (if available), then status check
-      return enabled ? on(...args) : off(...args);
-    };
+  //     if (!flag) return off(...args);
+  //     const enabled = override ? await override(flag, ...args) : flag.enabled; // override (if available), then status check
+  //     return enabled ? on(...args) : off(...args);
+  //   };
+  // }
+
+  private async load(environmentName: string) {
+    return this.attemptAndHandleError(async () => {
+      const fetchOptions = {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json; charset=utf-8',
+        },
+        body: JSON.stringify({ environment: environmentName }),
+      };
+
+      const response = await fetch(`${this.apiUrl}`, fetchOptions);
+      const fflags: unknown = await response.json();
+      this.assertFlagMapping(fflags); // placeholder runtime type validation
+
+      this.flags = { ...this.flags, ...fflags };
+      return true;
+    });
   }
 
-  private constructor(options: ConfigOptions) {
-    this.environment = options.environment;
-    this.status = options.status;
+  async attemptAndHandleError<O, F extends () => O>(cb: F, cleanupCb?: () => void): Promise<O> {
+    try {
+      return cb();
+    } catch(error) {
+      throw new Error(`${new Date()}: ${error}`);
+    } finally {
+      cleanupCb?.();
+    }
+  }
 
-    this.loader = options.featureFlagsLoader;
+  private constructor(options: ClientOptions) {
+    this.environment = options.environment;
+    this.apiUrl = options.apiUrl;
+    // this.autoAddSpanAttributes = options.autoAddSpanAttributes;
+    this.attributeAssignmentCb = options.attributeAssignmentCb;
     if (options.autoRefresh) {
       this.startPolling(options.refreshIntervalInSeconds ?? DEFAULT_DURATION);
     }
@@ -116,5 +196,15 @@ export class FFlagsClient {
       () => void this.refresh(),
       intervalInSeconds * 1000
     );
+  }
+  
+  // placeholder
+  private assertFlagMapping(arg: unknown): asserts arg is ClientFlagMapping {
+    if (!arg 
+      || typeof arg !== 'object' 
+      || Array.isArray(arg)
+    ) {
+      throw new TypeError(`Arg ${arg} is not a ClientFlagMapping`);
+    }
   }
 }
