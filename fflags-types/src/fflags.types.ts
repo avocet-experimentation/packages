@@ -1,8 +1,10 @@
+import { z } from "zod";
 import { OverrideRule } from "./overrideRules.types.js";
+import { clientFlagMappingSchema, environmentNameSchema, featureFlagSchema } from "./fflags.schema.js";
 
 export type FlagName = string;
 
-export type FlagEnvironmentName = "prod" | "dev" | "testing";
+export type FlagEnvironmentName = z.infer<typeof environmentNameSchema>;
 
 export interface FlagEnvironment {
   enabled: boolean;
@@ -14,22 +16,15 @@ export type FlagEnvironments = Record<FlagEnvironmentName, FlagEnvironment>;
 /**
  * Flag objects available in the backend
  */
-export interface FeatureFlag {
-  id: string;
-  name: FlagName;
-  description: string;
-  createdAt: number;
-  updatedAt: number;
-  environments: FlagEnvironments; // store envName: enabled
-  valueType: 'boolean' | 'string' | 'number';
-  defaultValue: string;
-}
+export type FeatureFlag = z.infer<typeof featureFlagSchema>;
 /**
  * Feature flag data available to the client SDK
  */
 export interface FeatureFlagClientData extends Pick<FeatureFlag, 'name' | 'valueType' | 'defaultValue'> {
   currentValue: string;
 }
+
+export type ClientFlagMapping = z.infer<typeof clientFlagMappingSchema>;
 
 /**
  * A map of flag names to properties

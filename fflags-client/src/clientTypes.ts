@@ -16,17 +16,13 @@ export interface ExperimentAttributes {
   blockId: string;
 }
 
-
 export type Attributes = { featureFlags?: FlagAttributes[], experiments: ExperimentAttributes[] } 
 | { featureFlags: FlagAttributes[], experiments?: ExperimentAttributes[] }
-
-export type ClientFlagMapping = Record<FlagName, FeatureFlagClientData>;
 
 export type ClientOptions = {
   environment: FlagEnvironmentName;
   autoRefresh: boolean;
   refreshIntervalInSeconds?: number;
-  // autoAddSpanAttributes: boolean;
-  attributeAssignmentCb?: <SpanType>(span: SpanType) => void;
+  attributeAssignmentCb?: <SpanType>(span: SpanType, attributes: Attributes) => void;
   apiUrl: string;
 };

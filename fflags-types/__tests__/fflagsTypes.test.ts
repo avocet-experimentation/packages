@@ -1,5 +1,5 @@
 import { beforeAll, describe, expect, test } from "vitest";
-import { FlagContent, FeatureFlags, FlagName } from "../src/index.js";
+import { FeatureFlag, FeatureFlags, FlagName } from "../src/index.js";
 
 describe("fflagsTypes", () => {
   let flags: FeatureFlags;
@@ -7,30 +7,30 @@ describe("fflagsTypes", () => {
   const mockBooleanFFContent = (
     flagName: string,
     enabled: boolean
-  ): FlagContent => ({
+  ): FeatureFlag => ({
     id: "abc",
     name: flagName,
     description: "This is a test!",
     createdAt: Number(new Date().toISOString),
     updatedAt: Number(new Date().toISOString),
     environments: {
-      dev: { enabled: enabled },
-      prod: { enabled: !enabled },
-      testing: { enabled: !enabled },
+      dev: { enabled: enabled, overrideRules: [] },
+      prod: { enabled: !enabled, overrideRules: [] },
+      testing: { enabled: !enabled, overrideRules: [] },
     },
     valueType: "number",
-    defaultValue: 200,
+    defaultValue: '200',
   });
 
   const mockFeatureFlags = (): FeatureFlags => {
-    const flags: FeatureFlags = new Map<FlagName, FlagContent>();
-    flags.set("flagOne", mockBooleanFFContent("flagOne", true));
-    flags.set("flagTwo", mockBooleanFFContent("flagTwo", false));
+    const flags: FeatureFlags = {};
+    flags["flagOne"] = mockBooleanFFContent("flagOne", true);
+    flags["flagTwo"] = mockBooleanFFContent("flagTwo", false);
     return flags;
   };
 
-  const getFlag = (flagName: FlagName): FlagContent | undefined => {
-    const flagContent = flags.get(flagName);
+  const getFlag = (flagName: FlagName): FeatureFlag | undefined => {
+    const flagContent = flags[flagName];
     return flagContent ? flagContent : undefined;
   };
 

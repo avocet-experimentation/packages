@@ -1,12 +1,10 @@
 import { z } from "zod";
-import { featureFlagSchema } from "./fflags.schema.js";
 
 export const clientAttributeDataSchema = z.union([
   z.literal("string"),
   z.literal("number"),
   z.literal("boolean"),
 ]);
-
 
 export const clientSessionAttributeSchema = z.object({
   name: z.string(),
@@ -33,32 +31,4 @@ export const overrideRuleSchema = z.object({
     attributes: z.array(clientSessionAttributeSchema),
     proportion: z.number(),
   }),
-});
-
-export const interventionSchema = z.record(z.string());
-
-
-const eventTelemetrySchema = z.any();
-
-export const experimentBlockSchema = z.object({
-  id: z.string(),
-  name: z.string(),
-  startTimestamp: z.number().optional(),
-  endTimestamp: z.number().optional(),
-  flagValue: featureFlagSchema.shape.valueType,
-});
-
-export const experimentGroupSchema = z.object({
-  id: z.string(),
-  name: z.string(),
-  proportion: z.number(),
-  blocks: z.array(experimentBlockSchema),
-  gap: z.number(),
-});
-
-export const experimentSchema = overrideRuleSchema.extend({
-  name: z.string(),
-  groups: z.array(experimentGroupSchema),
-  flagId: z.string(),
-  dependents: z.array(eventTelemetrySchema),
 });
