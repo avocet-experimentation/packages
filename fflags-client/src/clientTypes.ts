@@ -5,14 +5,14 @@ import { ClientSessionAttribute, FeatureFlag, FeatureFlagClientData, FlagEnviron
  */
 export interface FlagAttributes {
   key: FlagName;
-  providerName: 'Field-Trip';
+  providerName: 'estuary-exp';
   valueType: FeatureFlag['valueType'];
   value: string;
 }
 
 export interface ExperimentAttributes {
   key: string;
-  providerName: 'Field-Trip';
+  providerName: 'estuary-exp';
   blockId: string;
 }
 

@@ -75,7 +75,7 @@ export class FFlagsClient {
       featureFlags: [
         {
           key: flagName,
-          providerName: 'Field-Trip',
+          providerName: 'estuary-exp',
           valueType: flag.valueType,
           value: flag.currentValue,
         },
