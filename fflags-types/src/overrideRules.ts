@@ -3,6 +3,8 @@ import { clientSessionAttributeSchema } from "./attributes.js";
 import { flagValueTypeSchema } from "./fflags.js";
 import { eventTelemetrySchema } from "./telemetry.js";
 
+export const ruleTypeSchema = z.enum(['Experiment', 'ForcedValue']);
+
 export const ruleStatusSchema = z.enum([
   "draft",
   "active",
@@ -15,6 +17,7 @@ export const ruleStatusSchema = z.enum([
 
 export const overrideRuleSchema = z.object({
   id: z.string(),
+  type: ruleTypeSchema,
   description: z.string(),
   status: ruleStatusSchema,
   startTimestamp: z.number().int().gte(0).optional(),
@@ -50,6 +53,12 @@ export const experimentSchema = overrideRuleSchema.extend({
   dependents: z.array(eventTelemetrySchema),
 });
 
+export const forcedValueSchema = overrideRuleSchema.extend({
+  value: flagValueTypeSchema,
+});
+
+export type RuleType = z.infer<typeof ruleTypeSchema>;
+
 export type RuleStatus = z.infer<typeof ruleStatusSchema>;
 
 /**
@@ -61,10 +70,18 @@ export type OverrideRule = z.infer<typeof overrideRuleSchema>;
 // for supporting multivariate experiments later
 export type Intervention = z.infer<typeof interventionSchema>;
 
-// a block defines an intervention for a group
+/**
+ * a block is a period of time in which a specific intervention is applied to subjects
+ */
 export type ExperimentBlock = z.infer<typeof experimentBlockSchema>;
 
-// a grouping of users to be subjected to a sequence of experiment blocks
+/**
+ * a grouping of users to be subjected to a sequence of experiment blocks
+ */
 export type ExperimentGroup = z.infer<typeof experimentGroupSchema>;
 
 export type Experiment = z.infer<typeof experimentSchema>;
+/**
+ * A value forced for all users. Permits a simple override of a flag's default value on a per-environment basis.
+ */
+export type ForcedValue = z.infer<typeof forcedValueSchema>;

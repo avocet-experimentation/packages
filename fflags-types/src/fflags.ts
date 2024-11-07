@@ -1,31 +1,40 @@
 import { z } from "zod";
 import { overrideRuleSchema } from "./overrideRules.js";
-import { environmentNameSchema } from "./environments.js";
+import { EnvironmentName, environmentNameSchema } from "./environments.js";
 import { nonnegativeIntegerSchema } from "./general.js";
 
+export const flagNameSchema = z.string();
 /**
  * Placeholder
  */
-export const flagNameSchema = z.string();
+export type FlagName = string;
 
-/**
- * Environment-specific data for a `FeatureFlag`
- */
 export const flagEnvironmentSchema = z.object({
   name: z.string(),
   enabled: z.boolean(),
   overrideRules: z.array(overrideRuleSchema),
 });
 /**
- * Mapping of environment names to objects
+ * Environment-specific data for a `FeatureFlag`
  */
+export type FlagEnvironment = z.infer<typeof flagEnvironmentSchema>;
+
+
 export const flagEnvironmentMappingSchema = z.record(environmentNameSchema, flagEnvironmentSchema);
+/**
+ * Mapping of environment names to `FlagEnvironment`
+ */
+export type FlagEnvironmentMapping = Record<EnvironmentName, FlagEnvironment>;
 
 export const flagValueTypeSchema = z.enum([
   "boolean",
   "string",
   "number",
 ]);
+/**
+ * A string of the data type of a flag's value
+ */
+export type FlagValueType = z.infer<typeof flagValueTypeSchema>;
 
 export const featureFlagSchema = z.object({
   id: z.string(),
@@ -37,8 +46,22 @@ export const featureFlagSchema = z.object({
   valueType: flagValueTypeSchema,
   defaultValue: z.string(),
 });
+/**
+ * Flag objects available in the backend
+ */
+export type FeatureFlag = z.infer<typeof featureFlagSchema>;
+
+export const featureFlagStubSchema = featureFlagSchema
+  .omit({ environments: true })
+  .extend({
+    environments: z.record(environmentNameSchema, flagEnvironmentSchema.pick({ enabled: true })),
+  });
 
 export const featureFlagMappingSchema = z.record(flagNameSchema, featureFlagSchema);
+/**
+ * Mapping of flag names to their server-side data
+ */
+export type FeatureFlagMapping = z.infer<typeof featureFlagMappingSchema>;
 
 export const featureFlagClientDataSchema = featureFlagSchema
   .pick({ name: true, valueType: true, defaultValue: true })
@@ -47,36 +70,13 @@ export const featureFlagClientDataSchema = featureFlagSchema
       currentValue: z.string(),
     }),
   );
-
-
-export const clientFlagMappingSchema = z.record(z.string(), featureFlagClientDataSchema);
-
-export type FlagName = string;
-
-export type FlagEnvironmentName = z.infer<typeof environmentNameSchema>;
-
-export type FlagEnvironment = z.infer<typeof flagEnvironmentSchema>;
-
-export type FlagEnvironmentMapping = Record<FlagEnvironmentName, FlagEnvironment>;
-/**
- * A string of the data type of a flag's value
- */
-export type FlagValueType = z.infer<typeof flagValueTypeSchema>;
-
-/**
- * Flag objects available in the backend
- */
-export type FeatureFlag = z.infer<typeof featureFlagSchema>;
 /**
  * Feature flag data available to the client SDK
  */
-export interface FeatureFlagClientData extends Pick<FeatureFlag, 'name' | 'valueType' | 'defaultValue'> {
-  currentValue: string;
-}
+export type FeatureFlagClientData = z.infer<typeof featureFlagClientDataSchema>;  
 
-export type ClientFlagMapping = z.infer<typeof clientFlagMappingSchema>;
-
+export const clientFlagMappingSchema = z.record(z.string(), featureFlagClientDataSchema);
 /**
- * A map of flag names to properties
+ * Mapping of flag names to their client-side data
  */
-export type FeatureFlags = Record<FlagName, FeatureFlag>;
+export type ClientFlagMapping = z.infer<typeof clientFlagMappingSchema>;
