@@ -1,5 +1,6 @@
 import { z } from "zod";
 
+// seems to be metadata (details of the instrumentation package)
 export const scopeSchema = z.object({
   name: z.string(),
   version: z.string(),
@@ -29,12 +30,15 @@ export const spanArrayAttributeSchema = z.union([
   z.array(spanIntAttributeSchema),
 ]);
 
+// context for a span, such as the route followed, current configuration, etc
+// Used to store flag and experiment data
 export const spanAttributeSchema = z.union([
   spanArrayAttributeSchema,
   spanStringAttributeSchema,
   spanIntAttributeSchema,
 ]);
 
+// "span" is a catch-all term for units of work or operations. See [Observability primer | OpenTelemetry](https://opentelemetry.io/docs/concepts/observability-primer/)
 export const spanSchema = z.object({
   traceId: z.string(),
   spanId: z.string(),
@@ -44,7 +48,7 @@ export const spanSchema = z.object({
   startTimeUnixNano: z.string(),
   endTimeUnixNano: z.string(),
   attributes: z.array(spanAttributeSchema),
-  status: z.object({}), // placeholder
+  status: z.object({}), // placeholder type
 });
 
 export const scopeSpanSchema = z.object({
@@ -72,4 +76,34 @@ export const transformedSpanSchema = spanSchema
     attributes: z.array(spanTransformedAttributeSchema),
   });
 
-export const eventTelemetrySchema = transformedSpanSchema;
+// spans, traces, etc
+export const eventTelemetrySchema = transformedSpanSchema; // or potentially more
+
+export type Scope = z.infer<typeof scopeSchema>;
+
+export type SpanStringAttribute = z.infer<typeof spanStringAttributeSchema>;
+
+export interface SpanIntAttribute {
+  key: string; // e.g., http.route
+  value: {
+	  intValue: string; // e.g., '/'
+  }
+}
+
+// export type SpanPrimitiveAttribute = SpanStringAttribute | SpanIntAttribute;
+
+export type SpanArrayAttribute = z.infer<typeof spanArrayAttributeSchema>;
+
+export type SpanAttribute = z.infer<typeof spanAttributeSchema>;
+
+export type Span = z.infer<typeof spanSchema>; 
+
+export type ScopeSpan = z.infer<typeof scopeSpanSchema>;
+
+export type ResourceSpan = z.infer<typeof resourceSpanSchema>;
+
+export type SpanTransformedAttribute = z.infer<typeof spanTransformedAttributeSchema>;
+
+export type TransformedSpan = z.infer<typeof transformedSpanSchema>;
+
+export type EventTelemetry = z.infer<typeof eventTelemetrySchema>;
