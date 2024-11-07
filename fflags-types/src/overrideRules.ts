@@ -48,12 +48,14 @@ export const experimentGroupSchema = z.object({
 
 export const experimentSchema = overrideRuleSchema.extend({
   name: z.string(),
+  type: z.literal('Experiment'),
   groups: z.array(experimentGroupSchema),
   flagId: z.string(),
   dependents: z.array(eventTelemetrySchema),
 });
 
 export const forcedValueSchema = overrideRuleSchema.extend({
+  type: z.literal('ForcedValue'),
   value: flagValueTypeSchema,
 });
 
