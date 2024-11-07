@@ -1,4 +1,4 @@
-import { ClientSessionAttribute, FeatureFlag, FeatureFlagClientData, FlagEnvironmentName, FlagName } from "@fflags/types"
+import { ClientSessionAttribute, FeatureFlag, EnvironmentName, FlagName } from "@fflags/types"
 
 /**
  * For embedding in telemetry data. See https://opentelemetry.io/docs/specs/semconv/general/attribute-requirement-level/
@@ -20,7 +20,7 @@ export type Attributes = { featureFlags?: FlagAttributes[], experiments: Experim
 | { featureFlags: FlagAttributes[], experiments?: ExperimentAttributes[] }
 
 export type ClientOptions = {
-  environment: FlagEnvironmentName;
+  environment: EnvironmentName;
   autoRefresh: boolean;
   refreshIntervalInSeconds?: number;
   attributeAssignmentCb?: <SpanType>(span: SpanType, attributes: Attributes) => void;
