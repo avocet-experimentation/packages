@@ -2,6 +2,7 @@ import { z } from "zod";
 import { clientSessionAttributeSchema } from "./attributes.js";
 import { flagValueTypeSchema } from "./fflags.js";
 import { eventTelemetrySchema } from "./telemetry.js";
+import { proportionSchema } from "./general.js";
 
 export const ruleTypeSchema = z.enum(['Experiment', 'ForcedValue']);
 
@@ -24,7 +25,7 @@ export const overrideRuleSchema = z.object({
   endTimestamp: z.number().int().gte(0).optional(),
   enrollment: z.object({
     attributes: z.array(clientSessionAttributeSchema),
-    proportion: z.number(),
+    proportion: proportionSchema,
   }),
 });
 
