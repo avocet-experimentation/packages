@@ -1,5 +1,5 @@
 import {
-  FlagEnvironmentName,
+  EnvironmentName,
   FlagName,
   FeatureFlagClientData,
   ClientFlagMapping,
@@ -16,7 +16,7 @@ const DEFAULT_DURATION = 5 * 60; // 5 minutes
 
 export class FFlagsClient {
   attributeAssignmentCb?: <SpanType>(span: SpanType, attributes: Attributes) => void;
-  private readonly environment: FlagEnvironmentName;
+  private readonly environment: EnvironmentName;
   // private readonly clientKey: string; // to replace .environment eventually
   private flags: ClientFlagMapping = {}; // represents cached data in memory
   private readonly apiUrl: string;
