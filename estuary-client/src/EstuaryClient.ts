@@ -6,7 +6,7 @@ import {
   Span,
   clientFlagMappingSchema,
   ClientSessionAttribute,
-} from "@fflags/types";
+} from "@estuary/types";
 import {
   Attributes,
   ClientOptions,
@@ -14,7 +14,7 @@ import {
 
 const DEFAULT_DURATION = 5 * 60; // 5 minutes
 
-export class FFlagsClient {
+export class EstuaryClient {
   attributeAssignmentCb?: <SpanType>(span: SpanType, attributes: Attributes) => void;
   private readonly environment: EnvironmentName;
   // private readonly clientKey: string; // to replace .environment eventually
@@ -30,8 +30,8 @@ export class FFlagsClient {
   */
   static async start(
     options: ClientOptions
-  ): Promise<FFlagsClient> {
-    const client = new FFlagsClient(options);
+  ): Promise<EstuaryClient> {
+    const client = new EstuaryClient(options);
     await client.refresh();
     return client;
   }
