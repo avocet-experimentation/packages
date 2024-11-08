@@ -9,6 +9,10 @@ export const permissionLevelSchema = z.enum(['none', 'view', 'edit', 'admin']);
 export const userPermissionsSchema = z.object({
   fflags: permissionLevelSchema,
   experiments: permissionLevelSchema,
+  environments: permissionLevelSchema,
+  users: permissionLevelSchema,
+  attributes: permissionLevelSchema,
+  events: permissionLevelSchema,
 })
 
 export const userSchema = z.object({
