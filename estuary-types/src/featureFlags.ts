@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { overrideRuleSchema } from "./overrideRules.js";
 import { EnvironmentName, environmentNameSchema } from "./environments.js";
-import { nonnegativeIntegerSchema } from "./general.js";
+import { flagValueTypeSchema, nonnegativeIntegerSchema } from "./general.js";
 
 export const flagNameSchema = z.string();
 /**
@@ -25,16 +25,6 @@ export const flagEnvironmentMappingSchema = z.record(environmentNameSchema, flag
  * Mapping of environment names to `FlagEnvironment`
  */
 export type FlagEnvironmentMapping = Record<EnvironmentName, FlagEnvironment>;
-
-export const flagValueTypeSchema = z.enum([
-  "boolean",
-  "string",
-  "number",
-]);
-/**
- * A string of the data type of a flag's value
- */
-export type FlagValueType = z.infer<typeof flagValueTypeSchema>;
 
 export const featureFlagSchema = z.object({
   id: z.string(),
