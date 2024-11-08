@@ -15,7 +15,7 @@
     "dist"
   ],
   "scripts": {
-    "build": "npm i && rm -rf ./dist && npx tsc",
+    "build": "npm i && rm -rf ./dist && tsc",
     "test": "vitest run"
   },
   "type": "module",
