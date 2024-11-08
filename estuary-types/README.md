@@ -1,11 +1,3 @@
-# `fflags-types`
+# `estuary-types`
 
-> TODO: description
-
-## Usage
-
-```
-import fflagsTypes from 'fflags-types';
-
-// TODO: DEMONSTRATE API
-```
+Stores both static types and Zod schema for feature flags, override rules, experiments, and more.

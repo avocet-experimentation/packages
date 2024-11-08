@@ -1,5 +1,4 @@
 import { describe, expect, Mock, test, vi } from "vitest";
-// import { RestLoader } from "../../fflags-rest-loader/src/index.js";
 /**
  * Todo: merge these tests into client.test.ts
  */

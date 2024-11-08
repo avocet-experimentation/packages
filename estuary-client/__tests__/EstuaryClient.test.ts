@@ -8,11 +8,11 @@ import {
   afterEach,
   beforeEach,
 } from "vitest";
-import { FFlagsClient } from "../src/index.js";
+import { EstuaryClient } from "../src/index.js";
 import {
-  FeatureFlags,
+  ClientFlagMapping,
   FlagName,
-} from "@fflags/types";
+} from "@estuary/types";
 
 /**
  * todo:
@@ -21,7 +21,7 @@ import {
  * - check for coverage
  */
 
-describe("FFlagsClient", () => {
+describe("EstuaryClient", () => {
   describe("Refresh Interval", () => {
     const FIVE_SECONDS = 5000;
 
@@ -46,7 +46,7 @@ describe("FFlagsClient", () => {
     });
 
     test("Should call the loader according to the provided interval", async () => {
-      const client = await FFlagsClient.start({
+      const client = await EstuaryClient.start({
         environment: "staging",
         autoRefresh: true,
         refreshIntervalInSeconds: 5,
@@ -60,7 +60,7 @@ describe("FFlagsClient", () => {
     });
 
     test("Should call the loader just once", async () => {
-      const client = await FFlagsClient.start({
+      const client = await EstuaryClient.start({
         environment: "staging",
         autoRefresh: false,
       });
@@ -72,7 +72,7 @@ describe("FFlagsClient", () => {
   });
 
   describe("Flag management", () => {
-    let client: FFlagsClient;
+    let client: EstuaryClient;
 
     const mockUserGroups = (
       newAccess: boolean,
@@ -91,16 +91,16 @@ describe("FFlagsClient", () => {
     // ignore environment since we are returning the groups directly
     const mockLoader = async (
       _environmentName: EnvironmentName
-    ): Promise<FeatureFlags> => {
-      const flags: FeatureFlags = new Map<FlagName, UserGroups>();
+    ): Promise<ClientFlagMapping> => {
+      const flags: ClientFlagMapping = new Map<FlagName, UserGroups>();
       flags.set("flagOne", mockUserGroups(true, false));
       flags.set("flagTwo", mockUserGroups(false, true));
       return flags;
     };
 
     beforeAll(async () => {
-      client = await FFlagsClient.start({
-        environmentName: "staging",
+      client = await EstuaryClient.start({
+        environment: "staging",
         autoRefresh: false,
         featureFlagsLoader: mockLoader,
       });

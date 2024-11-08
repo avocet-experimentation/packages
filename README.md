@@ -5,6 +5,6 @@ Run `npm run build` from this directory to install dependencies and create new p
 
 Packages can then be added into other projects by adding the following to `package.json`'s dependencies:
 ```
-"@fflags/client": "file:../packages/fflags-client",
-"@fflags/types": "file:../packages/fflags-types",
+"@estuary/client": "file:../packages/estuary-client",
+"@estuary/types": "file:../packages/estuary-types",
 ```
