@@ -1,7 +1,7 @@
 {
-  "name": "@fflags/types",
+  "name": "@estuary/client",
   "version": "0.0.17",
-  "description": "Types for feature flags",
+  "description": "Client access for feature flags",
   "author": "Adnan Shihabi <adnan@ashihabi.me>",
   "homepage": "",
   "license": "ISC",
@@ -15,12 +15,12 @@
     "dist"
   ],
   "scripts": {
-    "build": "npm i && rm -rf ./dist && tsc",
+    "build": "npm i && rm -rf ./dist && npx tsc",
     "test": "vitest run"
   },
   "type": "module",
-  "gitHead": "ceabdbee4a43938b1e1ef3bacf38db5f7e890141",
   "dependencies": {
-    "zod": "^3.23.8"
-  }
+    "@estuary/types": "file:../estuary-types"
+  },
+  "gitHead": "ceabdbee4a43938b1e1ef3bacf38db5f7e890141"
 }

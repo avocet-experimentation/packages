@@ -1,11 +1,11 @@
-# `fflags-client`
+# `estuary-client`
 
 > TODO: description
 
 ## Usage
 
 ```
-import fflagsClient from 'fflags-client';
+import estuaryClient from 'estuary-client';
 
 // TODO: DEMONSTRATE API
 ```

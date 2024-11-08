@@ -1,4 +1,4 @@
-import { ClientSessionAttribute, FeatureFlag, EnvironmentName, FlagName } from "@fflags/types"
+import { ClientSessionAttribute, FeatureFlag, EnvironmentName, FlagName } from "@estuary/types"
 
 /**
  * For embedding in telemetry data. See https://opentelemetry.io/docs/specs/semconv/general/attribute-requirement-level/
