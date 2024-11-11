@@ -32,6 +32,15 @@ export const flagCurrentValueSchema = z.union([z.boolean(), z.string(), z.number
 
 export type FlagCurrentValue = z.infer<typeof flagCurrentValueSchema>;
 
+export const flagClientValueSchema = z.object({
+  value: flagCurrentValueSchema,
+  hash: z.string(),
+});
+/**
+ * The response sent to the client when checking the value of a flag
+ */
+export type FlagClientValue = z.infer<typeof flagClientValueSchema>;
+
 const flagBooleanValueSchema = z.object({
   type: z.literal("boolean"),
   default: z.boolean(),
