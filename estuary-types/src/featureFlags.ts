@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { overrideRuleSchema } from "./overrideRules.js";
 import { EnvironmentName, environmentNameSchema } from "./environments.js";
-import { flagValueTypeSchema, nonnegativeIntegerSchema } from "./general.js";
+import { nonnegativeIntegerSchema } from "./general.js";
 
 export const flagNameSchema = z.string();
 /**
@@ -28,6 +28,10 @@ export const flagEnvironmentMappingSchema = z.record(
  */
 export type FlagEnvironmentMapping = Record<EnvironmentName, FlagEnvironment>;
 
+export const flagCurrentValueSchema = z.union([z.boolean(), z.string(), z.number()]);
+
+export type FlagCurrentValue = z.infer<typeof flagCurrentValueSchema>;
+
 const flagBooleanValueSchema = z.object({
   type: z.literal("boolean"),
   default: z.boolean(),
@@ -43,11 +47,13 @@ const flagNumberValueSchema = z.object({
   default: z.number(),
 });
 
-const flagValueSchema = z.union([
+export const flagValueDefSchema = z.union([
   flagBooleanValueSchema,
   flagNumberValueSchema,
   flagStringValueSchema,
 ]);
+
+export type FlagValue = z.infer<typeof flagValueDefSchema>;
 
 export const featureFlagSchema = z.object({
   id: z.string(),
@@ -56,7 +62,7 @@ export const featureFlagSchema = z.object({
   createdAt: nonnegativeIntegerSchema.optional(),
   updatedAt: nonnegativeIntegerSchema.optional(),
   environments: flagEnvironmentMappingSchema,
-  value: flagValueSchema,
+  value: flagValueDefSchema,
 });
 
 /**

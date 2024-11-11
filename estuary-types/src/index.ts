@@ -1,4 +1,4 @@
-export * from './attributes.js';
+export * from './clientProps.js';
 export * from './environments.js';
 export * from './experiments.js';
 export * from './featureFlags.js';
