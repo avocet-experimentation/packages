@@ -1,8 +1,8 @@
 import {
-  ClientSessionAttribute,
   FeatureFlag,
   EnvironmentName,
   FlagName,
+  ClientSessionAttributeMapping,
 } from "@estuary/types";
 
 /**
@@ -33,5 +33,5 @@ export type ClientOptions = {
     attributes: Attributes
   ) => void;
   apiUrl: string;
-  clientSessionAttributes: ClientSessionAttribute[];
+  attributes: ClientSessionAttributeMapping;
 };

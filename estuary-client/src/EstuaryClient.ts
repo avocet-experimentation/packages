@@ -5,7 +5,7 @@ import {
   ClientFlagMapping,
   Span,
   clientFlagMappingSchema,
-  ClientSessionAttribute,
+  ClientSessionAttributeMapping,
 } from "@estuary/types";
 import { Attributes, ClientOptions } from "./clientTypes.js";
 
@@ -21,7 +21,7 @@ export class EstuaryClient {
   private flags: ClientFlagMapping = {}; // represents cached data in memory
   private readonly apiUrl: string;
   private intervalId: NodeJS.Timeout | undefined; // necessary for setting/clearing interval
-  private clientSessionAttributes: ClientSessionAttribute[];
+  private attributes: ClientSessionAttributeMapping;
 
   /**
   * Static factory method (no constructor):
@@ -127,7 +127,7 @@ export class EstuaryClient {
         },
         body: JSON.stringify({
           environment: environmentName,
-          clientSessionAttributes: this.clientSessionAttributes,
+          clientSessionAttributes: this.attributes,
         }),
       };
 
@@ -157,7 +157,7 @@ export class EstuaryClient {
     this.environment = options.environment;
     this.apiUrl = options.apiUrl;
     this.attributeAssignmentCb = options.attributeAssignmentCb;
-    this.clientSessionAttributes = options.clientSessionAttributes;
+    this.attributes = options.attributes;
     if (options.autoRefresh === true) {
       this.startPolling(options.refreshIntervalInSeconds ?? DEFAULT_DURATION);
     }
