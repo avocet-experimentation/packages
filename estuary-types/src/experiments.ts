@@ -21,7 +21,7 @@ export const experimentGroupSchema = z.object({
   name: z.string(),
   proportion: z.number(),
   blocks: z.array(experimentBlockSchema),
-  gap: z.number(),
+  // gap: z.number(), // later: gap between interventions
 });
 /**
  * a grouping of users to be subjected to a sequence of experiment blocks
