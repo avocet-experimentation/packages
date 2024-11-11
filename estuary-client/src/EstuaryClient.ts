@@ -7,14 +7,14 @@ import {
   ClientPropMapping,
   FlagClientValue,
 } from "@estuary/types";
-import { Attributes, ClientOptions } from "./clientTypes.js";
+import { ClientOptions, FlagAttributes } from "./clientTypes.js";
 
 const DEFAULT_DURATION = 5 * 60; // 5 minutes
 
 export class EstuaryClient {
   attributeAssignmentCb?: <SpanType>(
     span: SpanType,
-    attributes: Attributes
+    attributes: FlagAttributes[]
   ) => void;
   private readonly environment: EnvironmentName;
   // private readonly clientKey: string; // to replace .environment eventually
@@ -47,44 +47,33 @@ export class EstuaryClient {
   }
 
   /**
-   * Retrieve a copy of cached data for the specified flag
-   */
-  getFlag(flagName: FlagName): FlagClientValue | undefined {
-    const flagContent = this.flags[flagName];
-    return { ...flagContent };
-  }
-
-  /**
-   * @returns a copy of all locally stored flags
-   */
-  getAllFlags(): FlagClientMapping {
-    return { ...this.flags };
-  }
-
-  /**
    * Generates an object of attributes for a given flag.
    * For insertion into telemetry data.
    */
-  getFlagAttributes(flagName: FlagName): Attributes {
+  getFlagAttributes(flagName: FlagName): FlagAttributes {
     const flag = this.getFlag(flagName);
     if (!flag) throw new Error(`Flag "${flagName}" not found!`);
 
-    const attributes: Attributes = {
-      featureFlags: [
-        {
-          key: flagName,
-          providerName: "estuary-exp",
-          value: flag.value,
-        },
-      ],
+    const attributes = {
+      key: flagName,
+      providerName: "estuary-exp" as const,
+      ...flag,
     };
 
     return attributes;
   }
 
-  getAllFlagAttributes(): Attributes[] {
-    const flagNames = Object.keys(this.flags);
-    return flagNames.map((name) => this.getFlagAttributes(name));
+  getAllFlagAttributes(): FlagAttributes[] {
+    const entries = Object.entries(this.flags);
+    const transformed = entries.map(([key, data]) => {
+      return {
+        key,
+        providerName: "estuary-exp" as const,
+        ...data,
+      }
+    });
+
+    return transformed;
   }
 
   /**
@@ -103,7 +92,7 @@ export class EstuaryClient {
 
     if (span) {
       const attributes = this.getFlagAttributes(flagName);
-      this.attributeAssignmentCb?.(span, attributes);
+      this.attributeAssignmentCb?.(span, [attributes]);
     }
 
     return flag.value;
@@ -129,6 +118,21 @@ export class EstuaryClient {
       this.flags = { ...this.flags, ...parsed };
       return true;
     });
+  }
+
+  /**
+   * Retrieve a copy of cached data for the specified flag
+   */
+  private getFlag(flagName: FlagName): FlagClientValue | undefined {
+    const flagContent = this.flags[flagName];
+    return { ...flagContent };
+  }
+
+  /**
+   * @returns a copy of all locally stored flags
+   */
+  private getAllFlags(): FlagClientMapping {
+    return { ...this.flags };
   }
 
   private async attemptAndHandleError<O, F extends () => O>(
