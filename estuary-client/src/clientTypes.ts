@@ -12,6 +12,7 @@ export interface FlagAttributes {
   key: FlagName;
   providerName: "estuary-exp";
   value: FlagCurrentValue;
+  hash: number;
 }
 
 export interface ExperimentAttributes {
@@ -20,17 +21,13 @@ export interface ExperimentAttributes {
   blockId: string;
 }
 
-export type Attributes =
-  | { featureFlags?: FlagAttributes[]; experiments: ExperimentAttributes[] }
-  | { featureFlags: FlagAttributes[]; experiments?: ExperimentAttributes[] };
-
 export type ClientOptions = {
   environment: EnvironmentName;
   autoRefresh: boolean;
   refreshIntervalInSeconds?: number;
   attributeAssignmentCb?: <SpanType>(
     span: SpanType,
-    attributes: Attributes
+    attributes: FlagAttributes[],
   ) => void;
   apiUrl: string;
   attributes: ClientPropMapping;
