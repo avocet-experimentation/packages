@@ -12,12 +12,6 @@ export type EstuarySchema<StaticType> = z.ZodType<StaticType>;
 // example usage
 // const schema1: z.ZodType<FeatureFlag> = featureFlagSchema;
 
-// export const flagValueTypeSchema = z.enum([
-//   "boolean",
-//   "string",
-//   "number",
-// ]);
-// /**
-//  * A string of the data type of a flag's value
-//  */
-// export type FlagValueType = z.infer<typeof flagValueTypeSchema>;
+export const flagCurrentValueSchema = z.union([z.boolean(), z.string(), z.number()]);
+
+export type FlagCurrentValue = z.infer<typeof flagCurrentValueSchema>;

@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { eventTelemetrySchema } from "./telemetry.js";
 import { overrideRuleSchema } from "./overrideRules.js";
-import { flagCurrentValueSchema } from "./featureFlags.js";
+import { flagCurrentValueSchema } from "./general.js";
 
 export const experimentBlockSchema = z.object({
   id: z.string(),

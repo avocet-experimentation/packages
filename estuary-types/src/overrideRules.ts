@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { proportionSchema } from "./general.js";
-import { flagCurrentValueSchema } from "./featureFlags.js";
+import { flagCurrentValueSchema } from "./general.js";
 import { clientPropNameSchema } from "./clientProps.js";
 
 export const ruleTypeSchema = z.enum(['Experiment', 'ForcedValue']);
