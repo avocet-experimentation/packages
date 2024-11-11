@@ -27,7 +27,7 @@ export type ClientOptions = {
   refreshIntervalInSeconds?: number;
   attributeAssignmentCb?: <SpanType>(
     span: SpanType,
-    attributes: FlagAttributes[],
+    attributes: FlagAttributes,
   ) => void;
   apiUrl: string;
   attributes: ClientPropMapping;

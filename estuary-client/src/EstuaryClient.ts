@@ -14,7 +14,7 @@ const DEFAULT_DURATION = 5 * 60; // 5 minutes
 export class EstuaryClient {
   attributeAssignmentCb?: <SpanType>(
     span: SpanType,
-    attributes: FlagAttributes[]
+    attributes: FlagAttributes,
   ) => void;
   private readonly environment: EnvironmentName;
   // private readonly clientKey: string; // to replace .environment eventually
@@ -90,9 +90,9 @@ export class EstuaryClient {
     const flag = this.getFlag(flagName);
     if (!flag) return null;
 
-    if (span) {
+    if (span && this.attributeAssignmentCb) {
       const attributes = this.getFlagAttributes(flagName);
-      this.attributeAssignmentCb?.(span, [attributes]);
+      this.attributeAssignmentCb(span, attributes);
     }
 
     return flag.value;
