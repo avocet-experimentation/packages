@@ -1,14 +1,14 @@
 import { z } from "zod";
 import { eventTelemetrySchema } from "./telemetry.js";
 import { overrideRuleSchema } from "./overrideRules.js";
-import { flagValueTypeSchema } from "./general.js";
+import { flagCurrentValueSchema } from "./featureFlags.js";
 
 export const experimentBlockSchema = z.object({
   id: z.string(),
   name: z.string(),
   startTimestamp: z.number().int().gte(0).optional(),
   endTimestamp: z.number().int().gte(0).optional(),
-  flagValue: flagValueTypeSchema,
+  flagValue: flagCurrentValueSchema,
 });
 /**
  * a block is a period of time in which a specific intervention is applied to subjects
