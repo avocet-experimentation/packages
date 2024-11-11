@@ -5,7 +5,7 @@ import {
   ClientFlagMapping,
   Span,
   clientFlagMappingSchema,
-  ClientSessionAttributeMapping,
+  ClientPropMapping,
 } from "@estuary/types";
 import { Attributes, ClientOptions } from "./clientTypes.js";
 
@@ -21,7 +21,7 @@ export class EstuaryClient {
   private flags: ClientFlagMapping = {}; // represents cached data in memory
   private readonly apiUrl: string;
   private intervalId: NodeJS.Timeout | undefined; // necessary for setting/clearing interval
-  private attributes: ClientSessionAttributeMapping;
+  private attributes: ClientPropMapping;
 
   /**
   * Static factory method (no constructor):
