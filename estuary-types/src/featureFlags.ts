@@ -49,7 +49,7 @@ const flagValueSchema = z.union([
   flagStringValueSchema,
 ]);
 
-const featureFlagSchema = z.object({
+export const featureFlagSchema = z.object({
   id: z.string(),
   name: z.string(),
   description: z.string().optional(),
