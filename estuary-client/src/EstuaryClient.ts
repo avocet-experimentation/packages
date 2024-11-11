@@ -1,11 +1,11 @@
 import {
   EnvironmentName,
   FlagName,
-  FeatureFlagClientData,
-  ClientFlagMapping,
+  flagClientMappingSchema,
+  FlagClientMapping,
   Span,
-  clientFlagMappingSchema,
   ClientPropMapping,
+  FlagClientValue,
 } from "@estuary/types";
 import { Attributes, ClientOptions } from "./clientTypes.js";
 
@@ -18,7 +18,7 @@ export class EstuaryClient {
   ) => void;
   private readonly environment: EnvironmentName;
   // private readonly clientKey: string; // to replace .environment eventually
-  private flags: ClientFlagMapping = {}; // represents cached data in memory
+  private flags: FlagClientMapping = {}; // represents cached data in memory
   private readonly apiUrl: string;
   private intervalId: NodeJS.Timeout | undefined; // necessary for setting/clearing interval
   private attributes: ClientPropMapping;
@@ -49,7 +49,7 @@ export class EstuaryClient {
   /**
    * Retrieve a copy of cached data for the specified flag
    */
-  getFlag(flagName: FlagName): FeatureFlagClientData | undefined {
+  getFlag(flagName: FlagName): FlagClientValue | undefined {
     const flagContent = this.flags[flagName];
     return { ...flagContent };
   }
@@ -57,7 +57,7 @@ export class EstuaryClient {
   /**
    * @returns a copy of all locally stored flags
    */
-  getAllFlags(): ClientFlagMapping {
+  getAllFlags(): FlagClientMapping {
     return { ...this.flags };
   }
 
@@ -106,16 +106,7 @@ export class EstuaryClient {
       this.attributeAssignmentCb?.(span, attributes);
     }
 
-    // handle various flag types
-    if (flag.value.type === "boolean") {
-      return Boolean(flag.value.default);
-    } else if (flag.value.type === "number") {
-      return Number(flag.value.default);
-    } else if (flag.value.type === "string") {
-      return String(flag.value.default);
-    }
-
-    return null; // todo: remove this after solving exhaustiveness check error
+    return flag.value;
   }
 
   private async load(environmentName: string) {
@@ -133,7 +124,7 @@ export class EstuaryClient {
 
       const response = await fetch(`${this.apiUrl}`, fetchOptions);
       const fflags: unknown = await response.json();
-      const parsed = clientFlagMappingSchema.parse(fflags);
+      const parsed = flagClientMappingSchema.parse(fflags);
 
       this.flags = { ...this.flags, ...parsed };
       return true;
