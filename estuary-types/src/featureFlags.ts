@@ -28,93 +28,49 @@ export const flagEnvironmentMappingSchema = z.record(
  */
 export type FlagEnvironmentMapping = Record<EnvironmentName, FlagEnvironment>;
 
-const baseFeatureFlagSchema = z.object({
+const flagBooleanValueSchema = z.object({
+  type: z.literal("boolean"),
+  default: z.boolean(),
+});
+
+const flagStringValueSchema = z.object({
+  type: z.literal("string"),
+  default: z.string(),
+});
+
+const flagNumberValueSchema = z.object({
+  type: z.literal("number"),
+  default: z.number(),
+});
+
+const flagValueSchema = z.union([
+  flagBooleanValueSchema,
+  flagNumberValueSchema,
+  flagStringValueSchema,
+]);
+
+const featureFlagSchema = z.object({
   id: z.string(),
   name: z.string(),
   description: z.string().optional(),
   createdAt: nonnegativeIntegerSchema.optional(),
   updatedAt: nonnegativeIntegerSchema.optional(),
   environments: flagEnvironmentMappingSchema,
-  valueType: flagValueTypeSchema,
-  defaultValue: z.union([z.boolean(), z.string(), z.number()]),
+  value: flagValueSchema,
 });
-
-export const featureFlagSchema = baseFeatureFlagSchema.superRefine(
-  (data, ctx) => {
-    if (
-      data.valueType === "boolean" &&
-      typeof data.defaultValue !== "boolean"
-    ) {
-      ctx.addIssue({
-        code: "custom",
-        path: ["defaultValue"],
-        message: "defaultValue must be a boolean when valueType is 'boolean'.",
-      });
-    } else if (
-      data.valueType === "string" &&
-      typeof data.defaultValue !== "string"
-    ) {
-      ctx.addIssue({
-        code: "custom",
-        path: ["defaultValue"],
-        message: "defaultValue must be a string when valueType is 'string'.",
-      });
-    } else if (
-      data.valueType === "number" &&
-      typeof data.defaultValue !== "number"
-    ) {
-      ctx.addIssue({
-        code: "custom",
-        path: ["defaultValue"],
-        message: "defaultValue must be a number when valueType is 'number'.",
-      });
-    }
-  }
-);
 
 /**
  * Flag objects available in the backend
  */
 export type FeatureFlag = z.infer<typeof featureFlagSchema>;
 
-export const featureFlagStubSchema = baseFeatureFlagSchema
+export const featureFlagStubSchema = featureFlagSchema
   .omit({ environments: true })
   .extend({
     environments: z.record(
       environmentNameSchema,
       flagEnvironmentSchema.pick({ enabled: true })
     ),
-  })
-  .superRefine((data, ctx) => {
-    // Add the same refinement here if needed
-    if (
-      data.valueType === "boolean" &&
-      typeof data.defaultValue !== "boolean"
-    ) {
-      ctx.addIssue({
-        code: "custom",
-        path: ["defaultValue"],
-        message: "defaultValue must be a boolean when valueType is 'boolean'.",
-      });
-    } else if (
-      data.valueType === "string" &&
-      typeof data.defaultValue !== "string"
-    ) {
-      ctx.addIssue({
-        code: "custom",
-        path: ["defaultValue"],
-        message: "defaultValue must be a string when valueType is 'string'.",
-      });
-    } else if (
-      data.valueType === "number" &&
-      typeof data.defaultValue !== "number"
-    ) {
-      ctx.addIssue({
-        code: "custom",
-        path: ["defaultValue"],
-        message: "defaultValue must be a number when valueType is 'number'.",
-      });
-    }
   });
 
 export const featureFlagMappingSchema = z.record(
@@ -127,44 +83,14 @@ export const featureFlagMappingSchema = z.record(
  */
 export type FeatureFlagMapping = z.infer<typeof featureFlagMappingSchema>;
 
-export const featureFlagClientDataSchema = baseFeatureFlagSchema
-  .pick({ name: true, valueType: true, defaultValue: true })
+export const featureFlagClientDataSchema = featureFlagSchema
+  .pick({ name: true, value: true })
   .and(
     z.object({
       currentValue: z.string(),
     })
-  )
-  .superRefine((data, ctx) => {
-    // Add the same refinement here if needed
-    if (
-      data.valueType === "boolean" &&
-      typeof data.defaultValue !== "boolean"
-    ) {
-      ctx.addIssue({
-        code: "custom",
-        path: ["defaultValue"],
-        message: "defaultValue must be a boolean when valueType is 'boolean'.",
-      });
-    } else if (
-      data.valueType === "string" &&
-      typeof data.defaultValue !== "string"
-    ) {
-      ctx.addIssue({
-        code: "custom",
-        path: ["defaultValue"],
-        message: "defaultValue must be a string when valueType is 'string'.",
-      });
-    } else if (
-      data.valueType === "number" &&
-      typeof data.defaultValue !== "number"
-    ) {
-      ctx.addIssue({
-        code: "custom",
-        path: ["defaultValue"],
-        message: "defaultValue must be a number when valueType is 'number'.",
-      });
-    }
-  });
+  );
+
 /**
  * Feature flag data available to the client SDK
  */
