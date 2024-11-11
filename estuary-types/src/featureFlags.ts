@@ -34,7 +34,7 @@ export type FlagCurrentValue = z.infer<typeof flagCurrentValueSchema>;
 
 export const flagClientValueSchema = z.object({
   value: flagCurrentValueSchema,
-  hash: z.string(),
+  hash: z.number(), // override rule hash
 });
 /**
  * The response sent to the client when checking the value of a flag
@@ -111,11 +111,11 @@ export const featureFlagClientDataSchema = featureFlagSchema
  */
 export type FeatureFlagClientData = z.infer<typeof featureFlagClientDataSchema>;
 
-export const clientFlagMappingSchema = z.record(
+export const flagClientMappingSchema = z.record(
   z.string(),
-  featureFlagClientDataSchema
+  flagClientValueSchema
 );
 /**
  * Mapping of flag names to their client-side data
  */
-export type ClientFlagMapping = z.infer<typeof clientFlagMappingSchema>;
+export type FlagClientMapping = z.infer<typeof flagClientMappingSchema>;

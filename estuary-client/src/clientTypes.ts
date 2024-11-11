@@ -1,8 +1,8 @@
 import {
-  FeatureFlag,
   EnvironmentName,
   FlagName,
   ClientPropMapping,
+  FlagCurrentValue,
 } from "@estuary/types";
 
 /**
@@ -11,7 +11,7 @@ import {
 export interface FlagAttributes {
   key: FlagName;
   providerName: "estuary-exp";
-  value: FeatureFlag["value"];
+  value: FlagCurrentValue;
 }
 
 export interface ExperimentAttributes {
