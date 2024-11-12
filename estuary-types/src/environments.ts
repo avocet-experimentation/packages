@@ -1,18 +1,18 @@
 import { z } from "zod";
+import { estuaryBaseSchema } from "./general.js";
+
+export const environmentNameSchema = z.enum(['prod', 'dev', 'testing', 'staging']);
 /**
  * This is a placeholder while environment options are hard-coded
  */
-export const environmentNameSchema = z.enum(['prod', 'dev', 'testing', 'staging']);
+export type EnvironmentName = z.infer<typeof environmentNameSchema>;
+
 /**
- * 
+ * Environments defined in the dashboard
  */
-export const environmentSchema = z.object({
-  id: z.string(),
+export const environmentSchema = estuaryBaseSchema.extend({
   name: environmentNameSchema,
-  description: z.string(),
   defaultEnabled: z.boolean(),
 });
-
-export type EnvironmentName = z.infer<typeof environmentNameSchema>;
 
 export type Environment = z.infer<typeof environmentSchema>;

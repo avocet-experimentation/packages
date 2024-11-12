@@ -7,6 +7,7 @@ export const forcedValueSchema = overrideRuleSchema.extend({
   value: flagCurrentValueSchema,
 });
 /**
- * A value forced for all users. Permits a simple override of a flag's default value on a per-environment basis.
+ * A value forced for all users. Permits a simple override of a flag's default value
+ * on a per-environment basis, optionally with a start or end time.
  */
 export type ForcedValue = z.infer<typeof forcedValueSchema>;
