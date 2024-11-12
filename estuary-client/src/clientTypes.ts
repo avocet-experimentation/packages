@@ -9,17 +9,21 @@ import {
  * For embedding in telemetry data. See https://opentelemetry.io/docs/specs/semconv/general/attribute-requirement-level/
  */
 export interface FlagAttributes {
-  key: FlagName;
-  providerName: "estuary-exp";
-  value: FlagCurrentValue;
-  hash: number;
+  [key: FlagName]:  {
+    value: FlagCurrentValue;
+    hash: number;
+  }
 }
 
-export interface ExperimentAttributes {
-  key: string;
-  providerName: "estuary-exp";
-  blockId: string;
+export type FlagAttributeMapping = {
+  'estuary-exp': FlagAttributes
 }
+
+// export interface ExperimentAttributes {
+//   key: string;
+//   providerName: "estuary-exp";
+//   blockId: string;
+// }
 
 export type ClientOptions = {
   environment: EnvironmentName;
@@ -27,7 +31,7 @@ export type ClientOptions = {
   refreshIntervalInSeconds?: number;
   attributeAssignmentCb?: <SpanType>(
     span: SpanType,
-    attributes: FlagAttributes,
+    attributes: FlagAttributeMapping,
   ) => void;
   apiUrl: string;
   attributes: ClientPropMapping;
