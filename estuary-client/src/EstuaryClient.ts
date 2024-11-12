@@ -20,7 +20,7 @@ export class EstuaryClient {
   private flagMap: FlagClientMapping = {}; // represents cached data in memory
   private readonly apiUrl: string;
   private intervalId: NodeJS.Timeout | undefined; // necessary for setting/clearing interval
-  private attributes: ClientPropMapping;
+  private clientProps: ClientPropMapping;
 
   /**
   * Static factory method (no constructor):
@@ -75,7 +75,8 @@ export class EstuaryClient {
   }
 
   /**
-   * Get the current value of a flag
+   * Get the last cached value of a flag, saving flag attributes to a span if any is passed
+   * and if the client was instantiated with an attribute assignment callback.
    * @param span a telemetry span object
    * @returns
    */
@@ -103,7 +104,7 @@ export class EstuaryClient {
         },
         body: JSON.stringify({
           environment: environmentName,
-          clientSessionAttributes: this.attributes,
+          clientProps: this.clientProps,
         }),
       };
 
@@ -148,7 +149,7 @@ export class EstuaryClient {
     this.environment = options.environment;
     this.apiUrl = options.apiUrl;
     this.attributeAssignmentCb = options.attributeAssignmentCb;
-    this.attributes = options.attributes;
+    this.clientProps = options.clientProps;
     if (options.autoRefresh === true) {
       this.startPolling(options.refreshIntervalInSeconds ?? DEFAULT_DURATION);
     }
