@@ -1,3 +1,4 @@
+export * from './clientConnections.js';
 export * from './clientProps.js';
 export * from './environments.js';
 export * from './experiments.js';

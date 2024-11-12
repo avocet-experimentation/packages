@@ -1,6 +1,5 @@
 import { z } from "zod";
 import { proportionSchema } from "./general.js";
-import { flagCurrentValueSchema } from "./general.js";
 import { clientPropNameSchema } from "./clientProps.js";
 
 export const ruleTypeSchema = z.enum(['Experiment', 'ForcedValue']);
@@ -9,11 +8,11 @@ export type RuleType = z.infer<typeof ruleTypeSchema>;
 export const ruleStatusSchema = z.enum([
   "draft",
   "active",
-  "in_test",
+  "in_test", // remove this?
   "paused",
   "completed",
-  "disabled",
-  "archived",
+  "disabled", // redundant with paused?
+  "archived", // redundant with completed?
 ]);
 export type RuleStatus = z.infer<typeof ruleStatusSchema>;
 
