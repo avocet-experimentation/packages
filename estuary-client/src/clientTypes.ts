@@ -1,29 +1,19 @@
 import {
   EnvironmentName,
-  FlagName,
   ClientPropMapping,
   FlagCurrentValue,
 } from "@estuary/types";
 
 /**
- * For embedding in telemetry data. See https://opentelemetry.io/docs/specs/semconv/general/attribute-requirement-level/
+ * For embedding in telemetry data. See https://opentelemetry.io/docs/specs/semconv/feature-flags/feature-flags-spans/
+ * and https://opentelemetry.io/docs/specs/semconv/general/attribute-requirement-level/
  */
 export interface FlagAttributes {
-  [key: FlagName]:  {
-    value: FlagCurrentValue;
-    hash: number;
-  }
+  'feature_flag.key': string;
+  'feature_flag.provider_name': 'estuary-exp';
+  'feature_flag.variant': FlagCurrentValue;
+  'feature_flag.hash': number | string; // todo: narrow down
 }
-
-export type FlagAttributeMapping = {
-  'estuary-exp': FlagAttributes
-}
-
-// export interface ExperimentAttributes {
-//   key: string;
-//   providerName: "estuary-exp";
-//   blockId: string;
-// }
 
 export type ClientOptions = {
   environment: EnvironmentName;
@@ -31,7 +21,7 @@ export type ClientOptions = {
   refreshIntervalInSeconds?: number;
   attributeAssignmentCb?: <SpanType>(
     span: SpanType,
-    attributes: FlagAttributeMapping,
+    attributes: FlagAttributes,
   ) => void;
   apiUrl: string;
   clientProps: ClientPropMapping;
