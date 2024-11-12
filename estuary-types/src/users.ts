@@ -4,16 +4,21 @@ import { z } from 'zod';
   These are placeholders, so likely to be revised
 */
 
-export const permissionLevelSchema = z.enum(['none', 'view', 'edit', 'admin']);
+export const permissionLevelSchema = z.enum(['none', 'view', 'edit', 'full']);
+
+export type PermissionLevel = z.infer<typeof permissionLevelSchema>;
 
 export const userPermissionsSchema = z.object({
-  fflags: permissionLevelSchema,
+  flags: permissionLevelSchema,
   experiments: permissionLevelSchema,
   environments: permissionLevelSchema,
   users: permissionLevelSchema,
-  attributes: permissionLevelSchema,
+  clientProps: permissionLevelSchema,
+  clientConnections: permissionLevelSchema,
   events: permissionLevelSchema,
 })
+
+export type UserPermissions = z.infer<typeof userPermissionsSchema>;
 
 export const userSchema = z.object({
   id: z.string(),
@@ -22,9 +27,7 @@ export const userSchema = z.object({
   passwordHash: z.string(),
   permissions: userPermissionsSchema,
 });
-
-export type PermissionLevel = z.infer<typeof permissionLevelSchema>;
-
-export type UserPermissions = z.infer<typeof userPermissionsSchema>;
-
+/**
+ * (Tentative) Dashboard user account data. * 
+ */
 export type User = z.infer<typeof userSchema>;
