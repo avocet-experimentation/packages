@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { estuaryBaseSchema } from './util.js';
 /*
   Dashboard user account types.
   These are placeholders, so likely to be revised
@@ -20,9 +21,7 @@ export const userPermissionsSchema = z.object({
 
 export type UserPermissions = z.infer<typeof userPermissionsSchema>;
 
-export const userSchema = z.object({
-  id: z.string(),
-  username: z.string(),
+export const userSchema = estuaryBaseSchema.extend({
   email: z.string(),
   passwordHash: z.string(),
   permissions: userPermissionsSchema,
