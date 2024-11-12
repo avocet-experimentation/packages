@@ -34,16 +34,3 @@ export const overrideRuleSchema = z.object({
  *  experiments and values forced per environment
  */
 export type OverrideRule = z.infer<typeof overrideRuleSchema>;
-
-export const interventionSchema = z.record(z.string());
-// for supporting multivariate experiments later
-export type Intervention = z.infer<typeof interventionSchema>;
-
-export const forcedValueSchema = overrideRuleSchema.extend({
-  type: z.literal('ForcedValue'),
-  value: flagCurrentValueSchema,
-});
-/**
- * A value forced for all users. Permits a simple override of a flag's default value on a per-environment basis.
- */
-export type ForcedValue = z.infer<typeof forcedValueSchema>;

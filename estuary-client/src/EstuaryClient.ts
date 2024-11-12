@@ -3,7 +3,6 @@ import {
   FlagName,
   flagClientMappingSchema,
   FlagClientMapping,
-  Span,
   ClientPropMapping,
   FlagClientValue,
 } from "@estuary/types";
@@ -18,7 +17,7 @@ export class EstuaryClient {
   ) => void;
   private readonly environment: EnvironmentName;
   // private readonly clientKey: string; // to replace .environment eventually
-  private flags: FlagClientMapping = {}; // represents cached data in memory
+  private flagMap: FlagClientMapping = {}; // represents cached data in memory
   private readonly apiUrl: string;
   private intervalId: NodeJS.Timeout | undefined; // necessary for setting/clearing interval
   private attributes: ClientPropMapping;
@@ -43,7 +42,7 @@ export class EstuaryClient {
    * Refresh local flag data. Must call manually if `autoRefresh` is set to false
    */
   async refresh(): Promise<void> {
-    this.load(this.environment);
+    await this.load(this.environment);
   }
 
   /**
@@ -51,12 +50,12 @@ export class EstuaryClient {
    * For insertion into telemetry data.
    */
   getFlagAttributes(flagName: FlagName): FlagAttributeMapping {
-    const flag = this.getFlag(flagName);
+    const flag = this.getCachedFlagValue(flagName);
     if (!flag) throw new Error(`Flag "${flagName}" not found!`);
 
     const attributes = {
       'estuary-exp': {
-        flagName: {
+        [flagName]: {
           ...flag,
         },
       },
@@ -66,12 +65,13 @@ export class EstuaryClient {
   }
 
   getAllFlagAttributes(): FlagAttributeMapping {
-    const entries = Object.entries(this.flags);
+    const entries = Object.entries(this.flagMap);
+    // console.log({ flagMap: entries })
     const transformed = entries.reduce((acc, [flagName, data]) => {
       return { [flagName]: data };
     }, {} as FlagAttributes);
 
-    return { 'estuary-exp': transformed};
+    return { 'estuary-exp': transformed };
   }
 
   /**
@@ -79,13 +79,11 @@ export class EstuaryClient {
    * @param span a telemetry span object
    * @returns
    */
-  // flagValue(flagName: FlagName)
-  // flagValue<SpanType extends Span>(flagName: FlagName, span: SpanType)
-  flagValue<SpanType extends Span>(
+  flagValue<SpanType>(
     flagName: FlagName,
     span?: SpanType
   ): null | boolean | number | string {
-    const flag = this.getFlag(flagName);
+    const flag = this.getCachedFlagValue(flagName);
     if (!flag) return null;
 
     if (span && this.attributeAssignmentCb) {
@@ -110,10 +108,10 @@ export class EstuaryClient {
       };
 
       const response = await fetch(`${this.apiUrl}`, fetchOptions);
-      const fflags: unknown = await response.json();
-      const parsed = flagClientMappingSchema.parse(fflags);
+      const featureFlagMap: unknown = await response.json();
+      const parsed = flagClientMappingSchema.parse(featureFlagMap);
 
-      this.flags = { ...this.flags, ...parsed };
+      this.flagMap = { ...this.flagMap, ...parsed };
       return true;
     });
   }
@@ -121,8 +119,8 @@ export class EstuaryClient {
   /**
    * Retrieve a copy of cached data for the specified flag
    */
-  private getFlag(flagName: FlagName): FlagClientValue | undefined {
-    const flagContent = this.flags[flagName];
+  private getCachedFlagValue(flagName: FlagName): FlagClientValue | undefined {
+    const flagContent = this.flagMap[flagName];
     return { ...flagContent };
   }
 
@@ -130,7 +128,7 @@ export class EstuaryClient {
    * @returns a copy of all locally stored flags
    */
   private getAllFlags(): FlagClientMapping {
-    return { ...this.flags };
+    return { ...this.flagMap };
   }
 
   private async attemptAndHandleError<O, F extends () => O>(

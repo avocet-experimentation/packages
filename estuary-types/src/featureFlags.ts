@@ -1,7 +1,10 @@
 import { z } from "zod";
-import { overrideRuleSchema } from "./overrideRules.js";
 import { EnvironmentName, environmentNameSchema } from "./environments.js";
 import { flagCurrentValueSchema, nonnegativeIntegerSchema } from "./general.js";
+import { experimentSchema } from "./experiments.js";
+import { forcedValueSchema } from "./forcedValue.js";
+
+export const overrideRuleUnionSchema = z.union([experimentSchema, forcedValueSchema]);
 
 export const flagNameSchema = z.string();
 /**
@@ -12,7 +15,7 @@ export type FlagName = string;
 export const flagEnvironmentSchema = z.object({
   name: z.string(),
   enabled: z.boolean(),
-  overrideRules: z.array(overrideRuleSchema),
+  overrideRules: z.array(overrideRuleUnionSchema),
 });
 /**
  * Environment-specific data for a `FeatureFlag`
