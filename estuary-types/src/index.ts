@@ -1,5 +1,5 @@
-export * from './clientConnections.js';
-export * from './clientProps.js';
+export * from './attributes.js';
+export * from './flagClients.js';
 export * from './environments.js';
 export * from './experiments.js';
 export * from './featureFlags.js';
@@ -8,3 +8,4 @@ export * from './general.js';
 export * from './overrideRules.js';
 export * from './telemetry.js';
 export * from './users.js';
+export * from './util.js';

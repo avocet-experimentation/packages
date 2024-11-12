@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { eventTelemetrySchema } from "./telemetry.js";
 import { overrideRuleSchema } from "./overrideRules.js";
-import { flagCurrentValueSchema } from "./general.js";
+import { flagCurrentValueSchema, nonNegativeIntegerSchema } from "./util.js";
 
 export const interventionSchema = z.record(z.string());
 // for supporting multivariate experiments later
@@ -10,8 +10,8 @@ export type Intervention = z.infer<typeof interventionSchema>;
 export const experimentBlockSchema = z.object({
   id: z.string(),
   name: z.string(),
-  startTimestamp: z.number().int().gte(0).optional(),
-  endTimestamp: z.number().int().gte(0).optional(),
+  startTimestamp: nonNegativeIntegerSchema.optional(),
+  endTimestamp: nonNegativeIntegerSchema.optional(),
   flagValue: flagCurrentValueSchema,
 });
 /**

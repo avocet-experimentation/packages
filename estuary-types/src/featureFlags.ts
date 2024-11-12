@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { EnvironmentName, environmentNameSchema } from "./environments.js";
-import { flagCurrentValueSchema, nonnegativeIntegerSchema } from "./general.js";
+import { flagCurrentValueSchema, nonNegativeIntegerSchema } from "./util.js";
 import { experimentSchema } from "./experiments.js";
 import { forcedValueSchema } from "./forcedValue.js";
 
@@ -31,15 +31,6 @@ export const flagEnvironmentMappingSchema = z.record(
  */
 export type FlagEnvironmentMapping = Record<EnvironmentName, FlagEnvironment>;
 
-export const flagClientValueSchema = z.object({
-  value: flagCurrentValueSchema,
-  hash: z.number(), // override rule hash
-});
-/**
- * The response sent to the client when checking the value of a flag
- */
-export type FlagClientValue = z.infer<typeof flagClientValueSchema>;
-
 const flagBooleanValueSchema = z.object({
   type: z.literal("boolean"),
   default: z.boolean(),
@@ -60,19 +51,20 @@ export const flagValueDefSchema = z.union([
   flagNumberValueSchema,
   flagStringValueSchema,
 ]);
-
-export type FlagValue = z.infer<typeof flagValueDefSchema>;
+/**
+ * The definition of a feature flag's data type and default value
+ */
+export type FlagValueDef = z.infer<typeof flagValueDefSchema>;
 
 export const featureFlagSchema = z.object({
   id: z.string(),
   name: z.string(),
   description: z.string().optional(),
-  createdAt: nonnegativeIntegerSchema.optional(),
-  updatedAt: nonnegativeIntegerSchema.optional(),
+  createdAt: nonNegativeIntegerSchema.optional(),
+  updatedAt: nonNegativeIntegerSchema.optional(),
   environments: flagEnvironmentMappingSchema,
   value: flagValueDefSchema,
 });
-
 /**
  * Flag objects available in the backend
  */
@@ -91,30 +83,7 @@ export const featureFlagMappingSchema = z.record(
   flagNameSchema,
   featureFlagSchema
 );
-
 /**
  * Mapping of flag names to their server-side data
  */
 export type FeatureFlagMapping = z.infer<typeof featureFlagMappingSchema>;
-
-export const featureFlagClientDataSchema = featureFlagSchema
-  .pick({ name: true, value: true })
-  .and(
-    z.object({
-      currentValue: z.string(),
-    })
-  );
-
-/**
- * Feature flag data available to the client SDK
- */
-export type FeatureFlagClientData = z.infer<typeof featureFlagClientDataSchema>;
-
-export const flagClientMappingSchema = z.record(
-  z.string(),
-  flagClientValueSchema
-);
-/**
- * Mapping of flag names to their client-side data
- */
-export type FlagClientMapping = z.infer<typeof flagClientMappingSchema>;

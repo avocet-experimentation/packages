@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { flagCurrentValueSchema } from "./general.js";
+import { flagCurrentValueSchema } from "./util.js";
 import { overrideRuleSchema } from "./overrideRules.js";
 
 export const forcedValueSchema = overrideRuleSchema.extend({

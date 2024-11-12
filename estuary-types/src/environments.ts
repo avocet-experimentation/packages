@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { estuaryBaseSchema } from "./general.js";
+import { estuaryBaseSchema } from "./util.js";
 
 export const environmentNameSchema = z.enum(['prod', 'dev', 'testing', 'staging']);
 /**
