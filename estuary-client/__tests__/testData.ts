@@ -1,6 +1,4 @@
 import { FeatureFlag, FlagValue } from "@estuary/types";
-import { BeforeId } from "../MongoRepository.types.js";
-import { ObjectId } from "mongodb";
 
 export const flagEnvironmentInit = () => ({
   prod: { name: 'prod', enabled: false, overrideRules: [], },
@@ -16,7 +14,7 @@ export const getExampleFlag = (
     type: 'boolean',
     default: false,
   },
-): BeforeId<FeatureFlag> => {
+): Omit<FeatureFlag, 'id'> => {
   const currentTimeMs = Date.now();
   
   const flag = {
@@ -43,7 +41,7 @@ export const exampleFlags = [
   ),
 ];
 
-export const staticFlags = [
+export const staticFlags: FeatureFlag[] = [
   {
     id: '67328591069f921a07e5bd76',
     name: 'use-new-database',
@@ -58,6 +56,7 @@ export const staticFlags = [
             type: 'ForcedValue',
             description: 'Always sets this flag to true in the dev environment',
             status: 'active',
+            value: true,
             enrollment: {
               attributes: ['id'],
               proportion: 1,
@@ -83,6 +82,7 @@ export const staticFlags = [
           type: 'ForcedValue',
           description: 'Always sets this flag to true',
           status: 'active',
+          value: true,
           enrollment: {
             attributes: ['id'],
             proportion: 1,
