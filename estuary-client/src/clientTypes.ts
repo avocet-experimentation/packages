@@ -34,5 +34,5 @@ export type ClientOptions = {
     attributes: FlagAttributeMapping,
   ) => void;
   apiUrl: string;
-  attributes: ClientPropMapping;
+  clientProps: ClientPropMapping;
 };
