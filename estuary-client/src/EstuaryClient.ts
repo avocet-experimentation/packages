@@ -7,14 +7,14 @@ import {
   ClientPropMapping,
   FlagClientValue,
 } from "@estuary/types";
-import { ClientOptions, FlagAttributes } from "./clientTypes.js";
+import { ClientOptions, FlagAttributeMapping, FlagAttributes } from "./clientTypes.js";
 
 const DEFAULT_DURATION = 5 * 60; // 5 minutes
 
 export class EstuaryClient {
   attributeAssignmentCb?: <SpanType>(
     span: SpanType,
-    attributes: FlagAttributes,
+    attributes: FlagAttributeMapping,
   ) => void;
   private readonly environment: EnvironmentName;
   // private readonly clientKey: string; // to replace .environment eventually
@@ -50,30 +50,28 @@ export class EstuaryClient {
    * Generates an object of attributes for a given flag.
    * For insertion into telemetry data.
    */
-  getFlagAttributes(flagName: FlagName): FlagAttributes {
+  getFlagAttributes(flagName: FlagName): FlagAttributeMapping {
     const flag = this.getFlag(flagName);
     if (!flag) throw new Error(`Flag "${flagName}" not found!`);
 
     const attributes = {
-      key: flagName,
-      providerName: "estuary-exp" as const,
-      ...flag,
+      'estuary-exp': {
+        flagName: {
+          ...flag,
+        },
+      },
     };
 
     return attributes;
   }
 
-  getAllFlagAttributes(): FlagAttributes[] {
+  getAllFlagAttributes(): FlagAttributeMapping {
     const entries = Object.entries(this.flags);
-    const transformed = entries.map(([key, data]) => {
-      return {
-        key,
-        providerName: "estuary-exp" as const,
-        ...data,
-      }
-    });
+    const transformed = entries.reduce((acc, [flagName, data]) => {
+      return { [flagName]: data };
+    }, {} as FlagAttributes);
 
-    return transformed;
+    return { 'estuary-exp': transformed};
   }
 
   /**
