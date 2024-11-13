@@ -15,9 +15,15 @@ export const nullishOrTextPrimitiveArraySchema = z.union([
 
 export type NullishOrTextPrimitiveArray = z.infer<typeof nullishOrTextPrimitiveArraySchema>;
 
+/**
+ * See https://opentelemetry.io/docs/specs/otel/common/#attribute
+ */
 export const oTelAttributeNameSchema = z.string().refine(
-  (val) => val === val.toLowerCase() && !(/\s/.test(val)), 
-  { message: 'Attributes must be lowercase and contain no whitespace'},
+  (val) => val === val.toLowerCase() 
+  && !(/\s/.test(val)
+  && val.length > 0
+), 
+  { message: 'Attribute names must be lowercase, non-empty and contain no whitespace.'},
 );
 
 export const oTelAttributeValueSchema = z.union([
