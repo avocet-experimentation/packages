@@ -19,7 +19,6 @@ export const experimentBlockSchema = z.object({
  */
 export type ExperimentBlock = z.infer<typeof experimentBlockSchema>;
 
-
 export const experimentGroupSchema = z.object({
   id: z.string(),
   name: z.string(),
@@ -32,10 +31,10 @@ export const experimentGroupSchema = z.object({
  */
 export type ExperimentGroup = z.infer<typeof experimentGroupSchema>;
 
-
 export const experimentSchema = overrideRuleSchema.extend({
   name: z.string(),
-  type: z.literal('Experiment'),
+  hypothesis: z.string(),
+  type: z.literal("Experiment"),
   groups: z.array(experimentGroupSchema),
   flagId: z.string(),
   dependents: z.array(eventTelemetrySchema),
