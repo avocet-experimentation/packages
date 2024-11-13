@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { EnvironmentName, environmentNameSchema } from "./environments.js";
-import { flagCurrentValueSchema, nonNegativeIntegerSchema } from "./util.js";
+import { estuaryBaseSchema, flagCurrentValueSchema, nonNegativeIntegerSchema } from "./util.js";
 import { experimentSchema } from "./experiments.js";
 import { forcedValueSchema } from "./forcedValue.js";
 
@@ -20,7 +20,7 @@ export const flagEnvironmentSchema = z.object({
 /**
  * Environment-specific data for a `FeatureFlag`
  */
-export type FlagEnvironment = z.infer<typeof flagEnvironmentSchema>;
+export interface FlagEnvironment extends z.infer<typeof flagEnvironmentSchema> {};
 
 export const flagEnvironmentMappingSchema = z.record(
   environmentNameSchema,
@@ -56,7 +56,7 @@ export const flagValueDefSchema = z.union([
  */
 export type FlagValueDef = z.infer<typeof flagValueDefSchema>;
 
-export const featureFlagSchema = z.object({
+export const featureFlagSchema = estuaryBaseSchema.extend({
   id: z.string(),
   name: z.string(),
   description: z.string().optional(),
@@ -68,16 +68,7 @@ export const featureFlagSchema = z.object({
 /**
  * Flag objects available in the backend
  */
-export type FeatureFlag = z.infer<typeof featureFlagSchema>;
-
-export const featureFlagStubSchema = featureFlagSchema
-  .omit({ environments: true })
-  .extend({
-    environments: z.record(
-      environmentNameSchema,
-      flagEnvironmentSchema.pick({ enabled: true })
-    ),
-  });
+export interface FeatureFlag extends z.infer<typeof featureFlagSchema> {};
 
 export const featureFlagMappingSchema = z.record(
   flagNameSchema,
@@ -86,4 +77,4 @@ export const featureFlagMappingSchema = z.record(
 /**
  * Mapping of flag names to their server-side data
  */
-export type FeatureFlagMapping = z.infer<typeof featureFlagMappingSchema>;
+export interface FeatureFlagMapping extends z.infer<typeof featureFlagMappingSchema> {};

@@ -1,25 +1,41 @@
 import { z } from 'zod';
-import { ClientConnection, ClientPropDef } from './flagClients.js';
-import { Environment } from './environments.js';
-import { Experiment } from './experiments.js';
-import { FeatureFlag } from './featureFlags.js';
+import { ClientConnection, clientConnectionSchema, ClientPropDef, clientPropDefSchema } from './flagClients.js';
+import { Environment, environmentSchema } from './environments.js';
+import { Experiment, experimentSchema } from './experiments.js';
+import { FeatureFlag, featureFlagSchema } from './featureFlags.js';
 
 /**
- * Generic type for all schema defined in this package
- * todo:
- * - replace with ZodType<>, narrowing it down so that object schema methods can be invoked on them
+ * Generic type representing all Zod schema
  */
 export type EstuarySchema = z.ZodTypeAny;
-// export type EstuarySchema = z.ZodType<any, any, any>;
 
-export const inferSchema = <S extends EstuarySchema>(schema: S) => schema;
-
+export const estuaryMongoTypesSchema = z.union([
+  featureFlagSchema,
+  experimentSchema,
+  environmentSchema,
+  clientPropDefSchema,
+  clientConnectionSchema,
+]);
 /**
- * Base types that stores a hex string representing an ObjectId on the `id` property
+ * Union of types stored in MongoDB
  */
-export type EstuaryMongoTypes = FeatureFlag | Experiment | Environment | ClientPropDef | ClientConnection; // later: users and event types
+export type EstuaryMongoTypes = 
+  | FeatureFlag
+  | Experiment
+  | Environment
+  | ClientPropDef
+  | ClientConnection; // later: users and event types
 
+export const estuaryMongoCollectionNameSchema = z.enum([
+  'FeatureFlag',
+  'Experiment',
+  'Environment',
+  'ClientPropDef',
+  'ClientConnection',
+  'User',
+]);
 
+export type EstuaryMongoCollectionName = z.infer<typeof estuaryMongoCollectionNameSchema>;
 /**
  * Version that is complete but not yet assigned an ObjectId by MongoDB
  */

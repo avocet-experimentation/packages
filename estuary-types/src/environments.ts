@@ -15,4 +15,4 @@ export const environmentSchema = estuaryBaseSchema.extend({
   defaultEnabled: z.boolean(),
 });
 
-export type Environment = z.infer<typeof environmentSchema>;
+export interface Environment extends z.infer<typeof environmentSchema> {};
