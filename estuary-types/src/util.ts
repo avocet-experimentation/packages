@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-/* UTILITY TYPES FOR OTHER SCHEMA AND TYPES IN THIS PACKAGE */
+/* UTILITY SCHEMA AND TYPES */
 
 export const nonNegativeIntegerSchema = z.number().int().gte(0);
 /**
@@ -8,45 +8,61 @@ export const nonNegativeIntegerSchema = z.number().int().gte(0);
  */
 export const proportionSchema = z.number().gte(0).lte(1);
 
+/** .default might cause type inference problems */
+export const defaultEmptyStringSchema = z.string().default('');
+
 export const nonEmptyStringSchema = z.string().min(1);
 
-export const objectIdHexStringSchema = z.string().length(24);
+export const bsonObjectIdHexStringSchema = z.string().length(24);
 
-export const defaultEmptyStringSchema = z.string().default('');
 /**
+ * Similar to Unix timestamp, but also accepts negative values indicating dates before 1970.
  * See https://www.mongodb.com/docs/manual/reference/bson-types/#std-label-document-bson-type-date
  */
-export const optionalBsonDateSchema = z.number().int().optional();
-
-export const estuaryBaseSchema = z.object({
-  id: objectIdHexStringSchema,
-  name: nonEmptyStringSchema,
-  description: z.string().optional(),
-  createdAt: optionalBsonDateSchema,
-  updatedAt: optionalBsonDateSchema,
-});
+export const bsonDateSchema = z.number().int();
 /**
- * Parent type for application documents after being fetched from MongoDB.
- * For the union of document types, see `EstuaryMongoTypes`
+ * Unlike the native Omit, this raises a type error if `Keys` includes a key not on `T`
  */
-export interface EstuaryBase extends z.infer<typeof estuaryBaseSchema> {};
 
-export const flagCurrentValueSchema = z.union([z.boolean(), z.string(), z.number()]);
+export type SafeOmit<T, Keys extends keyof T> = {
+  [P in keyof T as P extends Keys ? never : P]: T[P];
+};
 /**
- * All supported flag value types
+ * Makes the passed properties required, and others optional. Example usage:
+ * `type DraftFlag = RequireOnly<FeatureFlag, 'name' | 'environments'>;`
  */
-export type FlagCurrentValue = z.infer<typeof flagCurrentValueSchema>;
-
-export const flagAttributesSchema = z.object({
-  'feature_flag.key': nonEmptyStringSchema,
-  'feature_flag.provider_name': z.literal('estuary-exp'),
-  'feature_flag.variant': z.string(),
-  'feature_flag.hash': z.string(),
-})
+export type RequireOnly<T, K extends keyof T> = Required<Pick<T, K>> & Partial<Omit<T, K>>;
 /**
- * For embedding in telemetry data. See https://opentelemetry.io/docs/specs/semconv/feature-flags/feature-flags-spans/
- * and https://opentelemetry.io/docs/specs/semconv/general/attribute-requirement-level/
+ * Makes the passed properties optional, and the rest required.
  */
-export interface FlagAttributes extends z.infer<typeof flagAttributesSchema> {};
+export type RequireExcept<T, K extends keyof T> = Required<Omit<T, K>> & Partial<Pick<T, K>>;
+/**
+ * Given a Zod object schema, returns a corresponding schema with all properties made
+ * optional. Throws an error if the argument is not a Zod object schema.
+ * The generic type S is used for inference of the exact schema type at runtime;
+ * see https://zod.dev/?id=writing-generic-functions
+ */
 
-export const flagNameSchema = z.string();
+export const getPartialSchema = <S extends z.ZodTypeAny, O extends z.AnyZodObject>(schema: S): S => {
+  return (schema as unknown as O).partial() as unknown as S;
+};
+/**
+ * (WIP) Returns a schema with only the passed keys required
+ * Loses type information
+ */
+
+export const schemaRequireOnly = <S extends z.ZodTypeAny, O extends z.AnyZodObject, K extends keyof S>(schema: O, keys: K[]): RequireOnly<S, K> => {
+  const objectSchema = schema as unknown as O;
+  const keyObj = keys.reduce((acc, key) => Object.assign(acc, { [key]: true }), {});
+  const required = objectSchema.pick(keyObj).required();
+  const optional = objectSchema.omit(keyObj).partial();
+
+  return required.merge(optional) as unknown as RequireOnly<S, K>;
+};
+/**
+ * WIP
+ */
+export const schemaOmit = <S extends z.ZodTypeAny>(schema: S, keys: string[]) => {
+  const keyObj = keys.reduce((acc, key) => Object.assign(acc, { [key]: true }), {});
+  return (schema as unknown as z.AnyZodObject).omit(keyObj) as unknown as S;
+};

@@ -1,15 +1,11 @@
 import { z } from "zod";
 import { eventTelemetrySchema } from "./telemetry.js";
 import { overrideRuleSchema } from "./overrideRules.js";
-import { estuaryBaseSchema, flagCurrentValueSchema, flagNameSchema, nonNegativeIntegerSchema } from "./util.js";
+import { nonEmptyStringSchema, nonNegativeIntegerSchema } from "./util.js";
+import { flagCurrentValueSchema } from './flags/flagValues.js';
 
-export const interventionSchema = z.record(flagNameSchema, flagCurrentValueSchema);
-/**
- * for supporting multivariate experiments later, replacing experimentBlockSchema.flagValue with .intervention
- */
-export interface Intervention extends z.infer<typeof interventionSchema> {};
 
-export const experimentBlockSchema = estuaryBaseSchema.extend({
+export const experimentBlockSchema = z.object({
   id: z.string(),
   startTimestamp: nonNegativeIntegerSchema.optional(),
   endTimestamp: nonNegativeIntegerSchema.optional(),
@@ -20,24 +16,26 @@ export const experimentBlockSchema = estuaryBaseSchema.extend({
  */
 export interface ExperimentBlock extends z.infer<typeof experimentBlockSchema> {};
 
-export const experimentGroupSchema = estuaryBaseSchema.extend({
+export const experimentGroupSchema = z.object({
   id: z.string(),
+  name: nonEmptyStringSchema,
+  description: z.string().optional(), // omit?
   proportion: z.number(),
   blocks: z.array(experimentBlockSchema),
-  // gap: z.number(), // later: gap between interventions
 });
 /**
  * a grouping of users to be subjected to a sequence of experiment blocks
  */
 export interface ExperimentGroup extends z.infer<typeof experimentGroupSchema>{};
 
-export const experimentSchema = overrideRuleSchema.extend({
-  name: z.string(),
-  hypothesis: z.string(),
+export const experimentDraftSchema = overrideRuleSchema.extend({
+  name: nonEmptyStringSchema,
+  description: z.string().optional(),
+  hypothesis: z.string().optional(),
   type: z.literal("Experiment"),
   groups: z.array(experimentGroupSchema),
   flagId: z.string(),
   dependents: z.array(eventTelemetrySchema),
 });
 
-export interface Experiment extends z.infer<typeof experimentSchema> {};
+export interface ExperimentDraft extends z.infer<typeof experimentDraftSchema> {};
