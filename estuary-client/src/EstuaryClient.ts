@@ -56,8 +56,8 @@ export class EstuaryClient {
     const attributes: FlagAttributes = { 
       'feature_flag.key': flagName,
       'feature_flag.provider_name': 'estuary-exp',
-      'feature_flag.variant': flag.value,
-      'feature_flag.hash': flag.hash
+      'feature_flag.variant': String(flag.value),
+      'feature_flag.hash': String(flag.hash)
      }; 
 
     return attributes;
