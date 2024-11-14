@@ -1,6 +1,5 @@
 import {
   EnvironmentName,
-  FlagName,
   flagClientMappingSchema,
   FlagClientMapping,
   ClientPropMapping,
@@ -50,7 +49,7 @@ export class EstuaryClient {
    * Generates an object of attributes for a given flag
    * for insertion into telemetry data.
    */
-  getFlagAttributes(flagName: FlagName): FlagAttributes | null {
+  getFlagAttributes(flagName: string): FlagAttributes | null {
     const flag = this.getCachedFlagValue(flagName);
     if (!flag) return null;
 
@@ -71,7 +70,7 @@ export class EstuaryClient {
    * @returns
    */
   flagValue<SpanType>(
-    flagName: FlagName,
+    flagName: string,
     span?: SpanType
   ): null | boolean | number | string {
     const flag = this.getCachedFlagValue(flagName);
@@ -113,7 +112,7 @@ export class EstuaryClient {
   /**
    * Retrieve a copy of cached data for the specified flag
    */
-  private getCachedFlagValue(flagName: FlagName): FlagClientValue | undefined {
+  private getCachedFlagValue(flagName: string): FlagClientValue | undefined {
     const flagContent = this.flagMap[flagName];
     return { ...flagContent };
   }
