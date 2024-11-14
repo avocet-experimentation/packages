@@ -90,8 +90,13 @@ export type BeforeId<T extends EstuaryMongoTypes> = Omit<T, 'id' | '_id'>;
  */
 export type PartialUpdate<T extends EstuaryMongoTypes> = RequireOnly<T, 'id'>;
 /**
- * A partial object with only the minimum fields required to save it as a draft. Might replace this with per-type
- * draft definitions.
+ * Mapping of 
  */
-export type DraftRecord<T extends EstuaryMongoTypes> = RequireOnly<T, 'name'>;
+export type DraftRecord<T extends EstuaryMongoTypes> = 
+T extends FeatureFlag ? FeatureFlagDraft :
+T extends Experiment ? ExperimentDraft :
+T extends Environment ? EnvironmentDraft :
+T extends ClientPropDef ? ClientPropDefDraft :
+T extends ClientConnection ? ClientConnectionDraft :
+never;
 
