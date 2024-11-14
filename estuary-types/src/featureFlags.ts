@@ -1,16 +1,10 @@
 import { z } from "zod";
 import { EnvironmentName, environmentNameSchema } from "./environments.js";
-import { estuaryBaseSchema, flagCurrentValueSchema, nonNegativeIntegerSchema } from "./util.js";
+import { estuaryBaseSchema, flagNameSchema } from "./util.js";
 import { experimentSchema } from "./experiments.js";
 import { forcedValueSchema } from "./forcedValue.js";
 
 export const overrideRuleUnionSchema = z.union([experimentSchema, forcedValueSchema]);
-
-export const flagNameSchema = z.string();
-/**
- * Placeholder
- */
-export type FlagName = string;
 
 export const flagEnvironmentSchema = z.object({
   name: z.string(),
@@ -57,14 +51,11 @@ export const flagValueDefSchema = z.union([
 export type FlagValueDef = z.infer<typeof flagValueDefSchema>;
 
 export const featureFlagSchema = estuaryBaseSchema.extend({
-  id: z.string(),
   name: z.string(),
-  description: z.string().optional(),
-  createdAt: nonNegativeIntegerSchema.optional(),
-  updatedAt: nonNegativeIntegerSchema.optional(),
   environments: flagEnvironmentMappingSchema,
   value: flagValueDefSchema,
 });
+
 /**
  * Flag objects available in the backend
  */
