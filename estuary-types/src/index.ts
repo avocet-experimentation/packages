@@ -5,6 +5,7 @@ export * from './experiments.js';
 export * from './featureFlags.js';
 export * from './forcedValue.js';
 export * from './general.js';
+export * from './metrics.js';
 export * from './overrideRules.js';
 export * from './telemetry.js';
 export * from './users.js';
