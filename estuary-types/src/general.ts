@@ -76,7 +76,7 @@ export const getPartialSchema = <S extends z.ZodTypeAny, O extends z.AnyZodObjec
  * (WIP) Returns a schema with only the passed keys required
  * Loses type information
  */
-const schemaRequireOnly = <S extends z.ZodTypeAny, O extends z.AnyZodObject>(schema: S, keys: string[]): S => {
+export const schemaRequireOnly = <S extends z.ZodTypeAny, O extends z.AnyZodObject>(schema: S, keys: string[]): S => {
   const keyObj = keys.reduce((acc, key) => Object.assign(acc, { [key]: true }), {});
   const required = (schema as unknown as O)
     .pick(keyObj);
@@ -88,7 +88,7 @@ const schemaRequireOnly = <S extends z.ZodTypeAny, O extends z.AnyZodObject>(sch
 /**
  * WIP
  */
-const schemaOmit = <S extends z.ZodTypeAny>(schema: S, keys: string[]) => {
+export const schemaOmit = <S extends z.ZodTypeAny>(schema: S, keys: string[]) => {
   const keyObj = keys.reduce((acc, key) => Object.assign(acc, { [key]: true }), {});
   return (schema as unknown as z.AnyZodObject).omit(keyObj) as unknown as S;
 }
