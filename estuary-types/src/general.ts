@@ -16,7 +16,10 @@ import {
   clientPropDefSchema,
   ClientConnection,
   clientConnectionSchema,
+  userSchema,
+  User,
  } from './imputed.js';
+import { UserDraft, userDraftSchema } from './users.js';
 
 /**
  * Generic type representing all Zod schema.
@@ -40,6 +43,7 @@ export const estuaryDraftTypesSchema = z.union([
   environmentDraftSchema,
   clientPropDefDraftSchema,
   clientConnectionDraftSchema,
+  userDraftSchema,
 ]);
 /**
  * Union of draft types
@@ -49,7 +53,9 @@ export type EstuaryDraftTypes =
 | ExperimentDraft
 | EnvironmentDraft
 | ClientPropDefDraft
-| ClientConnectionDraft;
+| ClientConnectionDraft
+| UserDraft;
+
 
 export const estuaryMongoTypesSchema = z.union([
   featureFlagSchema,
@@ -57,6 +63,7 @@ export const estuaryMongoTypesSchema = z.union([
   environmentSchema,
   clientPropDefSchema,
   clientConnectionSchema,
+  userSchema,
 ]);
 /**
  * Union of types stored in MongoDB
@@ -66,11 +73,13 @@ export type EstuaryMongoTypes =
   | Experiment
   | Environment
   | ClientPropDef
-  | ClientConnection; // later: users and event types
+  | ClientConnection
+  | User; // later: users and event types
 
 // export type EstuaryMongoType<T extends EstuaryMongoTypes> = T;
 /**
- * Infers the type of a schema. Useful for ensuring that the right schema is passed in
+ * Mapping of MongoTypes to the types of their schema. 
+ * Useful for ensuring that the right schema is passed in
  * when passing in `T` as a generic type argument
  */
 export type EstuarySchema<T extends EstuaryMongoTypes> =
@@ -79,6 +88,19 @@ T extends Experiment ? typeof experimentSchema :
 T extends Environment ? typeof environmentSchema :
 T extends ClientPropDef ? typeof clientPropDefSchema :
 T extends ClientConnection ? typeof clientConnectionSchema :
+T extends User ? typeof userSchema :
+never;
+
+/**
+ * Mapping of records to drafts
+ */
+export type DraftRecord<T extends EstuaryMongoTypes> = 
+T extends FeatureFlag ? FeatureFlagDraft :
+T extends Experiment ? ExperimentDraft :
+T extends Environment ? EnvironmentDraft :
+T extends ClientPropDef ? ClientPropDefDraft :
+T extends ClientConnection ? ClientConnectionDraft :
+T extends User ? UserDraft :
 never;
 
 /**
@@ -89,14 +111,3 @@ export type BeforeId<T extends EstuaryMongoTypes> = Omit<T, 'id' | '_id'>;
  * Partial object used to update only the provided fields. Only the `id` field is required.
  */
 export type PartialUpdate<T extends EstuaryMongoTypes> = RequireOnly<T, 'id'>;
-/**
- * Mapping of 
- */
-export type DraftRecord<T extends EstuaryMongoTypes> = 
-T extends FeatureFlag ? FeatureFlagDraft :
-T extends Experiment ? ExperimentDraft :
-T extends Environment ? EnvironmentDraft :
-T extends ClientPropDef ? ClientPropDefDraft :
-T extends ClientConnection ? ClientConnectionDraft :
-never;
-
