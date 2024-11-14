@@ -1,15 +1,19 @@
 import { z } from "zod";
-import { estuaryBaseSchema, flagCurrentValueSchema, flagNameSchema } from "./util.js";
+import { nonEmptyStringSchema } from "./util.js";
+import { flagCurrentValueSchema } from './flags/flagValues.js';
+import { flagNameSchema } from "./lib/names.js";
 
 /**
  * For client app connections to the cattails feature flagging service
  */
-export const clientConnectionSchema = estuaryBaseSchema.extend({
+export const clientConnectionDraftSchema = z.object({
+  name: nonEmptyStringSchema,
+  description: z.string().optional(),
   environmentId: z.string(),
   // clientKeyHash: z.string(), // TBD
 });
 
-export interface ClientConnection extends z.infer<typeof clientConnectionSchema> {};
+export interface ClientConnectionDraft extends z.infer<typeof clientConnectionDraftSchema> {};
 /**
  * Keys of the attributes passed into the client SDK when initialized and used for experiment/flag assignment
  */
@@ -20,27 +24,23 @@ export const clientPropValueSchema = z.union([z.boolean(), z.string(), z.number(
  * Mapping of client property names to their values
  */
 export const clientPropMappingSchema = z.record(clientPropNameSchema, clientPropValueSchema);
+/**
+ * prop name-value mapping sent by the client SDK when establishing a connection
+ */
+export interface ClientPropMapping extends z.infer<typeof clientPropMappingSchema> {};
 
-// if we want to support different properties for each kind of data type,
-// such as string formatting
-// export const clientPropValueDefSchema = z.union([
-//   clientPropBooleanValueSchema,
-//   clientPropStringValueSchema,
-//   clientPropBooleanValueSchema,
-// ])
 
-export const clientPropDefSchema = estuaryBaseSchema.extend({
+export const clientPropDefDraftSchema = z.object({
+  name: nonEmptyStringSchema,
+  description: z.string().optional(),
   dataType: clientPropValueSchema,
   isIdentifier: z.boolean(),
 });
 /**
  * Definition of a client property visible server-side
  */
-export interface ClientPropDef extends z.infer<typeof clientPropDefSchema> {};
-/**
- * prop name-value mapping sent by the client SDK when establishing a connection
- */
-export interface ClientPropMapping extends z.infer<typeof clientPropMappingSchema> {};
+export interface ClientPropDefDraft extends z.infer<typeof clientPropDefDraftSchema> {};
+
 
 export const flagClientValueSchema = z.object({
   value: flagCurrentValueSchema,
@@ -51,6 +51,7 @@ export const flagClientValueSchema = z.object({
  */
 export interface FlagClientValue extends z.infer<typeof flagClientValueSchema> {};
 
+
 export const flagClientMappingSchema = z.record(
   flagNameSchema,
   flagClientValueSchema
@@ -59,3 +60,16 @@ export const flagClientMappingSchema = z.record(
  * Mapping of flag names to their client-side data
  */
 export interface FlagClientMapping extends z.infer<typeof flagClientMappingSchema> {};
+
+
+export const flagAttributesSchema = z.object({
+  'feature_flag.key': nonEmptyStringSchema,
+  'feature_flag.provider_name': z.literal('estuary-exp'),
+  'feature_flag.variant': z.string(),
+  'feature_flag.hash': z.string(),
+});
+/**
+ * For embedding in telemetry data. See https://opentelemetry.io/docs/specs/semconv/feature-flags/feature-flags-spans/
+ * and https://opentelemetry.io/docs/specs/semconv/general/attribute-requirement-level/
+ */
+export interface FlagAttributes extends z.infer<typeof flagAttributesSchema> {};
