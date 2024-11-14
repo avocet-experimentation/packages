@@ -1,32 +1,28 @@
 import { z } from 'zod';
-import { estuaryBaseSchema } from './util.js';
+import { estuaryBaseSchema, objectIdHexStringSchema } from './util.js';
+import { estuaryMongoCollectionNameSchema } from './general.js';
 /*
   Dashboard user account types.
-  These are placeholders, so likely to be revised
+  These are placeholders, likely to be revised once 
+  authentication is implemented
 */
 
 export const permissionLevelSchema = z.enum(['none', 'view', 'edit', 'full']);
 
 export type PermissionLevel = z.infer<typeof permissionLevelSchema>;
 
-export const userPermissionsSchema = z.object({
-  flags: permissionLevelSchema,
-  experiments: permissionLevelSchema,
-  environments: permissionLevelSchema,
-  users: permissionLevelSchema,
-  clientProps: permissionLevelSchema,
-  clientConnections: permissionLevelSchema,
-  events: permissionLevelSchema,
-})
+export const userPermissionsSchema = z.record(estuaryMongoCollectionNameSchema, permissionLevelSchema);
 
-export type UserPermissions = z.infer<typeof userPermissionsSchema>;
+export interface UserPermissions extends z.infer<typeof userPermissionsSchema> {};
 
 export const userSchema = estuaryBaseSchema.extend({
+  id: objectIdHexStringSchema,
+  name: z.string(),
   email: z.string(),
   passwordHash: z.string(),
   permissions: userPermissionsSchema,
 });
 /**
- * (Tentative) Dashboard user account data. * 
+ * (Tentative) Dashboard user account data.
  */
-export type User = z.infer<typeof userSchema>;
+export interface User extends z.infer<typeof userSchema> {};

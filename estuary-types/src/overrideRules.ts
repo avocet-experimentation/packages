@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { proportionSchema } from "./util.js";
+import { objectIdHexStringSchema, proportionSchema } from "./util.js";
 import { clientPropNameSchema } from "./flagClients.js";
 
 export const ruleTypeSchema = z.enum(["Experiment", "ForcedValue"]);
@@ -14,9 +14,9 @@ export const ruleStatusSchema = z.enum([
 export type RuleStatus = z.infer<typeof ruleStatusSchema>;
 
 export const overrideRuleSchema = z.object({
-  id: z.string(),
+  id: objectIdHexStringSchema,
   type: ruleTypeSchema,
-  description: z.string(),
+  description: z.string().default(''),
   status: ruleStatusSchema,
   startTimestamp: z.number().int().gte(0).optional(),
   endTimestamp: z.number().int().gte(0).optional(),
@@ -29,4 +29,4 @@ export const overrideRuleSchema = z.object({
  * Any rule that causes a flag value to differ from its default, including
  *  experiments and values forced per environment
  */
-export type OverrideRule = z.infer<typeof overrideRuleSchema>;
+export interface OverrideRule extends z.infer<typeof overrideRuleSchema> {};

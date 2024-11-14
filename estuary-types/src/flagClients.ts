@@ -5,16 +5,16 @@ import { flagNameSchema } from "./featureFlags.js";
 /**
  * For client app connections to the cattails feature flagging service
  */
-const clientConnectionSchema = estuaryBaseSchema.extend({
+export const clientConnectionSchema = estuaryBaseSchema.extend({
   environmentId: z.string(),
   // clientKeyHash: z.string(), // TBD
 });
 
-export type ClientConnection = z.infer<typeof clientConnectionSchema>;
+export interface ClientConnection extends z.infer<typeof clientConnectionSchema> {};
 /**
  * Keys of the attributes passed into the client SDK when initialized and used for experiment/flag assignment
  */
-export const clientPropNameSchema = z.string();
+export const clientPropNameSchema = z.string().min(1);
 
 export const clientPropValueSchema = z.union([z.boolean(), z.string(), z.number()]);
 /**
@@ -37,11 +37,11 @@ export const clientPropDefSchema = estuaryBaseSchema.extend({
 /**
  * Definition of a client property visible server-side
  */
-export type ClientPropDef = z.infer<typeof clientPropDefSchema>;
+export interface ClientPropDef extends z.infer<typeof clientPropDefSchema> {};
 /**
  * prop name-value mapping sent by the client SDK when establishing a connection
  */
-export type ClientPropMapping = z.infer<typeof clientPropMappingSchema>;
+export interface ClientPropMapping extends z.infer<typeof clientPropMappingSchema> {};
 
 export const flagClientValueSchema = z.object({
   value: flagCurrentValueSchema,
@@ -50,7 +50,7 @@ export const flagClientValueSchema = z.object({
 /**
  * The response sent to the client when checking the value of a flag
  */
-export type FlagClientValue = z.infer<typeof flagClientValueSchema>;
+export interface FlagClientValue extends z.infer<typeof flagClientValueSchema> {};
 
 export const flagClientMappingSchema = z.record(
   flagNameSchema,
@@ -59,4 +59,4 @@ export const flagClientMappingSchema = z.record(
 /**
  * Mapping of flag names to their client-side data
  */
-export type FlagClientMapping = z.infer<typeof flagClientMappingSchema>;
+export interface FlagClientMapping extends z.infer<typeof flagClientMappingSchema> {};

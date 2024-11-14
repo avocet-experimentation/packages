@@ -5,15 +5,16 @@ import {
   FlagClientMapping,
   ClientPropMapping,
   FlagClientValue,
+  FlagAttributes,
 } from "@estuary/types";
-import { ClientOptions, FlagAttributeMapping, FlagAttributes } from "./clientTypes.js";
+import { ClientOptions } from "./clientTypes.js";
 
-const DEFAULT_DURATION = 5 * 60; // 5 minutes
+const DEFAULT_DURATION_SEC = 5 * 60; // 5 minutes
 
 export class EstuaryClient {
   attributeAssignmentCb?: <SpanType>(
     span: SpanType,
-    attributes: FlagAttributeMapping,
+    attributes: FlagAttributes,
   ) => void;
   private readonly environment: EnvironmentName;
   // private readonly clientKey: string; // to replace .environment eventually
@@ -46,32 +47,21 @@ export class EstuaryClient {
   }
 
   /**
-   * Generates an object of attributes for a given flag.
-   * For insertion into telemetry data.
+   * Generates an object of attributes for a given flag
+   * for insertion into telemetry data.
    */
-  getFlagAttributes(flagName: FlagName): FlagAttributeMapping {
+  getFlagAttributes(flagName: FlagName): FlagAttributes | null {
     const flag = this.getCachedFlagValue(flagName);
-    if (!flag) throw new Error(`Flag "${flagName}" not found!`);
+    if (!flag) return null;
 
-    const attributes = {
-      'estuary-exp': {
-        [flagName]: {
-          ...flag,
-        },
-      },
-    };
+    const attributes: FlagAttributes = { 
+      'feature_flag.key': flagName,
+      'feature_flag.provider_name': 'estuary-exp',
+      'feature_flag.variant': flag.value,
+      'feature_flag.hash': flag.hash
+     }; 
 
     return attributes;
-  }
-
-  getAllFlagAttributes(): FlagAttributeMapping {
-    const entries = Object.entries(this.flagMap);
-    // console.log({ flagMap: entries })
-    const transformed = entries.reduce((acc, [flagName, data]) => {
-      return { [flagName]: data };
-    }, {} as FlagAttributes);
-
-    return { 'estuary-exp': transformed };
   }
 
   /**
@@ -89,6 +79,9 @@ export class EstuaryClient {
 
     if (span && this.attributeAssignmentCb) {
       const attributes = this.getFlagAttributes(flagName);
+      if (attributes === null) {
+        throw new Error(`Failed to retrieve cached attributes for flag "${flagName}!`);
+      }
       this.attributeAssignmentCb(span, attributes);
     }
 
@@ -128,7 +121,7 @@ export class EstuaryClient {
   /**
    * @returns a copy of all locally stored flags
    */
-  private getAllFlags(): FlagClientMapping {
+  private getAllCachedFlags(): FlagClientMapping {
     return { ...this.flagMap };
   }
 
@@ -151,7 +144,7 @@ export class EstuaryClient {
     this.attributeAssignmentCb = options.attributeAssignmentCb;
     this.clientProps = options.clientProps;
     if (options.autoRefresh === true) {
-      this.startPolling(options.refreshIntervalInSeconds ?? DEFAULT_DURATION);
+      this.startPolling(options.refreshIntervalInSeconds ?? DEFAULT_DURATION_SEC);
     }
   }
 
