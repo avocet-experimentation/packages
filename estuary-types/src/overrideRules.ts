@@ -16,6 +16,7 @@ export type RuleStatus = z.infer<typeof ruleStatusSchema>;
 export const overrideRuleSchema = z.object({
   type: ruleTypeSchema,
   status: ruleStatusSchema,
+  description: z.string().optional(),
   startTimestamp: z.number().int().gte(0).optional(),
   endTimestamp: z.number().int().gte(0).optional(),
   enrollment: z.object({
@@ -27,4 +28,4 @@ export const overrideRuleSchema = z.object({
  * Any rule that causes a flag value to differ from its default, including
  *  experiments and values forced per environment
  */
-export interface OverrideRule extends z.infer<typeof overrideRuleSchema> {};
+export interface OverrideRule extends z.infer<typeof overrideRuleSchema> {}
