@@ -16,7 +16,7 @@ export type RuleStatus = z.infer<typeof ruleStatusSchema>;
 export const overrideRuleSchema = z.object({
   id: objectIdHexStringSchema,
   type: ruleTypeSchema,
-  description: z.string().default(''),
+  description: z.string(),
   status: ruleStatusSchema,
   startTimestamp: z.number().int().gte(0).optional(),
   endTimestamp: z.number().int().gte(0).optional(),

@@ -1,6 +1,5 @@
 import { z } from "zod";
-import { estuaryBaseSchema, flagCurrentValueSchema } from "./util.js";
-import { flagNameSchema } from "./featureFlags.js";
+import { estuaryBaseSchema, flagCurrentValueSchema, flagNameSchema } from "./util.js";
 
 /**
  * For client app connections to the cattails feature flagging service

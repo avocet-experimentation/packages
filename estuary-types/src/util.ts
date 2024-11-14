@@ -8,12 +8,22 @@ export const nonNegativeIntegerSchema = z.number().int().gte(0);
  */
 export const proportionSchema = z.number().gte(0).lte(1);
 
+export const nonEmptyStringSchema = z.string().min(1);
+
 export const objectIdHexStringSchema = z.string().length(24);
+
+export const defaultEmptyStringSchema = z.string().default('');
+/**
+ * See https://www.mongodb.com/docs/manual/reference/bson-types/#std-label-document-bson-type-date
+ */
+export const optionalBsonDateSchema = z.number().int().optional();
 
 export const estuaryBaseSchema = z.object({
   id: objectIdHexStringSchema,
-  name: z.string(),
-  description: z.string().default(''),
+  name: nonEmptyStringSchema,
+  description: z.string().optional(),
+  createdAt: optionalBsonDateSchema,
+  updatedAt: optionalBsonDateSchema,
 });
 /**
  * Parent type for application documents after being fetched from MongoDB.
@@ -38,3 +48,5 @@ export const flagAttributesSchema = z.object({
  * and https://opentelemetry.io/docs/specs/semconv/general/attribute-requirement-level/
  */
 export interface FlagAttributes extends z.infer<typeof flagAttributesSchema> {};
+
+export const flagNameSchema = z.string();

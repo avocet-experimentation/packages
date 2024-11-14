@@ -1,8 +1,7 @@
 import { z } from "zod";
 import { eventTelemetrySchema } from "./telemetry.js";
 import { overrideRuleSchema } from "./overrideRules.js";
-import { estuaryBaseSchema, flagCurrentValueSchema, nonNegativeIntegerSchema } from "./util.js";
-import { flagNameSchema } from "./featureFlags.js";
+import { estuaryBaseSchema, flagCurrentValueSchema, flagNameSchema, nonNegativeIntegerSchema } from "./util.js";
 
 export const interventionSchema = z.record(flagNameSchema, flagCurrentValueSchema);
 /**
