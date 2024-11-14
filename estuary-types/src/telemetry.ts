@@ -79,9 +79,9 @@ export const transformedSpanSchema = spanSchema
 // spans, traces, etc
 export const eventTelemetrySchema = transformedSpanSchema; // or potentially more
 
-export type Scope = z.infer<typeof scopeSchema>;
+export interface Scope extends z.infer<typeof scopeSchema> {};
 
-export type SpanStringAttribute = z.infer<typeof spanStringAttributeSchema>;
+export interface SpanStringAttribute extends z.infer<typeof spanStringAttributeSchema> {};
 
 export interface SpanIntAttribute {
   key: string; // e.g., http.route
@@ -96,14 +96,14 @@ export type SpanArrayAttribute = z.infer<typeof spanArrayAttributeSchema>;
 
 export type SpanAttribute = z.infer<typeof spanAttributeSchema>;
 
-export type Span = z.infer<typeof spanSchema>; 
+export interface Span extends z.infer<typeof spanSchema> {}; 
 
-export type ScopeSpan = z.infer<typeof scopeSpanSchema>;
+export interface ScopeSpan extends z.infer<typeof scopeSpanSchema> {};
 
-export type ResourceSpan = z.infer<typeof resourceSpanSchema>;
+export interface ResourceSpan extends z.infer<typeof resourceSpanSchema> {};
 
-export type SpanTransformedAttribute = z.infer<typeof spanTransformedAttributeSchema>;
+export interface SpanTransformedAttribute extends z.infer<typeof spanTransformedAttributeSchema> {};
 
-export type TransformedSpan = z.infer<typeof transformedSpanSchema>;
+export interface TransformedSpan extends z.infer<typeof transformedSpanSchema> {};
 
-export type EventTelemetry = z.infer<typeof eventTelemetrySchema>;
+export interface EventTelemetry extends z.infer<typeof eventTelemetrySchema> {};

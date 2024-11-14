@@ -11,6 +11,7 @@ import {
 import { EstuaryClient } from "../src/index.js";
 import {
   EnvironmentName,
+  flagAttributesSchema,
   FlagClientMapping,
   FlagName,
 } from "@estuary/types";
@@ -20,6 +21,7 @@ import { randomUUID } from "crypto";
 /**
  * todo:
  * - mock the server using MSW
+ * - create a flag called 'flagOne'
  * - update tests to reflect new client interface
  * - check for coverage
  */
@@ -101,14 +103,26 @@ describe("EstuaryClient", () => {
     });
 
     describe("flagValue", () => {
-      test("Should fail to get the flag for a non-existent name", () => {
+      test("Fails to get the flag for a non-existent flag", () => {
         const actualFlag = client.flagValue("fake-feature-flag");
         expect(actualFlag).toBeNull();
       });
 
-      test("Should get the value of a real flag", () => {
+      test("Gets the value of a real flag", () => {
         const actualFlag = client.flagValue("flagOne");
         expect(actualFlag).toBeNull();
+      });
+    });
+
+    describe("getFlagAttributes", () => {
+      test("Returns null for a non-existent flag", () => {
+        const result = client.getFlagAttributes("fake-feature-flag");
+        expect(result).toBeNull();
+      });
+
+      test("Returns a correctly formatted object for a real flag", () => {
+        const result = client.getFlagAttributes("flagOne");
+        expect(flagAttributesSchema.parse(result)).not.toThrow();
       });
     });
 
