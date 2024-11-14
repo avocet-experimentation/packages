@@ -1,6 +1,5 @@
 import { z } from 'zod';
-import { estuaryBaseSchema, objectIdHexStringSchema } from './util.js';
-import { estuaryMongoCollectionNameSchema } from './general.js';
+import { estuaryMongoCollectionNameSchema } from './lib/names.js';
 /*
   Dashboard user account types.
   These are placeholders, likely to be revised once 
@@ -15,14 +14,11 @@ export const userPermissionsSchema = z.record(estuaryMongoCollectionNameSchema, 
 
 export interface UserPermissions extends z.infer<typeof userPermissionsSchema> {};
 
-export const userSchema = estuaryBaseSchema.extend({
-  id: objectIdHexStringSchema,
-  name: z.string(),
-  email: z.string(),
-  passwordHash: z.string(),
+export const userDraftSchema = z.object({
+  // name: z.string(),
+  email: z.string().optional(),
+  // passwordHash: z.string(), // todo: clecan up once deciding on user auth system
   permissions: userPermissionsSchema,
 });
-/**
- * (Tentative) Dashboard user account data.
- */
-export interface User extends z.infer<typeof userSchema> {};
+
+export interface UserDraft extends z.infer<typeof userDraftSchema> {};
