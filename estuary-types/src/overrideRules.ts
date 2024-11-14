@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { objectIdHexStringSchema, proportionSchema } from "./util.js";
+import { bsonObjectIdHexStringSchema, proportionSchema } from "./util.js";
 import { clientPropNameSchema } from "./flagClients.js";
 
 export const ruleTypeSchema = z.enum(["Experiment", "ForcedValue"]);
@@ -14,9 +14,7 @@ export const ruleStatusSchema = z.enum([
 export type RuleStatus = z.infer<typeof ruleStatusSchema>;
 
 export const overrideRuleSchema = z.object({
-  id: objectIdHexStringSchema,
   type: ruleTypeSchema,
-  description: z.string(),
   status: ruleStatusSchema,
   startTimestamp: z.number().int().gte(0).optional(),
   endTimestamp: z.number().int().gte(0).optional(),
