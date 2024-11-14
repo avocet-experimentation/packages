@@ -87,6 +87,9 @@ export class EstuaryClient {
     return flag.value;
   }
 
+  /**
+   * Returns a boolean indicating whether or not it fetched a FlagClientMapping
+   */
   private async load(environmentName: string) {
     return this.attemptAndHandleError(async () => {
       const fetchOptions = {
@@ -101,11 +104,14 @@ export class EstuaryClient {
       };
 
       const response = await fetch(`${this.apiUrl}`, fetchOptions);
-      const featureFlagMap: unknown = await response.json();
-      const parsed = flagClientMappingSchema.parse(featureFlagMap);
-
-      this.flagMap = { ...this.flagMap, ...parsed };
-      return true;
+      const data: unknown = await response.json();
+      const safeParseResult = flagClientMappingSchema.safeParse(data);
+      if (safeParseResult.success) {
+        this.flagMap = { ...this.flagMap, ...safeParseResult.data };
+        return true;
+      } else {
+        return false;
+      }
     });
   }
 
@@ -127,11 +133,11 @@ export class EstuaryClient {
   private async attemptAndHandleError<O, F extends () => O>(
     cb: F,
     cleanupCb?: () => void
-  ): Promise<O> {
+  ): Promise<O | undefined> {
     try {
       return cb();
     } catch (error) {
-      throw new Error(`${new Date()}: ${error}`);
+      console.error(`${new Date()}: ${error}`);
     } finally {
       cleanupCb?.();
     }
