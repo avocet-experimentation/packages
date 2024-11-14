@@ -38,10 +38,10 @@ export const flagCurrentValueSchema = z.union([z.boolean(), z.string(), z.number
 export type FlagCurrentValue = z.infer<typeof flagCurrentValueSchema>;
 
 export const flagAttributesSchema = z.object({
-  'feature_flag.key': z.string(),
+  'feature_flag.key': nonEmptyStringSchema,
   'feature_flag.provider_name': z.literal('estuary-exp'),
-  'feature_flag.variant': flagCurrentValueSchema,
-  'feature_flag.hash': z.union([z.number(), z.string()]), // todo: narrow down
+  'feature_flag.variant': z.string(),
+  'feature_flag.hash': z.string(),
 })
 /**
  * For embedding in telemetry data. See https://opentelemetry.io/docs/specs/semconv/feature-flags/feature-flags-spans/
