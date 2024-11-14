@@ -9,7 +9,7 @@ export const interventionSchema = z.record(flagNameSchema, flagCurrentValueSchem
  */
 export interface Intervention extends z.infer<typeof interventionSchema> {};
 
-export const experimentBlockSchema = estuaryBaseSchema.extend({
+export const experimentBlockSchema = z.object({
   id: z.string(),
   startTimestamp: nonNegativeIntegerSchema.optional(),
   endTimestamp: nonNegativeIntegerSchema.optional(),
@@ -20,7 +20,7 @@ export const experimentBlockSchema = estuaryBaseSchema.extend({
  */
 export interface ExperimentBlock extends z.infer<typeof experimentBlockSchema> {};
 
-export const experimentGroupSchema = estuaryBaseSchema.extend({
+export const experimentGroupSchema = z.object({
   id: z.string(),
   proportion: z.number(),
   blocks: z.array(experimentBlockSchema),
