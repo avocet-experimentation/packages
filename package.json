@@ -2,7 +2,8 @@
   "name": "root",
   "private": true,
   "scripts": {
-    "build": "npm i && npm run --prefix ./estuary-types build && npm run --prefix ./estuary-client build"
+    "build": "npm i && npm run --prefix ./estuary-types build && npm run --prefix ./estuary-client build",
+    "rebuild": "npm run --prefix ./estuary-types rebuild && npm run --prefix ./estuary-client rebuild"
   },
   "workspaces": [
     "*"
