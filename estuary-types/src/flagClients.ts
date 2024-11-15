@@ -20,6 +20,7 @@ export interface ClientConnectionDraft extends z.infer<typeof clientConnectionDr
 export const clientPropNameSchema = z.string().min(1);
 
 export const clientPropValueSchema = z.enum(['boolean', 'string', 'number']);
+export type ClientPropValue = z.infer<typeof clientPropValueSchema>;
 /**
  * Mapping of client property names to their values
  */
