@@ -1,9 +1,9 @@
 import { z } from "zod";
 import { environmentNameSchema } from "../environments.js";
-import { experimentDraftSchema } from "../experiments.js";
+import { experimentReferenceSchema } from "../experiments.js";
 import { forcedValueSchema } from "../forcedValue.js";
 
-export const overrideRuleUnionSchema = z.union([experimentDraftSchema, forcedValueSchema]);
+export const overrideRuleUnionSchema = z.union([experimentReferenceSchema, forcedValueSchema]);
 
 export const flagEnvironmentPropsSchema = z.object({
   name: z.string(),
