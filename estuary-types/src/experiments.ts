@@ -56,4 +56,15 @@ export const experimentDraftSchema = overrideRuleSchema.extend({
 });
 
 export interface ExperimentDraft
-  extends z.infer<typeof experimentDraftSchema> {}
+  extends z.infer<typeof experimentDraftSchema> {};
+
+export const experimentReferenceSchema = z.object({
+  id: bsonObjectIdHexStringSchema, // experiment id
+  name: nonEmptyStringSchema,
+  type: z.literal('ExperimentReference'),
+  status: ruleStatusSchema,
+});
+/**
+ * Stored on flags instead of experiments themselves
+ */
+export interface ExperimentReference extends z.infer<typeof experimentReferenceSchema> {};

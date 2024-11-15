@@ -21,6 +21,8 @@ import {
  } from './imputed.js';
 import { UserDraft, userDraftSchema } from './users.js';
 
+/* FOR INFERRING TYPES AND SCHEMA FROM OTHERS */
+
 /**
  * Generic type representing all Zod schema.
  */
@@ -111,3 +113,8 @@ export type BeforeId<T extends EstuaryMongoTypes> = Omit<T, 'id' | '_id'>;
  * Partial object used to update only the provided fields. Only the `id` field is required.
  */
 export type PartialUpdate<T extends EstuaryMongoTypes> = RequireOnly<T, 'id'>;
+
+
+export interface ExperimentSummary extends Pick<Experiment,
+  'id' | 'type' | 'name' | 'groups' | 'status' | 'enrollment'
+  > {};
