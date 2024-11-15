@@ -3,6 +3,7 @@ import { z } from 'zod';
 /* UTILITY SCHEMA AND TYPES */
 
 export const nonNegativeIntegerSchema = z.number().int().gte(0);
+export const positiveIntegerSchema = z.number().int().gte(1);
 /**
  * Represents a portion of a whole between 0 and 1, inclusive
  */

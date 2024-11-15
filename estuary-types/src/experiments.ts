@@ -1,18 +1,21 @@
 import { z } from "zod";
-import { overrideRuleSchema } from "./overrideRules.js";
-import { bsonObjectIdHexStringSchema, nonEmptyStringSchema, nonNegativeIntegerSchema, proportionSchema } from "./util.js";
+import { overrideRuleSchema, ruleStatusSchema } from "./overrideRules.js";
+import { bsonObjectIdHexStringSchema, nonEmptyStringSchema, nonNegativeIntegerSchema, positiveIntegerSchema, proportionSchema } from "./util.js";
 import { metricSchema } from "./metrics.js";
 import { flagCurrentValueSchema } from "./flags/flagValues.js";
 
-const flagStateSchema = z.object({ 
-  id: bsonObjectIdHexStringSchema,
+export const flagStateSchema = z.object({ 
+  id: bsonObjectIdHexStringSchema, // flag id
   value: flagCurrentValueSchema,
 });
+
+export interface FlagState extends z.infer<typeof flagStateSchema> {};
 
 const treatmentIdSchema = z.string();
 
 export const treatmentSchema = z.object({
   id: treatmentIdSchema,
+  name: z.string(),
   duration: nonNegativeIntegerSchema,
   flagStates: z.array(flagStateSchema),
 });
@@ -21,10 +24,9 @@ export const treatmentSchema = z.object({
  */
 export interface Treatment extends z.infer<typeof treatmentSchema> {};
 
-export const treatmentSequenceIdSchema = z.string();
+const treatmentSequenceIdSchema = z.string();
 export const treatmentSequenceSchema = z.object({
   id: treatmentSequenceIdSchema,
-  name: z.string(),
   treatmentIds: z.array(treatmentIdSchema),
 });
 /**
@@ -37,13 +39,14 @@ export const experimentGroupSchema = z.object({
   name: nonEmptyStringSchema,
   description: z.string().optional(),
   proportion: z.number(),
-  treatmentSchedule: z.array(treatmentSequenceIdSchema),
+  sequenceId: treatmentSequenceIdSchema.optional(),
+  cycles: positiveIntegerSchema,
 });
 /**
  * a grouping of users who will receive the same sequences of experiment treatments
  */
 export interface ExperimentGroup
-  extends z.infer<typeof experimentGroupSchema> {}
+  extends z.infer<typeof experimentGroupSchema> {};
 
 export const experimentDraftSchema = overrideRuleSchema.extend({
   name: nonEmptyStringSchema,
