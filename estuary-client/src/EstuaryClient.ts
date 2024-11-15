@@ -13,7 +13,7 @@ const DEFAULT_DURATION_SEC = 5 * 60; // 5 minutes
 export class EstuaryClient {
   attributeAssignmentCb?: <SpanType>(
     span: SpanType,
-    attributes: FlagAttributes,
+    attributes: Record<string, string>,
   ) => void;
   private readonly environment: EnvironmentName;
   // private readonly clientKey: string; // to replace .environment eventually
@@ -49,15 +49,20 @@ export class EstuaryClient {
    * Generates an object of attributes for a given flag
    * for insertion into telemetry data.
    */
-  getFlagAttributes(flagName: string): FlagAttributes | null {
+  getFlagAttributes(flagName: string): Record<string, string> | null {
     const flag = this.getCachedFlagValue(flagName);
     if (!flag) return null;
 
-    const attributes: FlagAttributes = { 
-      'feature_flag.key': flagName,
-      'feature_flag.provider_name': 'estuary-exp',
-      'feature_flag.variant': String(flag.value),
-      'feature_flag.hash': String(flag.hash)
+    // const attributes: FlagAttributes = { 
+    //   'feature_flag.key': flagName,
+    //   'feature_flag.provider_name': 'estuary-exp',
+    //   'feature_flag.variant': String(flag.value),
+    //   'feature_flag.hash': String(flag.hash)
+    //  }; 
+
+    const attributes = { 
+      [`estuary-exp.${flagName}.variant`]: String(flag.value),
+      [`estuary-exp.${flagName}.hash`]: String(flag.hash),
      }; 
 
     return attributes;
