@@ -44,7 +44,7 @@ export type RequireExcept<T, K extends keyof T> = Required<Omit<T, K>> & Partial
  */
 
 export const getPartialSchema = <S extends z.ZodTypeAny, O extends z.AnyZodObject>(schema: S): S => {
-  return (schema as unknown as O).partial() as unknown as S;
+  return (schema as unknown as O).deepPartial() as unknown as S;
 };
 /**
  * (WIP) Returns a schema with only the passed keys required
