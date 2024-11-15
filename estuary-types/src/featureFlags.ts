@@ -7,8 +7,8 @@ import { flagValueDefSchema } from "./flags/flagValues.js";
 export const featureFlagDraftSchema = z.object({
   name: nonEmptyStringSchema,
   description: z.string().optional(),
-  environments: flagEnvironmentMappingSchema,
   value: flagValueDefSchema,
+  environments: flagEnvironmentMappingSchema,
 });
 
 export interface FeatureFlagDraft extends z.infer<typeof featureFlagDraftSchema> {};

@@ -1,5 +1,9 @@
 import { z } from "zod";
 
+export const flagValueTypeDefSchema = z.enum(['string', 'number', 'boolean']);
+
+export type FlagValueTypeDef = z.infer<typeof flagValueTypeDefSchema>;
+
 export const flagCurrentValueSchema = z.union([z.boolean(), z.string(), z.number()]);
 /**
  * All supported flag value types

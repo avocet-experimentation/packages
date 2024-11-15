@@ -5,8 +5,10 @@ import { forcedValueSchema } from "../forcedValue.js";
 
 export const overrideRuleUnionSchema = z.union([experimentReferenceSchema, forcedValueSchema]);
 
+export type OverrideRuleUnion = z.infer<typeof overrideRuleUnionSchema>;
+
 export const flagEnvironmentPropsSchema = z.object({
-  name: z.string(),
+  name: environmentNameSchema,
   enabled: z.boolean(),
   overrideRules: z.array(overrideRuleUnionSchema),
 });
