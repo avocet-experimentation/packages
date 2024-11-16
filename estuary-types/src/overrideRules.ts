@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { bsonObjectIdHexStringSchema, proportionSchema } from "./util.js";
+import { bsonObjectIdHexStringSchema, nonNegativeIntegerSchema, proportionSchema } from "./util.js";
 import { clientPropNameSchema } from "./flagClients.js";
 import { environmentNameSchema } from "./environments.js";
 
@@ -26,8 +26,8 @@ export const overrideRuleSchema = z.object({
   status: ruleStatusSchema,
   description: z.string().optional(),
   environment: environmentNameSchema,
-  startTimestamp: z.number().int().gte(0).optional(),
-  endTimestamp: z.number().int().gte(0).optional(),
+  startTimestamp: nonNegativeIntegerSchema.optional(),
+  endTimestamp: nonNegativeIntegerSchema.optional(),
   enrollment: enrollmentSchema,
 });
 /**
