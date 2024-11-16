@@ -1,8 +1,9 @@
 import { z } from "zod";
-import { overrideRuleSchema, ruleStatusSchema } from "./overrideRules.js";
+import { enrollmentSchema, overrideRuleSchema, ruleStatusSchema } from "./overrideRules.js";
 import { bsonObjectIdHexStringSchema, nonEmptyStringSchema, nonNegativeIntegerSchema, positiveIntegerSchema, proportionSchema } from "./util.js";
 import { metricSchema } from "./metrics.js";
 import { flagCurrentValueSchema } from "./flags/flagValues.js";
+import { environmentNameSchema } from "./environments.js";
 
 export const flagStateSchema = z.object({ 
   id: bsonObjectIdHexStringSchema, // flag id
@@ -62,10 +63,12 @@ export interface ExperimentDraft
   extends z.infer<typeof experimentDraftSchema> {};
 
 export const experimentReferenceSchema = z.object({
-  id: bsonObjectIdHexStringSchema, // experiment id
-  name: nonEmptyStringSchema,
+  id: bsonObjectIdHexStringSchema, // object id of the full experiment document
   type: z.literal('ExperimentReference'),
   status: ruleStatusSchema,
+  name: nonEmptyStringSchema,
+  environment: environmentNameSchema,
+  enrollment: enrollmentSchema,
 });
 /**
  * Stored on flags instead of experiments themselves

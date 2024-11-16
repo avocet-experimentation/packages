@@ -45,7 +45,7 @@ export interface ClientPropDefDraft extends z.infer<typeof clientPropDefDraftSch
 
 export const flagClientValueSchema = z.object({
   value: flagCurrentValueSchema,
-  hash: z.number(), // override rule hash
+  hash: z.string(),
 });
 /**
  * The response sent to the client when checking the value of a flag
