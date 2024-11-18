@@ -18,3 +18,8 @@ export * from './overrideRules.js';
 export * from './telemetry.js';
 export * from './users.js';
 export * from './util.js';
+
+export * from './classes/Experiment.js';
+export * from './classes/ExperimentSubclasses.js';
+export * from './classes/FeatureFlag.js';
+export * from './classes/FeatureFlagSubclasses.js';
