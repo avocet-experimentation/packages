@@ -21,10 +21,11 @@ export const bsonObjectIdHexStringSchema = z.string().length(24);
  * See https://www.mongodb.com/docs/manual/reference/bson-types/#std-label-document-bson-type-date
  */
 export const bsonDateSchema = z.number().int();
+
+export type GeneralRecord = Record<string | number, unknown>;
 /**
  * Unlike the native Omit, this raises a type error if `Keys` includes a key not on `T`
  */
-
 export type SafeOmit<T, Keys extends keyof T> = {
   [P in keyof T as P extends Keys ? never : P]: T[P];
 };
