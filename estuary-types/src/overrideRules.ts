@@ -25,11 +25,12 @@ export const overrideRuleSchema = z.object({
   type: ruleTypeSchema,
   status: ruleStatusSchema,
   description: z.string().optional(),
-  environment: environmentNameSchema,
+  environmentName: environmentNameSchema,
   startTimestamp: nonNegativeIntegerSchema.optional(),
   endTimestamp: nonNegativeIntegerSchema.optional(),
   enrollment: enrollmentSchema,
 });
+
 /**
  * Any rule that causes a flag value to differ from its default, including
  *  experiments and values forced per environment

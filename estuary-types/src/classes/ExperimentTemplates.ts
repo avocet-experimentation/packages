@@ -16,7 +16,7 @@ type ExperimentDraftDefaults = Pick<ExperimentDraft, 'groups' |
  */
 
 export class ExperimentDraftTemplate extends ExperimentDraftImpl {
-  constructor(name: string, environment: EnvironmentName) {
+  constructor(name: string, environmentName: EnvironmentName) {
     const status = 'draft';
 
     const defaults: ExperimentDraftDefaults = {
@@ -29,7 +29,7 @@ export class ExperimentDraftTemplate extends ExperimentDraftImpl {
       definedTreatments: [],
       definedSequences: [],
     };
-    super({ name, environment, status, ...defaults });
+    super({ name, environmentName, status, ...defaults });
   }
 }
 /**
@@ -38,7 +38,7 @@ export class ExperimentDraftTemplate extends ExperimentDraftImpl {
  */
 
 export class SwitchbackTemplate extends ExperimentDraftImpl {
-  constructor(name: string, environment: EnvironmentName) {
+  constructor(name: string, environmentName: EnvironmentName) {
     const status = 'draft';
 
     const treatments = [
@@ -65,7 +65,7 @@ export class SwitchbackTemplate extends ExperimentDraftImpl {
       definedSequences: [sequence],
     };
 
-    super({ name, environment, status, ...defaults });
+    super({ name, environmentName, status, ...defaults });
   }
 }
 ;
@@ -73,7 +73,7 @@ export class SwitchbackTemplate extends ExperimentDraftImpl {
  * Creates an experiment with two groups and one treatment assigned to each
  */
 export class ABExperimentTemplate extends ExperimentDraftImpl {
-  constructor(name: string, environment: EnvironmentName) {
+  constructor(name: string, environmentName: EnvironmentName) {
     const status = 'draft';
 
     const treatments = [
@@ -99,6 +99,6 @@ export class ABExperimentTemplate extends ExperimentDraftImpl {
       definedSequences: [...sequences],
     };
 
-    super({ name, environment, status, ...defaults });
+    super({ name, environmentName, status, ...defaults });
   }
 }
