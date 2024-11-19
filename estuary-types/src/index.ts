@@ -20,6 +20,9 @@ export * from './users.js';
 export * from './util.js';
 
 export * from './classes/Experiment.js';
+export * from './classes/ExperimentTemplates.js';
 export * from './classes/ExperimentSubclasses.js';
+
 export * from './classes/FeatureFlag.js';
+export * from './classes/FeatureFlagTemplates.js';
 export * from './classes/FeatureFlagSubclasses.js';
