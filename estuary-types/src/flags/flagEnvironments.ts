@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { environmentNameSchema } from "../environments.js";
+import { EnvironmentName, environmentNameSchema } from "../environments.js";
 import { experimentReferenceSchema } from "../experiments.js";
 import { forcedValueSchema } from "../forcedValue.js";
 
@@ -15,14 +15,14 @@ export const flagEnvironmentPropsSchema = z.object({
 /**
  * Environment-specific data for a `FeatureFlag`
  */
-export interface FlagEnvironmentProps extends z.infer<typeof flagEnvironmentPropsSchema> { };
+export interface FlagEnvironmentProps extends z.infer<typeof flagEnvironmentPropsSchema> {};
 
 export const flagEnvironmentMappingSchema = z.record(
   environmentNameSchema,
   flagEnvironmentPropsSchema
 );
 /**
- * Mapping of environment names to `FlagEnvironment`
+ * Mapping of environment names to `FlagEnvironmentProps`. All properties are optional.
  */
 
-export interface FlagEnvironmentMapping extends z.infer<typeof flagEnvironmentMappingSchema> { };
+export interface FlagEnvironmentMapping extends z.infer<typeof flagEnvironmentMappingSchema> {};
