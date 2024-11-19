@@ -67,7 +67,7 @@ export const experimentReferenceSchema = z.object({
   type: z.literal('ExperimentReference'),
   status: ruleStatusSchema,
   name: nonEmptyStringSchema,
-  environment: environmentNameSchema,
+  environmentName: environmentNameSchema,
   startTimestamp: nonNegativeIntegerSchema.optional(),
   endTimestamp: nonNegativeIntegerSchema.optional(),
   enrollment: enrollmentSchema,
