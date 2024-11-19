@@ -29,6 +29,18 @@ export const experimentSchema = experimentDraftSchema.merge(imputedBaseSchema);
 export interface Experiment extends z.infer<typeof experimentSchema> {};
 
 
+export interface ExperimentSummary extends Pick<Experiment,
+  'id' | 
+  'type' | 
+  'name' | 
+  'groups' | 
+  'status' | 
+  'enrollment' | 
+  'createdAt' |
+  'updatedAt'
+> {};
+
+
 export const environmentSchema = environmentDraftSchema.merge(imputedBaseSchema);
 /**
  * Environment options as defined through the dashboard

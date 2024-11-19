@@ -20,6 +20,7 @@ import {
   User,
  } from './imputed.js';
 import { UserDraft, userDraftSchema } from './users.js';
+import { EstuaryMongoCollectionName } from './lib/names.js';
 
 /* FOR INFERRING TYPES AND SCHEMA FROM OTHERS */
 
@@ -39,7 +40,7 @@ export type InferFromSchema<Z extends z.ZodTypeAny> = z.infer<Z>;
  */
 export type InferFromObjectSchema<S extends z.AnyZodObject> = InferFromSchema<S>;
 
-export const estuaryDraftTypesSchema = z.union([
+export const estuaryDraftSchema = z.union([
   featureFlagDraftSchema,
   experimentDraftSchema,
   environmentDraftSchema,
@@ -50,7 +51,7 @@ export const estuaryDraftTypesSchema = z.union([
 /**
  * Union of draft types
  */
-export type EstuaryDraftTypes = 
+export type EstuaryDraft = 
 | FeatureFlagDraft
 | ExperimentDraft
 | EnvironmentDraft
@@ -108,13 +109,8 @@ never;
 /**
  * Version that is complete but not yet assigned an ObjectId by MongoDB
  */
-export type BeforeId<T extends EstuaryMongoTypes> = Omit<T, 'id' | '_id'>;
+export type BeforeId<T extends EstuaryDraft> = Omit<T, 'id' | '_id'>;
 /**
  * Partial object used to update only the provided fields. Only the `id` field is required.
  */
 export type PartialUpdate<T extends EstuaryMongoTypes> = RequireOnly<T, 'id'>;
-
-
-export interface ExperimentSummary extends Pick<Experiment,
-  'id' | 'type' | 'name' | 'groups' | 'status' | 'enrollment'
-  > {};
