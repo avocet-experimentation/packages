@@ -1,9 +1,11 @@
+import { EnvironmentName } from "../environments.js";
 import { FeatureFlagDraft } from "../featureFlags.js";
 import { FlagEnvironmentMapping } from "../flags/flagEnvironments.js";
 import { FlagValueDef } from "../flags/flagValues.js";
 import {
   FlagValueDefTemplate,
   FlagEnvironmentMappingTemplate,
+  FlagEnvironmentPropsTemplate,
 } from "./FeatureFlagSubclasses.js";
 
 export class FeatureFlagDraftImpl implements FeatureFlagDraft {
@@ -18,6 +20,19 @@ export class FeatureFlagDraftImpl implements FeatureFlagDraft {
     this.value = value;
     this.environments = environments;
   }
+
+  environmentData(environmentName: EnvironmentName) {
+    if (!(environmentName in this.environments)) {
+      Object.assign(
+        this.environments, {
+          [environmentName]: new FlagEnvironmentPropsTemplate(environmentName),
+      });
+    }
+
+    return this.environments[environmentName];
+  }
+
+  
 }
 
 export class FeatureFlagDraftTemplate extends FeatureFlagDraftImpl {
