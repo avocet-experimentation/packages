@@ -6,6 +6,7 @@ import {
 import { Metric } from "../metrics.js";
 import { RuleStatus } from "../overrideRules.js";
 import { Enrollment, ExperimentGroup, Treatment } from "./ExperimentSubclasses.js";
+import { Experiment, experimentSchema } from "../imputed.js";
 
 /**
  * Creates a full ExperimentDraft
@@ -33,5 +34,16 @@ export class ExperimentDraft implements z.infer<typeof experimentDraftSchema> {
     // this.definedSequences = definedSequences;
 
     this.type = 'Experiment';
+  }
+
+  /* Helper methods for working with ExperimentDrafts and Experiments */
+  static isExperiment(arg: unknown): arg is Experiment {
+    const safeParseResult = experimentSchema.safeParse(arg);
+    return safeParseResult.success;
+  }
+
+  static parsedExperiment<I>(arg: I) {
+    const safeParseResult = experimentSchema.safeParse(arg);
+    return safeParseResult.success ? safeParseResult.data : safeParseResult.error;
   }
 }
