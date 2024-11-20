@@ -28,3 +28,6 @@ export * from './classes/errors.js';
 
 export * from './helpers/index.js';
 export * from './helpers/util.js';
+
+export * from './managers/ExperimentManager.js';
+export * from './managers/FeatureFlagManager.js';
