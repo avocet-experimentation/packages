@@ -4,7 +4,10 @@ import { FlagValueDef } from "../flags/flagValues.js";
 import {
   FlagValueDefTemplate,
   FlagEnvironmentMappingTemplate,
+  FlagEnvironmentPropsTemplate,
  } from "./FeatureFlagSubclasses.js";
+import { EnvironmentName } from "../environments.js";
+import { FeatureFlag } from "../imputed.js";
 
 export class FeatureFlagDraft implements z.infer<typeof featureFlagDraftSchema> {
   name: string;
@@ -17,6 +20,21 @@ export class FeatureFlagDraft implements z.infer<typeof featureFlagDraftSchema> 
     this.description = draft.description;
     this.value = draft.value;
     this.environments = draft.environments;
+  }
+
+  /* Helpers for working with FeatureFlags */
+  /**
+   * Get the data for a given environment on a draft or completed feature flag
+   */
+  static environmentData(flag: FeatureFlagDraft | FeatureFlag, environmentName: EnvironmentName) {
+    if (!(environmentName in flag.environments)) {
+      Object.assign(
+        flag.environments, {
+        [environmentName]: new FlagEnvironmentPropsTemplate(environmentName),
+      });
+    }
+
+    return flag.environments[environmentName];
   }
 }
 
@@ -31,3 +49,5 @@ export class FeatureFlagDraftTemplate extends FeatureFlagDraft {
     super({ name, ...defaults });
   }
 }
+
+
