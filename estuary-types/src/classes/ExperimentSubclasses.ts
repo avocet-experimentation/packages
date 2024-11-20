@@ -1,14 +1,14 @@
+import { z } from "zod";
 import { EnvironmentName } from "../environments.js";
 import {
-  Treatment,
   FlagState,
-  TreatmentSequence,
-  ExperimentGroup,
-  ExperimentReference,
+  experimentGroupSchema,
+  treatmentSchema,
+  experimentReferenceSchema,
 } from "../experiments.js";
-import { Enrollment, RuleStatus } from "../overrideRules.js";
+import { RuleStatus, enrollmentSchema } from "../overrideRules.js";
 
-export class EnrollmentImpl implements Enrollment {
+export class Enrollment implements z.infer<typeof enrollmentSchema> {
   attributes: string[];
   proportion: number;
 
@@ -18,7 +18,7 @@ export class EnrollmentImpl implements Enrollment {
   }
 }
 
-export class EnrollmentTemplate extends EnrollmentImpl {
+export class EnrollmentTemplate extends Enrollment {
   constructor() {
     const defaults = {
       attributes: [],
@@ -29,7 +29,10 @@ export class EnrollmentTemplate extends EnrollmentImpl {
   }
 }
 
-export class TreatmentImpl implements Treatment {
+/**
+ * A time interval in which a specific combination of flag states is to be applied to subjects
+ */
+export class Treatment implements z.infer<typeof treatmentSchema> {
   id: string;
   name: string;
   duration: number;
@@ -46,7 +49,7 @@ export class TreatmentImpl implements Treatment {
   }
 }
 
-export class TreatmentTemplate extends TreatmentImpl {
+export class TreatmentTemplate extends Treatment {
   constructor(name: string) {
     const defaults = {
       duration: 0,
@@ -56,51 +59,44 @@ export class TreatmentTemplate extends TreatmentImpl {
   }
 }
 
-export class TreatmentSequenceImpl implements TreatmentSequence {
-  id: string;
-  treatmentIds: string[];
-
-  constructor({ treatmentIds }: Omit<TreatmentSequence, 'id'>) {
-    this.id = self.crypto.randomUUID();
-    this.treatmentIds = treatmentIds;
-  }
-}
-
-export class ExperimentGroupImpl implements ExperimentGroup {
+/**
+ * a grouping of users who will receive the same sequences of experiment treatments
+ */
+export class ExperimentGroup implements z.infer<typeof experimentGroupSchema> {
   id: string;
   name: string;
   proportion: number;
-  sequenceId?: string;
+  sequence: string[];
   cycles: number;
 
   constructor({
-    name, proportion, sequenceId, cycles,
+    name, proportion, sequence, cycles,
   }: Omit<ExperimentGroup, 'id'>) {
     this.id = self.crypto.randomUUID();
     this.name = name;
     this.proportion = proportion;
-    this.sequenceId = sequenceId;
+    this.sequence = sequence;
     this.cycles = cycles;
   }
 }
 
-export class ExperimentGroupTemplate extends ExperimentGroupImpl {
-  constructor(name: string, sequenceId?: string) {
+export class ExperimentGroupTemplate extends ExperimentGroup {
+  constructor(name: string) {
 
     const defaults = {
       proportion: 0,
+      sequence: [],
       cycles: 1,
     };
 
-    super({ name, sequenceId, ...defaults });
+    super({ name, ...defaults });
   }
 }
 
 /**
- * Given an Experiment, create a reference object to embed into a
- * feature flag
+ * Given an Experiment, create a reference object to embed into a feature flag
  */
-export class ExperimentReferenceImpl implements ExperimentReference {
+export class ExperimentReference implements z.infer<typeof experimentReferenceSchema> {
   id: string;
   name: string;
   type: 'ExperimentReference';
@@ -122,7 +118,7 @@ export class ExperimentReferenceImpl implements ExperimentReference {
   }
 }
 
-export class ExperimentReferenceTemplate extends ExperimentReferenceImpl {
+export class ExperimentReferenceTemplate extends ExperimentReference {
   constructor(experimentId: string, environmentName: EnvironmentName) {
     const defaults = {
       name: '',

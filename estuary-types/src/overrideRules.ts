@@ -1,5 +1,8 @@
 import { z } from "zod";
-import { bsonObjectIdHexStringSchema, nonNegativeIntegerSchema, proportionSchema } from "./util.js";
+import {
+  nonNegativeIntegerSchema,
+  proportionSchema,
+} from "./helpers/util.js";
 import { clientPropNameSchema } from "./flagClients.js";
 import { environmentNameSchema } from "./environments.js";
 
@@ -18,8 +21,6 @@ export const enrollmentSchema = z.object({
   attributes: z.array(clientPropNameSchema),
   proportion: proportionSchema,
 });
-
-export interface Enrollment extends z.infer<typeof enrollmentSchema> {};
 
 export const overrideRuleSchema = z.object({
   type: ruleTypeSchema,

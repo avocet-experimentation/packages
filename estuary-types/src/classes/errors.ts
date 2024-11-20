@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { EstuaryMongoTypes } from '../general.js';
-import { GeneralRecord } from "../util.js";
+import { GeneralRecord } from "../helpers/util.js";
 
 export class SchemaParseError<T extends EstuaryMongoTypes> extends Error {
   constructor(safeParseError: z.SafeParseError<T>) {
