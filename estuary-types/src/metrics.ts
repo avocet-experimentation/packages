@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { oTelAttributeValueSchema } from './attributes.js';
-import { nonNegativeIntegerSchema } from './util.js';
+import { nonNegativeIntegerSchema } from './helpers/util.js';
 
 /* TYPES FOR TRANSFORMED EVENTS AND DASHBOARD-DEFINED METRICS */
 

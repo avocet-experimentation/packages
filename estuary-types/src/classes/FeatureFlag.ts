@@ -1,34 +1,33 @@
-import { EnvironmentName } from "../environments.js";
-import { FeatureFlagDraft } from "../featureFlags.js";
-import { FlagEnvironmentMapping } from "../flags/flagEnvironments.js";
+import { z } from "zod";
+import { featureFlagDraftSchema, FlagEnvironmentMapping } from "../featureFlags.js";
 import { FlagValueDef } from "../flags/flagValues.js";
 import {
-  FlagEnvironmentPropsTemplate,
-} from "./FeatureFlagSubclasses.js";
+  FlagValueDefTemplate,
+  FlagEnvironmentMappingTemplate,
+ } from "./FeatureFlagSubclasses.js";
 
-export class FeatureFlagDraftImpl implements FeatureFlagDraft {
+export class FeatureFlagDraft implements z.infer<typeof featureFlagDraftSchema> {
   name: string;
   description?: string;
   value: FlagValueDef;
   environments: FlagEnvironmentMapping;
 
-  constructor({ name, description, value, environments}: FeatureFlagDraft) {
-    this.name = name;
-    this.description = description;
-    this.value = value;
-    this.environments = environments;
+  constructor(draft: FeatureFlagDraft) {
+    this.name = draft.name;
+    this.description = draft.description;
+    this.value = draft.value;
+    this.environments = draft.environments;
   }
+}
 
-  environmentData(environmentName: EnvironmentName) {
-    if (!(environmentName in this.environments)) {
-      Object.assign(
-        this.environments, {
-          [environmentName]: new FlagEnvironmentPropsTemplate(environmentName),
-      });
-    }
 
-    return this.environments[environmentName];
+export class FeatureFlagDraftTemplate extends FeatureFlagDraft {
+  constructor(name: string, dataType: "string" | "number" | "boolean") {
+    const defaults = {
+      value: new FlagValueDefTemplate(dataType) as FlagValueDef,
+      environments: new FlagEnvironmentMappingTemplate(),
+    };
+
+    super({ name, ...defaults });
   }
-
-  
 }

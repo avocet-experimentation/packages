@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { nonEmptyStringSchema } from "./util.js";
+import { nonEmptyStringSchema } from "./helpers/util.js";
 import { flagCurrentValueSchema } from './flags/flagValues.js';
 import { flagNameSchema } from "./lib/names.js";
 

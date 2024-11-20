@@ -1,9 +1,10 @@
+import { z } from "zod";
 import { EnvironmentName } from "../environments.js";
 import {
-  FlagEnvironmentProps,
   OverrideRuleUnion,
   FlagEnvironmentMapping,
-} from "../flags/flagEnvironments.js";
+  flagEnvironmentPropsSchema
+} from "../featureFlags.js";
 import { FlagValueTypeDef, FlagCurrentValue, FlagValueDef } from "../flags/flagValues.js";
 
 
@@ -24,8 +25,10 @@ export class FlagValueDefTemplate extends FlagValueDefImpl {
     super(defaults);
   }
 }
-
-export class FlagEnvironmentPropsImpl implements FlagEnvironmentProps {
+/**
+ * Environment-specific data for a `FeatureFlag`
+ */
+export class FlagEnvironmentProps implements z.infer<typeof flagEnvironmentPropsSchema> {
   name: EnvironmentName;
   enabled: boolean;
   overrideRules: OverrideRuleUnion[];
@@ -42,7 +45,7 @@ export class FlagEnvironmentPropsImpl implements FlagEnvironmentProps {
 
 }
 
-export class FlagEnvironmentPropsTemplate extends FlagEnvironmentPropsImpl {
+export class FlagEnvironmentPropsTemplate extends FlagEnvironmentProps {
   constructor(environmentName: EnvironmentName) {
     const defaults = {
       enabled: false,

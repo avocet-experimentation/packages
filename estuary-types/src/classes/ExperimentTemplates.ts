@@ -1,21 +1,24 @@
-import { ExperimentDraftImpl } from "./Experiment.js";
-
+import { ExperimentDraft } from "./Experiment.js";
 import { EnvironmentName } from "../environments.js";
-import { ExperimentDraft } from "../experiments.js";
-import { TreatmentTemplate, TreatmentSequenceImpl, ExperimentGroupImpl, ExperimentGroupTemplate } from "./ExperimentSubclasses.js";
+import {
+  TreatmentTemplate,
+  ExperimentGroup,
+  ExperimentGroupTemplate,
+} from "./ExperimentSubclasses.js";
+import { idMap } from "../helpers/index.js";
 
 
 type ExperimentDraftDefaults = Pick<ExperimentDraft, 'groups' |
   'enrollment' |
+  'flagIds' |
   'dependents' |
-  'definedTreatments' |
-  'definedSequences'
+  'definedTreatments'
 >;
 /**
  * Uses defaults where possible to make a bare-bones ExperimentDraft
  */
 
-export class ExperimentDraftTemplate extends ExperimentDraftImpl {
+export class ExperimentDraftTemplate extends ExperimentDraft {
   constructor(name: string, environmentName: EnvironmentName) {
     const status = 'draft';
 
@@ -25,9 +28,9 @@ export class ExperimentDraftTemplate extends ExperimentDraftImpl {
         attributes: [],
         proportion: 0,
       },
+      flagIds: [],
       dependents: [],
-      definedTreatments: [],
-      definedSequences: [],
+      definedTreatments: {},
     };
     super({ name, environmentName, status, ...defaults });
   }
@@ -37,7 +40,7 @@ export class ExperimentDraftTemplate extends ExperimentDraftImpl {
  * in a sequence, executed twice
  */
 
-export class SwitchbackTemplate extends ExperimentDraftImpl {
+export class SwitchbackTemplate extends ExperimentDraft {
   constructor(name: string, environmentName: EnvironmentName) {
     const status = 'draft';
 
@@ -46,33 +49,29 @@ export class SwitchbackTemplate extends ExperimentDraftImpl {
       new TreatmentTemplate('Experimental'),
     ];
 
-    const sequence = new TreatmentSequenceImpl({
-      treatmentIds: treatments.map((el) => el.id),
-    });
-
-    const group = new ExperimentGroupImpl({
+    const group = new ExperimentGroup({
       name: 'Experimental',
       proportion: 1,
-      sequenceId: sequence.id,
+      sequence: [],
       cycles: 2,
     });
 
     const defaults = {
       groups: [group],
       enrollment: { attributes: [], proportion: 0 },
+      flagIds: [],
       dependents: [],
-      definedTreatments: [...treatments],
-      definedSequences: [sequence],
+      definedTreatments: idMap(treatments),
     };
 
     super({ name, environmentName, status, ...defaults });
   }
 }
-;
+
 /**
  * Creates an experiment with two groups and one treatment assigned to each
  */
-export class ABExperimentTemplate extends ExperimentDraftImpl {
+export class ABExperimentTemplate extends ExperimentDraft {
   constructor(name: string, environmentName: EnvironmentName) {
     const status = 'draft';
 
@@ -81,22 +80,17 @@ export class ABExperimentTemplate extends ExperimentDraftImpl {
       new TreatmentTemplate('Experimental'),
     ];
 
-    const sequences = [
-      new TreatmentSequenceImpl({ treatmentIds: [treatments[0].id] }),
-      new TreatmentSequenceImpl({ treatmentIds: [treatments[1].id] }),
-    ];
-
     const groups = [
-      new ExperimentGroupTemplate('Group 1', sequences[0].id),
-      new ExperimentGroupTemplate('Group 2', sequences[1].id),
+      new ExperimentGroupTemplate('Group 1'),
+      new ExperimentGroupTemplate('Group 2'),
     ];
 
     const defaults = {
       groups,
       enrollment: { attributes: [], proportion: 0 },
+      flagIds: [],
       dependents: [],
-      definedTreatments: [...treatments],
-      definedSequences: [...sequences],
+      definedTreatments: idMap(treatments),
     };
 
     super({ name, environmentName, status, ...defaults });

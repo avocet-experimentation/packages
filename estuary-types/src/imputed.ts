@@ -3,7 +3,7 @@ import { z } from "zod";
 import { featureFlagDraftSchema } from "./featureFlags.js";
 import { clientConnectionDraftSchema, clientPropDefDraftSchema } from "./flagClients.js";
 import { environmentDraftSchema, environmentNameSchema } from "./environments.js";
-import { bsonObjectIdHexStringSchema, bsonDateSchema } from "./util.js";
+import { bsonObjectIdHexStringSchema, bsonDateSchema } from "./helpers/util.js";
 import { experimentDraftSchema } from "./experiments.js";
 import { userDraftSchema } from "./users.js";
 

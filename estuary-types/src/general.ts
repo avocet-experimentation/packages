@@ -2,9 +2,9 @@ import { z } from 'zod';
 import { ClientPropDefDraft, clientPropDefDraftSchema } from './flagClients.js';
 import { ClientConnectionDraft, clientConnectionDraftSchema } from "./flagClients.js";
 import { EnvironmentDraft, environmentDraftSchema } from "./environments.js";
-import { ExperimentDraft, experimentDraftSchema } from './experiments.js';
-import { FeatureFlagDraft, featureFlagDraftSchema } from './featureFlags.js';
-import { RequireOnly } from './util.js';
+import { experimentDraftSchema } from './experiments.js';
+import { featureFlagDraftSchema } from './featureFlags.js';
+import { RequireOnly } from './helpers/util.js';
 import {
   FeatureFlag,
   featureFlagSchema,
@@ -21,6 +21,8 @@ import {
  } from './imputed.js';
 import { UserDraft, userDraftSchema } from './users.js';
 import { EstuaryMongoCollectionName } from './lib/names.js';
+import { FeatureFlagDraft } from './classes/FeatureFlag.js';
+import { ExperimentDraft } from './classes/Experiment.js';
 
 /* FOR INFERRING TYPES AND SCHEMA FROM OTHERS */
 
