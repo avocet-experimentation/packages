@@ -1,6 +1,6 @@
 import { z } from "zod";
-import { flagCurrentValueSchema } from './flags/flagValues.js';
-import { overrideRuleSchema } from "./overrideRules.js";
+import { flagCurrentValueSchema } from "../helpers/flag-value.js";
+import { overrideRuleSchema } from "./override-rules.schema.js";
 
 export const forcedValueSchema = overrideRuleSchema.extend({
   type: z.literal('ForcedValue'),

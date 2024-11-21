@@ -1,10 +1,10 @@
 import { z } from "zod";
-import { flagNameSchema } from "./lib/names.js";
-import { nonEmptyStringSchema } from "./helpers/util.js";
-import { flagValueDefSchema } from "./flags/flagValues.js";
-import { environmentNameSchema } from "./environments.js";
-import { experimentReferenceSchema } from "./experiments.js";
-import { forcedValueSchema } from "./forcedValue.js";
+import { flagNameSchema } from "../helpers/names.js";
+import { nonEmptyStringSchema } from "../helpers/bounded-primitives.js";
+import { environmentNameSchema } from "../environments/schema.js";
+import { experimentReferenceSchema } from "../experiments/schema.js";
+import { forcedValueSchema } from "../override-rules/forced-value.schema.js";
+import { flagValueDefSchema } from "../helpers/flag-value.js";
 
 export const overrideRuleUnionSchema = z.union([
   experimentReferenceSchema,

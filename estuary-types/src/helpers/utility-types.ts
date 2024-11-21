@@ -1,26 +1,5 @@
 import { z } from 'zod';
 
-/* UTILITY SCHEMA AND TYPES */
-
-export const nonNegativeIntegerSchema = z.number().int().gte(0);
-export const positiveIntegerSchema = z.number().int().gte(1);
-/**
- * Represents a portion of a whole between 0 and 1, inclusive
- */
-export const proportionSchema = z.number().gte(0).lte(1);
-
-/** .default might cause type inference problems */
-export const defaultEmptyStringSchema = z.string().default('');
-
-export const nonEmptyStringSchema = z.string().min(1);
-
-export const bsonObjectIdHexStringSchema = z.string().length(24);
-
-/**
- * Similar to Unix timestamp, but also accepts negative values indicating dates before 1970.
- * See https://www.mongodb.com/docs/manual/reference/bson-types/#std-label-document-bson-type-date
- */
-export const bsonDateSchema = z.number().int();
 
 export type GeneralRecord = Record<string | number, unknown>;
 /**
@@ -44,7 +23,6 @@ export type RequireExcept<T, K extends keyof T> = Required<Omit<T, K>> & Partial
  * The generic type S is used for inference of the exact schema type at runtime;
  * see https://zod.dev/?id=writing-generic-functions
  */
-
 export const getPartialSchema = <S extends z.ZodTypeAny, O extends z.AnyZodObject>(schema: S): S => {
   return (schema as unknown as O).deepPartial() as unknown as S;
 };
@@ -52,7 +30,6 @@ export const getPartialSchema = <S extends z.ZodTypeAny, O extends z.AnyZodObjec
  * (WIP) Returns a schema with only the passed keys required
  * Loses type information
  */
-
 export const schemaRequireOnly = <S extends z.ZodTypeAny, O extends z.AnyZodObject, K extends keyof S>(schema: O, keys: K[]): RequireOnly<S, K> => {
   const objectSchema = schema as unknown as O;
   const keyObj = keys.reduce((acc, key) => Object.assign(acc, { [key]: true }), {});
@@ -67,4 +44,21 @@ export const schemaRequireOnly = <S extends z.ZodTypeAny, O extends z.AnyZodObje
 export const schemaOmit = <S extends z.ZodTypeAny>(schema: S, keys: string[]) => {
   const keyObj = keys.reduce((acc, key) => Object.assign(acc, { [key]: true }), {});
   return (schema as unknown as z.AnyZodObject).omit(keyObj) as unknown as S;
-};
+};/* FOR INFERRING TYPES AND SCHEMA FROM OTHERS */
+/**
+ * Generic type representing all Zod schema.
+ */
+
+export type AnyZodSchema = z.ZodTypeAny;
+
+export type EstuaryObjectSchema = z.AnyZodObject;
+/**
+ * Infer a type from a schema
+ */
+
+export type InferFromSchema<Z extends z.ZodTypeAny> = z.infer<Z>;
+/**
+ * Infer an object type from a schema - might be useless
+ */
+export type InferFromObjectSchema<S extends z.AnyZodObject> = InferFromSchema<S>;
+

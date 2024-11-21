@@ -1,11 +1,11 @@
 import { z } from "zod";
-import { EnvironmentName } from "../environments.js";
+import { EnvironmentName } from "../environments/schema.js";
 import {
   OverrideRuleUnion,
   FlagEnvironmentMapping,
   flagEnvironmentPropsSchema
-} from "../featureFlags.js";
-import { FlagValueTypeDef, FlagCurrentValue, FlagValueDef } from "../flags/flagValues.js";
+} from "./schema.js";
+import { FlagValueTypeDef, FlagCurrentValue, FlagValueDef } from "../helpers/flag-value.js";
 
 
 class FlagValueDefImpl {

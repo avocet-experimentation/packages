@@ -3,16 +3,16 @@ import {
   enrollmentSchema,
   overrideRuleSchema,
   ruleStatusSchema,
-} from "./overrideRules.js";
+} from "../override-rules/override-rules.schema.js";
 import { 
   bsonObjectIdHexStringSchema, 
   nonEmptyStringSchema, 
   nonNegativeIntegerSchema, 
   positiveIntegerSchema,
- } from "./helpers/util.js";
-import { metricSchema } from "./metrics.js";
-import { flagCurrentValueSchema } from "./flags/flagValues.js";
-import { environmentNameSchema } from "./environments.js";
+ } from "../helpers/bounded-primitives.js";
+import { metricSchema } from "../metrics/schema.js";
+import { environmentNameSchema } from "../environments/schema.js";
+import { flagCurrentValueSchema } from "../helpers/flag-value.js";
 
 export const flagStateSchema = z.object({ 
   id: bsonObjectIdHexStringSchema,

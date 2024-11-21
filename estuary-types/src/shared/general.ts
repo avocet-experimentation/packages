@@ -1,10 +1,9 @@
 import { z } from 'zod';
-import { ClientPropDefDraft, clientPropDefDraftSchema } from './flagClients.js';
-import { ClientConnectionDraft, clientConnectionDraftSchema } from "./flagClients.js";
-import { EnvironmentDraft, environmentDraftSchema } from "./environments.js";
-import { experimentDraftSchema } from './experiments.js';
-import { featureFlagDraftSchema } from './featureFlags.js';
-import { RequireOnly } from './helpers/util.js';
+import { ClientConnectionDraft, clientConnectionDraftSchema } from "../flag-clients/client-connections.schema.js";
+import { EnvironmentDraft, environmentDraftSchema } from "../environments/schema.js";
+import { experimentDraftSchema } from '../experiments/schema.js';
+import { featureFlagDraftSchema } from '../feature-flags/schema.js';
+import { RequireOnly } from '../helpers/utility-types.js';
 import {
   FeatureFlag,
   featureFlagSchema,
@@ -19,28 +18,11 @@ import {
   userSchema,
   User,
  } from './imputed.js';
-import { UserDraft, userDraftSchema } from './users.js';
-import { EstuaryMongoCollectionName } from './lib/names.js';
-import { FeatureFlagDraft } from './classes/FeatureFlag.js';
-import { ExperimentDraft } from './classes/Experiment.js';
-
-/* FOR INFERRING TYPES AND SCHEMA FROM OTHERS */
-
-/**
- * Generic type representing all Zod schema.
- */
-export type AnyZodSchema = z.ZodTypeAny;
-
-export type EstuaryObjectSchema = z.AnyZodObject;
-
-/**
- * Infer a type from a schema
- */
-export type InferFromSchema<Z extends z.ZodTypeAny> = z.infer<Z>;
-/**
- * Infer an object type from a schema - might be useless
- */
-export type InferFromObjectSchema<S extends z.AnyZodObject> = InferFromSchema<S>;
+import { UserDraft, userDraftSchema } from '../users/schema.js';
+import { EstuaryMongoCollectionName } from '../helpers/names.js';
+import { FeatureFlagDraft } from '../feature-flags/classes.js';
+import { ExperimentDraft } from '../experiments/classes.js';
+import { clientPropDefDraftSchema, ClientPropDefDraft } from '../flag-clients/client-props.schema.js';
 
 export const estuaryDraftSchema = z.union([
   featureFlagDraftSchema,

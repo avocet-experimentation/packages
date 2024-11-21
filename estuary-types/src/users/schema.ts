@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { estuaryMongoCollectionNameSchema } from './lib/names.js';
+import { estuaryMongoCollectionNameSchema } from '../helpers/names.js';
 /*
   Dashboard user account types.
   These are placeholders, likely to be revised once 

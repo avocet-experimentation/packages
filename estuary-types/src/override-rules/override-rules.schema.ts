@@ -2,9 +2,9 @@ import { z } from "zod";
 import {
   nonNegativeIntegerSchema,
   proportionSchema,
-} from "./helpers/util.js";
-import { clientPropNameSchema } from "./flagClients.js";
-import { environmentNameSchema } from "./environments.js";
+} from "../helpers/bounded-primitives.js";
+import { environmentNameSchema } from "../environments/schema.js";
+import { clientPropNameSchema } from "../flag-clients/client-props.schema.js";
 
 export const ruleTypeSchema = z.enum(["Experiment", "ForcedValue"]);
 export type RuleType = z.infer<typeof ruleTypeSchema>;
