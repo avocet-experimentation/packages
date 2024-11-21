@@ -6,6 +6,7 @@ import {
   experimentReferenceSchema,
 } from "./schema.js";
 import { enrollmentSchema, RuleStatus } from "../override-rules/override-rules.schema.js";
+import { Experiment } from "../shared/imputed.js";
 
 export class Enrollment implements z.infer<typeof enrollmentSchema> {
   attributes: string[];
@@ -118,13 +119,17 @@ export class ExperimentReference implements z.infer<typeof experimentReferenceSc
 }
 
 export class ExperimentReferenceTemplate extends ExperimentReference {
-  constructor(experimentId: string, environmentName: string) {
+  constructor(experimentId: string, experimentName: string, environmentName: string) {
     const defaults = {
-      name: '',
       status: 'draft' as const,
       enrollment: new EnrollmentTemplate(),
     }
 
-    super({ id: experimentId, environmentName, ...defaults });
+    super({
+      id: experimentId,
+      name: experimentName,
+      environmentName,
+      ...defaults,
+    });
   }
 }
