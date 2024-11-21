@@ -1,11 +1,11 @@
-import { ExperimentDraft } from "./Experiment.js";
-import { EnvironmentName } from "../environments.js";
+import { ExperimentDraft } from "./classes.js";
+import { EnvironmentName } from "../environments/schema.js";
 import {
   TreatmentTemplate,
   ExperimentGroup,
   ExperimentGroupTemplate,
-} from "./ExperimentSubclasses.js";
-import { idMap } from "../helpers/index.js";
+} from "./child-classes.js";
+import { idMap } from '../helpers/index.js';
 
 
 type ExperimentDraftDefaults = Pick<ExperimentDraft, 'groups' |

@@ -1,12 +1,12 @@
 import { z } from "zod";
-import { EnvironmentName } from "../environments.js";
+import { EnvironmentName } from "../environments/schema.js";
 import {
   FlagState,
   experimentGroupSchema,
   treatmentSchema,
   experimentReferenceSchema,
-} from "../experiments.js";
-import { RuleStatus, enrollmentSchema } from "../overrideRules.js";
+} from "./schema.js";
+import { enrollmentSchema, RuleStatus } from "../override-rules/override-rules.schema.js";
 
 export class Enrollment implements z.infer<typeof enrollmentSchema> {
   attributes: string[];

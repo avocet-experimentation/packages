@@ -1,13 +1,13 @@
 import { z } from "zod";
-import { EstuaryMongoTypes } from '../general.js';
-import { GeneralRecord } from "../helpers/util.js";
+import { EstuaryMongoTypes } from '../shared/general.js';
+import { GeneralRecord } from './utility-types.js';
 
 export class SchemaParseError<T extends EstuaryMongoTypes> extends Error {
   constructor(safeParseError: z.SafeParseError<T>) {
     const formattedError = safeParseError.error.format();
     console.log('schema parse errors:', formattedError);
-    super(formattedError.toString());
-    this.name = 'Schema ParseError';
+    super(String(formattedError));
+    this.name = 'SchemaParseError';
   }
 }
 

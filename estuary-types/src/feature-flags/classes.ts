@@ -1,13 +1,13 @@
 import { z } from "zod";
-import { featureFlagDraftSchema, FlagEnvironmentMapping } from "../featureFlags.js";
-import { FlagValueDef } from "../flags/flagValues.js";
+import { featureFlagDraftSchema, FlagEnvironmentMapping } from "./schema.js";
 import {
   FlagValueDefTemplate,
   FlagEnvironmentMappingTemplate,
   FlagEnvironmentPropsTemplate,
- } from "./FeatureFlagSubclasses.js";
-import { EnvironmentName } from "../environments.js";
-import { FeatureFlag } from "../imputed.js";
+ } from "./child-classes.js";
+import { EnvironmentName } from "../environments/schema.js";
+import { FeatureFlag } from "../shared/imputed.js";
+import { FlagValueDef } from "../helpers/flag-value.js";
 
 export class FeatureFlagDraft implements z.infer<typeof featureFlagDraftSchema> {
   name: string;

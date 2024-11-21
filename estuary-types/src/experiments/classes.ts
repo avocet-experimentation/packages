@@ -1,12 +1,12 @@
 import { SafeParseError, SafeParseReturnType, ZodError, z } from "zod";
-import { EnvironmentName } from "../environments.js";
+import { EnvironmentName } from "../environments/schema.js";
 import {
   experimentDraftSchema,
-} from "../experiments.js";
-import { Metric } from "../metrics.js";
-import { RuleStatus } from "../overrideRules.js";
-import { Enrollment, ExperimentGroup, Treatment } from "./ExperimentSubclasses.js";
-import { Experiment, experimentSchema } from "../imputed.js";
+} from "./schema.js";
+import { Metric } from "../metrics/schema.js";
+import { Enrollment, ExperimentGroup, Treatment } from "./child-classes.js";
+import { Experiment, experimentSchema } from "../shared/imputed.js";
+import { RuleStatus } from "../override-rules/override-rules.schema.js";
 
 /**
  * Creates a full ExperimentDraft
@@ -45,5 +45,12 @@ export class ExperimentDraft implements z.infer<typeof experimentDraftSchema> {
   static parsedExperiment<I>(arg: I) {
     const safeParseResult = experimentSchema.safeParse(arg);
     return safeParseResult.success ? safeParseResult.data : safeParseResult.error;
+  }
+
+  static groupTreatments(experiment: ExperimentDraft | Experiment, groupId: string): Treatment[] | null {
+    const group = experiment.groups.find((group) => group.id === groupId);
+    if (!group) return null;
+
+    return group.sequence.map((treatmentId) => experiment.definedTreatments[treatmentId]);
   }
 }
