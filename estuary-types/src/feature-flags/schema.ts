@@ -1,7 +1,6 @@
 import { z } from "zod";
-import { flagNameSchema } from "../helpers/names.js";
+import { environmentNameSchema, flagNameSchema } from "../helpers/names.js";
 import { nonEmptyStringSchema } from "../helpers/bounded-primitives.js";
-import { environmentNameSchema } from "../environments/schema.js";
 import { experimentReferenceSchema } from "../experiments/schema.js";
 import { forcedValueSchema } from "../override-rules/forced-value.schema.js";
 import { flagValueDefSchema } from "../helpers/flag-value.js";
@@ -20,14 +19,9 @@ export const flagEnvironmentPropsSchema = z.object({
 });
 
 export const flagEnvironmentMappingSchema = z.record(
-  environmentNameSchema,
+  z.string(),
   flagEnvironmentPropsSchema
 );
-/**
- * Mapping of environment names to `FlagEnvironmentProps`. All properties are optional.
- */
-export interface FlagEnvironmentMapping 
-  extends z.infer<typeof flagEnvironmentMappingSchema> {};
 
 export const featureFlagDraftSchema = z.object({
   name: nonEmptyStringSchema,

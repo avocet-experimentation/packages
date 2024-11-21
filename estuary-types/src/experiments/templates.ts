@@ -1,5 +1,4 @@
 import { ExperimentDraft } from "./classes.js";
-import { EnvironmentName } from "../environments/schema.js";
 import {
   TreatmentTemplate,
   ExperimentGroup,
@@ -19,7 +18,7 @@ type ExperimentDraftDefaults = Pick<ExperimentDraft, 'groups' |
  */
 
 export class ExperimentDraftTemplate extends ExperimentDraft {
-  constructor(name: string, environmentName: EnvironmentName) {
+  constructor(name: string, environmentName: string) {
     const status = 'draft';
 
     const defaults: ExperimentDraftDefaults = {
@@ -41,7 +40,7 @@ export class ExperimentDraftTemplate extends ExperimentDraft {
  */
 
 export class SwitchbackTemplate extends ExperimentDraft {
-  constructor(name: string, environmentName: EnvironmentName) {
+  constructor(name: string, environmentName: string) {
     const status = 'draft';
 
     const treatments = [
@@ -72,7 +71,7 @@ export class SwitchbackTemplate extends ExperimentDraft {
  * Creates an experiment with two groups and one treatment assigned to each
  */
 export class ABExperimentTemplate extends ExperimentDraft {
-  constructor(name: string, environmentName: EnvironmentName) {
+  constructor(name: string, environmentName: string) {
     const status = 'draft';
 
     const treatments = [

@@ -1,9 +1,8 @@
 import { z } from "zod";
-import { EnvironmentName } from "../environments/schema.js";
 import {
   OverrideRuleUnion,
-  FlagEnvironmentMapping,
-  flagEnvironmentPropsSchema
+  flagEnvironmentPropsSchema,
+  flagEnvironmentMappingSchema
 } from "./schema.js";
 import { FlagValueTypeDef, FlagCurrentValue, FlagValueDef } from "../helpers/flag-value.js";
 
@@ -29,7 +28,7 @@ export class FlagValueDefTemplate extends FlagValueDefImpl {
  * Environment-specific data for a `FeatureFlag`
  */
 export class FlagEnvironmentProps implements z.infer<typeof flagEnvironmentPropsSchema> {
-  name: EnvironmentName;
+  name: string;
   enabled: boolean;
   overrideRules: OverrideRuleUnion[];
 
@@ -46,7 +45,7 @@ export class FlagEnvironmentProps implements z.infer<typeof flagEnvironmentProps
 }
 
 export class FlagEnvironmentPropsTemplate extends FlagEnvironmentProps {
-  constructor(environmentName: EnvironmentName) {
+  constructor(environmentName: string) {
     const defaults = {
       enabled: false,
       overrideRules: [],
@@ -54,21 +53,20 @@ export class FlagEnvironmentPropsTemplate extends FlagEnvironmentProps {
     super({ name: environmentName, ...defaults });
   }
 }
+/**
+ * Mapping of environment names to `FlagEnvironmentProps`.
+ */
+export class FlagEnvironmentMapping implements z.infer<typeof flagEnvironmentMappingSchema> {
+  [environmentName: string]: FlagEnvironmentProps;
 
-class FlagEnvironmentMappingImpl implements FlagEnvironmentMapping {
-  prod: FlagEnvironmentProps;
-  dev: FlagEnvironmentProps;
-  testing: FlagEnvironmentProps;
-  staging: FlagEnvironmentProps;
-
-  constructor({ prod, dev, testing, staging }: FlagEnvironmentMapping) {
-    this.prod = prod ?? new FlagEnvironmentPropsTemplate('prod');
-    this.dev = dev ?? new FlagEnvironmentPropsTemplate('dev');
-    this.testing = testing ?? new FlagEnvironmentPropsTemplate('testing');
-    this.staging = staging ?? new FlagEnvironmentPropsTemplate('staging');
+  constructor(mapping: FlagEnvironmentMapping) {
+    Object.entries(mapping).forEach(([environmentName, props]) => {
+      this[environmentName] = props;
+    })
   }
 }
-export class FlagEnvironmentMappingTemplate extends FlagEnvironmentMappingImpl {
+
+export class FlagEnvironmentMappingTemplate extends FlagEnvironmentMapping {
   constructor() {
     const defaults = {
       prod: new FlagEnvironmentPropsTemplate('prod'),

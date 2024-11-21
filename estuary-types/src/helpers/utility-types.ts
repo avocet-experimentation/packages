@@ -1,6 +1,5 @@
 import { z } from 'zod';
 
-
 export type GeneralRecord = Record<string | number, unknown>;
 /**
  * Unlike the native Omit, this raises a type error if `Keys` includes a key not on `T`

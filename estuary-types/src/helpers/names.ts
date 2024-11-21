@@ -1,6 +1,5 @@
 import { z } from "zod";
 
-
 export const estuaryMongoCollectionNameSchema = z.enum([
   'FeatureFlag',
   'Experiment',
@@ -14,4 +13,4 @@ export type EstuaryMongoCollectionName = z.infer<typeof estuaryMongoCollectionNa
 
 // might add more criteria later
 export const flagNameSchema = z.string();
-
+export const environmentNameSchema = z.string();
