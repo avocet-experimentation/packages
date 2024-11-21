@@ -5,7 +5,8 @@ import { GeneralRecord } from './utility-types.js';
 export class SchemaParseError<T extends EstuaryMongoTypes> extends Error {
   constructor(safeParseError: z.SafeParseError<T>) {
     const formattedError = safeParseError.error.format();
-    console.log('schema parse errors:', formattedError);
+    console.log('schema parse errors:');
+    console.dir(formattedError);
     super(String(formattedError));
     this.name = 'SchemaParseError';
   }
