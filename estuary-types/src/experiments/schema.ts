@@ -11,8 +11,8 @@ import {
   positiveIntegerSchema,
  } from "../helpers/bounded-primitives.js";
 import { metricSchema } from "../metrics/schema.js";
-import { environmentNameSchema } from "../environments/schema.js";
 import { flagCurrentValueSchema } from "../helpers/flag-value.js";
+import { environmentNameSchema } from "../helpers/names.js";
 
 export const flagStateSchema = z.object({ 
   id: bsonObjectIdHexStringSchema,

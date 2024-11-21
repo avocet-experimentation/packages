@@ -1,5 +1,4 @@
 import { z } from "zod";
-import { EnvironmentName } from "../environments/schema.js";
 import {
   FlagState,
   experimentGroupSchema,
@@ -101,7 +100,7 @@ export class ExperimentReference implements z.infer<typeof experimentReferenceSc
   name: string;
   type: 'ExperimentReference';
   status: RuleStatus;
-  environmentName: EnvironmentName;
+  environmentName: string;
   startTimestamp?: number;
   endTimestamp?: number;
   enrollment: Enrollment;
@@ -119,7 +118,7 @@ export class ExperimentReference implements z.infer<typeof experimentReferenceSc
 }
 
 export class ExperimentReferenceTemplate extends ExperimentReference {
-  constructor(experimentId: string, environmentName: EnvironmentName) {
+  constructor(experimentId: string, environmentName: string) {
     const defaults = {
       name: '',
       status: 'draft' as const,

@@ -1,5 +1,4 @@
-import { SafeParseError, SafeParseReturnType, ZodError, z } from "zod";
-import { EnvironmentName } from "../environments/schema.js";
+import { z } from "zod";
 import {
   experimentDraftSchema,
 } from "./schema.js";
@@ -13,7 +12,7 @@ import { RuleStatus } from "../override-rules/override-rules.schema.js";
  */
 export class ExperimentDraft implements z.infer<typeof experimentDraftSchema> {
   name: string;
-  environmentName: EnvironmentName;
+  environmentName: string;
   status: RuleStatus;
   type: 'Experiment';
   groups: ExperimentGroup[];

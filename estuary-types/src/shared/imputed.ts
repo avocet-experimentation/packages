@@ -1,8 +1,7 @@
-
 import { z } from "zod";
 import { featureFlagDraftSchema } from "../feature-flags/schema.js";
 import { clientConnectionDraftSchema } from "../flag-clients/client-connections.schema.js";
-import { environmentDraftSchema, environmentNameSchema } from "../environments/schema.js";
+import { environmentDraftSchema } from "../environments/schema.js";
 import { bsonObjectIdHexStringSchema, bsonDateSchema } from "../helpers/bounded-primitives.js";
 import { experimentDraftSchema } from "../experiments/schema.js";
 import { userDraftSchema } from "../users/schema.js";
