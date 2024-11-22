@@ -9,7 +9,9 @@ export class ForcedValue implements z.infer<typeof forcedValueSchema> {
   id: string;
   type: 'ForcedValue';
   status: RuleStatus;
-  description?: string;
+  description: string | null;
+  startTimestamp: number | null;
+  endTimestamp: number | null;
   environmentName: string;
   value: FlagCurrentValue;
   enrollment: Enrollment;
@@ -19,6 +21,8 @@ export class ForcedValue implements z.infer<typeof forcedValueSchema> {
     this.type = forcedValue.type;
     this.status = forcedValue.status;
     this.description = forcedValue.description;
+    this.startTimestamp = forcedValue.startTimestamp;
+    this.endTimestamp = forcedValue.endTimestamp;
     this.environmentName = forcedValue.environmentName;
     this.value = forcedValue.value;
     this.enrollment = forcedValue.enrollment;
@@ -28,14 +32,19 @@ export class ForcedValue implements z.infer<typeof forcedValueSchema> {
   /**
    * Create a ForcedValue, applying defaults to all optional fields that are not passed.
    */
-  static template(partial: RequireOnly<ForcedValue, 'environmentName' | 'value'>) {
+  static template(
+    partialForcedValue: RequireOnly<ForcedValue, 'environmentName' | 'value'>
+  ) {
     const defaults = {
       id: crypto.randomUUID(),
       type: 'ForcedValue' as const,
       status: 'draft' as RuleStatus,
+      description: null,
+      startTimestamp: null,
+      endTimestamp: null,
       enrollment: new EnrollmentTemplate(),
     }
 
-    return new ForcedValue({ ...defaults, ...partial });
+    return new ForcedValue({ ...defaults, ...partialForcedValue });
   }
 }

@@ -25,10 +25,10 @@ export const enrollmentSchema = z.object({
 export const overrideRuleSchema = z.object({
   type: ruleTypeSchema,
   status: ruleStatusSchema,
-  description: z.string().optional(),
+  description: z.string().nullable(),
   environmentName: environmentNameSchema,
-  startTimestamp: nonNegativeIntegerSchema.optional(),
-  endTimestamp: nonNegativeIntegerSchema.optional(),
+  startTimestamp: nonNegativeIntegerSchema.nullable(),
+  endTimestamp: nonNegativeIntegerSchema.nullable(),
   enrollment: enrollmentSchema,
 });
 

@@ -5,6 +5,7 @@ import {
   flagEnvironmentMappingSchema
 } from "./schema.js";
 import { FlagValueTypeDef, FlagCurrentValue, FlagValueDef } from "../helpers/flag-value.js";
+import { RequireOnly } from "../helpers/utility-types.js";
 
 
 class FlagValueDefImpl {
@@ -45,12 +46,12 @@ export class FlagEnvironmentProps implements z.infer<typeof flagEnvironmentProps
 }
 
 export class FlagEnvironmentPropsTemplate extends FlagEnvironmentProps {
-  constructor(environmentName: string) {
+  constructor(partialFlagEnvProps: RequireOnly<FlagEnvironmentProps, 'name'>) {
     const defaults = {
       enabled: false,
       overrideRules: [],
     }
-    super({ name: environmentName, ...defaults });
+    super({ ...defaults, ...partialFlagEnvProps });
   }
 }
 /**
@@ -66,15 +67,23 @@ export class FlagEnvironmentMapping implements z.infer<typeof flagEnvironmentMap
   }
 }
 
+/**
+ * todo: 
+ * - make this implementation take either of:
+ *   - an array of environment names
+ *   - an array of [name, FlagEnvironmentProps] entries
+ * 
+ * and remove the defaults
+ */
 export class FlagEnvironmentMappingTemplate extends FlagEnvironmentMapping {
-  constructor() {
+  constructor(partialFlagEnvMapping?: FlagEnvironmentMapping) {
     const defaults = {
-      prod: new FlagEnvironmentPropsTemplate('prod'),
-      dev: new FlagEnvironmentPropsTemplate('dev'),
-      testing: new FlagEnvironmentPropsTemplate('testing'),
-      staging: new FlagEnvironmentPropsTemplate('staging'),
+      prod: new FlagEnvironmentPropsTemplate({ name: 'prod' }),
+      dev: new FlagEnvironmentPropsTemplate({ name: 'dev' }),
+      testing: new FlagEnvironmentPropsTemplate({ name: 'testing' }),
+      staging: new FlagEnvironmentPropsTemplate({ name: 'staging' }),
     };
 
-    super(defaults);
+    super({ ...defaults, ...partialFlagEnvMapping });
   }
 }

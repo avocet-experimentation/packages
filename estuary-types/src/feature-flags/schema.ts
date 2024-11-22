@@ -25,7 +25,7 @@ export const flagEnvironmentMappingSchema = z.record(
 
 export const featureFlagDraftSchema = z.object({
   name: nonEmptyStringSchema,
-  description: z.string().optional(),
+  description: z.string().nullable(),
   value: flagValueDefSchema,
   environments: flagEnvironmentMappingSchema,
 });

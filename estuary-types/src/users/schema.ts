@@ -16,7 +16,7 @@ export interface UserPermissions extends z.infer<typeof userPermissionsSchema> {
 
 export const userDraftSchema = z.object({
   // name: z.string(),
-  email: z.string().optional(),
+  email: z.string().nullable(),
   // passwordHash: z.string(), // todo: clecan up once deciding on user auth system
   permissions: userPermissionsSchema,
 });

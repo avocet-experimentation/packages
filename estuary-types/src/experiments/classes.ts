@@ -15,27 +15,34 @@ export class ExperimentDraft implements z.infer<typeof experimentDraftSchema> {
   environmentName: string;
   status: RuleStatus;
   type: 'Experiment';
+  description: string | null;
+  hypothesis: string | null;
+  startTimestamp: number | null;
+  endTimestamp: number | null;
   groups: ExperimentGroup[];
   enrollment: Enrollment;
   flagIds: string[];
   dependents: Metric[];
   definedTreatments: Record<string,Treatment>;
 
-  constructor(draft: Omit<ExperimentDraft, 'type'>) {
-    this.name = draft.name;
-    this.environmentName = draft.environmentName;
-    this.status = draft.status;
-    this.groups = draft.groups;
-    this.enrollment = draft.enrollment;
-    this.flagIds = draft.flagIds;
-    this.dependents = draft.dependents;
-    this.definedTreatments = draft.definedTreatments;
-    // this.definedSequences = definedSequences;
+  constructor(experimentDraft: Omit<ExperimentDraft, 'type'>) {
+    this.name = experimentDraft.name;
+    this.environmentName = experimentDraft.environmentName;
+    this.status = experimentDraft.status;
+    this.description = experimentDraft.description;
+    this.hypothesis = experimentDraft.hypothesis;
+    this.startTimestamp = experimentDraft.startTimestamp;
+    this.endTimestamp = experimentDraft.endTimestamp;
+    this.groups = experimentDraft.groups;
+    this.enrollment = experimentDraft.enrollment;
+    this.flagIds = experimentDraft.flagIds;
+    this.dependents = experimentDraft.dependents;
+    this.definedTreatments = experimentDraft.definedTreatments;
 
     this.type = 'Experiment';
   }
 
-  /* Helper methods for working with ExperimentDrafts and Experiments */
+  // #region Helper methods for working with ExperimentDrafts and Experiments
   static isExperiment(arg: unknown): arg is Experiment {
     const safeParseResult = experimentSchema.safeParse(arg);
     return safeParseResult.success;
@@ -52,4 +59,5 @@ export class ExperimentDraft implements z.infer<typeof experimentDraftSchema> {
 
     return group.sequence.map((treatmentId) => experiment.definedTreatments[treatmentId]);
   }
+  // #endregion
 }
