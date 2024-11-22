@@ -17,6 +17,9 @@ export const clientPropMappingSchema = z.record(clientPropNameSchema, clientProp
  */
 export interface ClientPropMapping extends z.infer<typeof clientPropMappingSchema> {};
 
+export const clientPropEntriesSchema = z.array(z.tuple([clientPropNameSchema, clientPropValueSchema]));
+export type ClientPropEntries = z.infer<typeof clientPropEntriesSchema>; 
+
 export const clientPropDefDraftSchema = z.object({
   name: nonEmptyStringSchema,
   description: z.string().optional(),
