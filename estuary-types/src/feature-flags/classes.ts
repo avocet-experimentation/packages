@@ -1,33 +1,46 @@
 import { z } from "zod";
 import { featureFlagDraftSchema, OverrideRuleUnion } from "./schema.js";
 import {
-  FlagValueDefTemplate,
   FlagEnvironmentMappingTemplate,
   FlagEnvironmentPropsTemplate,
   FlagEnvironmentMapping,
+  FlagValueDefImpl,
  } from "./child-classes.js";
 import { FeatureFlag } from "../shared/imputed.js";
-import { FlagValueDef } from "../helpers/flag-value.js";
+import { FlagValueDef, FlagValueFromTypeDef, FlagValueTypeDef } from "../helpers/flag-value.js";
 import { RequireOnly } from "../helpers/utility-types.js";
 
-export class FeatureFlagDraft implements z.infer<typeof featureFlagDraftSchema> {
+type DraftRequired<T extends FlagValueTypeDef> = RequireOnly<FeatureFlagDraft<T>, 'name' | 'value'>;
+
+export class FeatureFlagDraft<T extends FlagValueTypeDef = FlagValueTypeDef> implements z.infer<typeof featureFlagDraftSchema> {
   name: string;
   description: string | null;
-  value: FlagValueDef;
+  value: FlagValueFromTypeDef<T>;
   environments: FlagEnvironmentMapping;
 
-  constructor(featureFlagDraft: FeatureFlagDraft) {
+  constructor(featureFlagDraft: FeatureFlagDraft<T>) {
     this.name = featureFlagDraft.name;
     this.description = featureFlagDraft.description;
     this.value = featureFlagDraft.value;
     this.environments = featureFlagDraft.environments;
   }
 
+  static template<T extends FlagValueTypeDef>(
+    partialFlagDraft: DraftRequired<T> & { value: FlagValueDefImpl<T> },
+  ) {
+    const defaults = {
+      description: null,
+      environments: new FlagEnvironmentMappingTemplate(),
+    };
+
+    return new FeatureFlagDraft({ ...defaults, ...partialFlagDraft });
+  }
+
   /* Helpers for working with FeatureFlags */
   /**
    * Get the data for a given environment on a draft or completed feature flag
    */
-  static environmentData(flag: FeatureFlagDraft | FeatureFlag, environmentName: string) {
+  static environmentData<T extends FlagValueTypeDef>(flag: FeatureFlagDraft<T> | FeatureFlag, environmentName: string) {
     if (!(environmentName in flag.environments)) {
       Object.assign(
         flag.environments, {
@@ -42,7 +55,10 @@ export class FeatureFlagDraft implements z.infer<typeof featureFlagDraftSchema> 
    * Get all rules on a flag corresponding to the passed environment name, or 
    * all its rules if none are passed
    */
-  static getRules(flag: FeatureFlagDraft | FeatureFlag, environmentName?: string) {
+  static getRules<T extends FlagValueTypeDef>(
+    flag: FeatureFlagDraft<T> | FeatureFlag,
+    environmentName?: string,
+  ) {
     if (!environmentName) {
       const collatedRules = Object.values(flag.environments)
         .reduce(
@@ -70,15 +86,13 @@ function isKeyOf<T extends Record<any, any>>(
   );
 }
 
-export class FeatureFlagDraftTemplate extends FeatureFlagDraft {
-  constructor(partialFlagDraft: RequireOnly<FeatureFlagDraft, 'name' | 'value'>) {
-    const defaults = {
-      description: null,
-      environments: new FlagEnvironmentMappingTemplate(),
-    };
+// export class FeatureFlagDraftTemplate extends FeatureFlagDraft {
+//   constructor(partialFlagDraft: RequireOnly<FeatureFlagDraft, 'name' | 'value'>) {
+//     const defaults = {
+//       description: null,
+//       environments: new FlagEnvironmentMappingTemplate(),
+//     };
 
-    super({ ...defaults, ...partialFlagDraft });
-  }
-}
-
-
+//     super({ ...defaults, ...partialFlagDraft });
+//   }
+// }

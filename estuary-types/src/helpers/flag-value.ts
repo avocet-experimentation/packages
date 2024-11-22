@@ -14,14 +14,46 @@ export const flagBooleanValueSchema = z.object({
   type: z.literal("boolean"),
   initial: z.boolean(),
 });
+
+class FlagBooleanValue implements z.infer<typeof flagBooleanValueSchema> {
+  type: 'boolean';
+  initial: boolean;
+
+  constructor(value: FlagBooleanValue) {
+    this.type = value.type;
+    this.initial = value.initial;
+  }
+}
+
 export const flagStringValueSchema = z.object({
   type: z.literal("string"),
   initial: z.string(),
 });
+
+class FlagStringValue implements z.infer<typeof flagStringValueSchema> {
+  type: 'string';
+  initial: string;
+
+  constructor(value: FlagStringValue) {
+    this.type = value.type;
+    this.initial = value.initial;
+  }
+}
+
 export const flagNumberValueSchema = z.object({
   type: z.literal("number"),
   initial: z.number(),
 });
+
+class FlagNumberValue implements z.infer<typeof flagNumberValueSchema> {
+  type: 'number';
+  initial: number;
+
+  constructor(value: FlagNumberValue) {
+    this.type = value.type;
+    this.initial = value.initial;
+  }
+}
 
 export const flagValueDefSchema = z.union([
   flagBooleanValueSchema,
@@ -33,4 +65,13 @@ export const flagValueDefSchema = z.union([
  */
 export type FlagValueDef = z.infer<typeof flagValueDefSchema>;
 
-
+export type FlagCurrentValueFromTypeDef<D extends FlagValueTypeDef> =
+D extends 'string' ? string :
+D extends 'number' ? number :
+D extends 'boolean' ? boolean :
+never;
+export type FlagValueFromTypeDef<D extends FlagValueTypeDef> =
+D extends 'string' ? FlagStringValue :
+D extends 'number' ? FlagNumberValue :
+D extends 'boolean' ? FlagBooleanValue :
+never;
