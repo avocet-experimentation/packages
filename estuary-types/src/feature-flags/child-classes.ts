@@ -1,19 +1,19 @@
 import { z } from "zod";
-import {
-  OverrideRuleUnion,
-  flagEnvironmentPropsSchema,
-  flagEnvironmentMappingSchema,
-} from "./schema.js";
+// import {
+//   OverrideRuleUnion,
+//   flagEnvironmentPropsSchema,
+//   flagEnvironmentMappingSchema,
+// } from "./schema.js";
 import {
   FlagValueTypeDef,
-  FlagCurrentValue,
-  FlagValueDef,
-  flagBooleanValueSchema,
-  flagNumberValueSchema,
-  flagStringValueSchema,
+  // FlagCurrentValue,
+  // FlagValueDef,
+  // flagBooleanValueSchema,
+  // flagNumberValueSchema,
+  // flagStringValueSchema,
   FlagCurrentValueFromTypeDef,
 } from "../helpers/flag-value.js";
-import { RequireOnly } from "../helpers/utility-types.js";
+// import { RequireOnly } from "../helpers/utility-types.js";
 
 export class FlagValueDefImpl<T extends FlagValueTypeDef> {
   type: T;
@@ -52,62 +52,62 @@ export class FlagValueDefImpl<T extends FlagValueTypeDef> {
 /**
  * Environment-specific data for a `FeatureFlag`
  */
-export class FlagEnvironmentProps implements z.infer<typeof flagEnvironmentPropsSchema> {
-  name: string;
-  enabled: boolean;
-  overrideRules: OverrideRuleUnion[];
+// export class FlagEnvironmentProps implements z.infer<typeof flagEnvironmentPropsSchema> {
+//   name: string;
+//   enabled: boolean;
+//   overrideRules: OverrideRuleUnion[];
 
-  constructor({
-    name,
-    enabled,
-    overrideRules,
-  }: FlagEnvironmentProps) {
-    this.name = name;
-    this.enabled = enabled;
-    this.overrideRules = overrideRules;
-  }
+//   constructor({
+//     name,
+//     enabled,
+//     overrideRules,
+//   }: FlagEnvironmentProps) {
+//     this.name = name;
+//     this.enabled = enabled;
+//     this.overrideRules = overrideRules;
+//   }
 
-}
+// }
 
-export class FlagEnvironmentPropsTemplate extends FlagEnvironmentProps {
-  constructor(partialFlagEnvProps: RequireOnly<FlagEnvironmentProps, 'name'>) {
-    const defaults = {
-      enabled: false,
-      overrideRules: [],
-    }
-    super({ ...defaults, ...partialFlagEnvProps });
-  }
-}
-/**
- * Mapping of environment names to `FlagEnvironmentProps`.
- */
-export class FlagEnvironmentMapping implements z.infer<typeof flagEnvironmentMappingSchema> {
-  [environmentName: string]: FlagEnvironmentProps;
+// export class FlagEnvironmentPropsTemplate extends FlagEnvironmentProps {
+//   constructor(partialFlagEnvProps: RequireOnly<FlagEnvironmentProps, 'name'>) {
+//     const defaults = {
+//       enabled: false,
+//       overrideRules: [],
+//     }
+//     super({ ...defaults, ...partialFlagEnvProps });
+//   }
+// }
+// /**
+//  * Mapping of environment names to `FlagEnvironmentProps`.
+//  */
+// export class FlagEnvironmentMapping implements z.infer<typeof flagEnvironmentMappingSchema> {
+//   [environmentName: string]: FlagEnvironmentProps;
 
-  constructor(mapping: FlagEnvironmentMapping) {
-    Object.entries(mapping).forEach(([environmentName, props]) => {
-      this[environmentName] = props;
-    })
-  }
-}
+//   constructor(mapping: FlagEnvironmentMapping) {
+//     Object.entries(mapping).forEach(([environmentName, props]) => {
+//       this[environmentName] = props;
+//     })
+//   }
+// }
 
-/**
- * todo: 
- * - make this implementation take either of:
- *   - an array of environment names
- *   - an array of [name, FlagEnvironmentProps] entries
- * 
- * and remove the defaults
- */
-export class FlagEnvironmentMappingTemplate extends FlagEnvironmentMapping {
-  constructor(partialFlagEnvMapping?: FlagEnvironmentMapping) {
-    const defaults = {
-      prod: new FlagEnvironmentPropsTemplate({ name: 'prod' }),
-      dev: new FlagEnvironmentPropsTemplate({ name: 'dev' }),
-      testing: new FlagEnvironmentPropsTemplate({ name: 'testing' }),
-      staging: new FlagEnvironmentPropsTemplate({ name: 'staging' }),
-    };
+// /**
+//  * todo: 
+//  * - make this implementation take either of:
+//  *   - an array of environment names
+//  *   - an array of [name, FlagEnvironmentProps] entries
+//  * 
+//  * and remove the defaults
+//  */
+// export class FlagEnvironmentMappingTemplate extends FlagEnvironmentMapping {
+//   constructor(partialFlagEnvMapping?: FlagEnvironmentMapping) {
+//     const defaults = {
+//       prod: new FlagEnvironmentPropsTemplate({ name: 'prod' }),
+//       dev: new FlagEnvironmentPropsTemplate({ name: 'dev' }),
+//       testing: new FlagEnvironmentPropsTemplate({ name: 'testing' }),
+//       staging: new FlagEnvironmentPropsTemplate({ name: 'staging' }),
+//     };
 
-    super({ ...defaults, ...partialFlagEnvMapping });
-  }
-}
+//     super({ ...defaults, ...partialFlagEnvMapping });
+//   }
+// }

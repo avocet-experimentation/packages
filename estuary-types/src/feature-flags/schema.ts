@@ -12,22 +12,23 @@ export const overrideRuleUnionSchema = z.union([
 
 export type OverrideRuleUnion = z.infer<typeof overrideRuleUnionSchema>;
 
-export const flagEnvironmentPropsSchema = z.object({
-  name: environmentNameSchema,
-  enabled: z.boolean(),
-  overrideRules: z.array(overrideRuleUnionSchema),
-});
+// export const flagEnvironmentPropsSchema = z.object({
+//   name: environmentNameSchema,
+//   enabled: z.boolean(),
+//   overrideRules: z.array(overrideRuleUnionSchema),
+// });
 
-export const flagEnvironmentMappingSchema = z.record(
-  z.string(),
-  flagEnvironmentPropsSchema
-);
+// export const flagEnvironmentMappingSchema = z.record(
+//   z.string(),
+//   flagEnvironmentPropsSchema
+// );
 
 export const featureFlagDraftSchema = z.object({
   name: nonEmptyStringSchema,
   description: z.string().nullable(),
   value: flagValueDefSchema,
-  environments: flagEnvironmentMappingSchema,
+  environmentNames: z.array(z.string()),
+  overrideRules: z.array(overrideRuleUnionSchema),
 });
 
 
