@@ -27,7 +27,7 @@ export const featureFlagDraftSchema = z.object({
   name: nonEmptyStringSchema,
   description: z.string().nullable(),
   value: flagValueDefSchema,
-  environmentIds: z.array(z.string()),
+  environmentNames: z.array(z.string()),
   overrideRules: z.array(overrideRuleUnionSchema),
 });
 

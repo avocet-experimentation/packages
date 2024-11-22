@@ -10,14 +10,14 @@ export class FeatureFlagDraft<T extends FlagValueTypeDef = FlagValueTypeDef> imp
   name: string;
   description: string | null;
   value: FlagValueFromTypeDef<T>;
-  environmentIds: string[];
+  environmentNames: string[];
   overrideRules: OverrideRuleUnion[];
 
   constructor(featureFlagDraft: FeatureFlagDraft<T>) {
     this.name = featureFlagDraft.name;
     this.description = featureFlagDraft.description;
     this.value = featureFlagDraft.value;
-    this.environmentIds = featureFlagDraft.environmentIds;
+    this.environmentNames = featureFlagDraft.environmentNames;
     this.overrideRules = featureFlagDraft.overrideRules;
   }
 
@@ -27,7 +27,7 @@ export class FeatureFlagDraft<T extends FlagValueTypeDef = FlagValueTypeDef> imp
   ) {
     const defaults = {
       description: null,
-      environmentIds: [],
+      environmentNames: [],
       overrideRules: [],
     };
 
