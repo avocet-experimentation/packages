@@ -51,13 +51,13 @@ export const experimentDraftSchema = overrideRuleSchema.extend({
   definedTreatments: z.record(treatmentIdSchema, treatmentSchema), // treatments created on an Experiment are stored here for reuse
 });
 
-export const experimentReferenceSchema = z.object({
+export const experimentReferenceSchema = overrideRuleSchema.extend({
   id: bsonObjectIdHexStringSchema, // object id of the full experiment document
   type: z.literal('ExperimentReference'),
-  status: ruleStatusSchema,
+  // status: ruleStatusSchema,
   name: nonEmptyStringSchema,
-  environmentName: environmentNameSchema,
-  startTimestamp: nonNegativeIntegerSchema.nullable(),
-  endTimestamp: nonNegativeIntegerSchema.nullable(),
-  enrollment: enrollmentSchema,
+  // environmentName: environmentNameSchema,
+  // startTimestamp: nonNegativeIntegerSchema.nullable(),
+  // endTimestamp: nonNegativeIntegerSchema.nullable(),
+  // enrollment: enrollmentSchema,
 });
