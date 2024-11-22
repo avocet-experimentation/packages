@@ -99,6 +99,7 @@ export class ExperimentGroupTemplate extends ExperimentGroup {
 export class ExperimentReference implements z.infer<typeof experimentReferenceSchema> {
   id: string;
   name: string;
+  description: string | null;
   type: 'ExperimentReference';
   status: RuleStatus;
   environmentName: string;
@@ -109,6 +110,7 @@ export class ExperimentReference implements z.infer<typeof experimentReferenceSc
   constructor(experimentReference: Omit<ExperimentReference, 'type'>) {
     this.id = experimentReference.id;
     this.name = experimentReference.name;
+    this.description = experimentReference.description;
     this.type = 'ExperimentReference';
     this.status = experimentReference.status;
     this.environmentName = experimentReference.environmentName;
