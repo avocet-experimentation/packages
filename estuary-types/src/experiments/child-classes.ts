@@ -6,26 +6,26 @@ import {
   experimentReferenceSchema,
 } from "./schema.js";
 import { enrollmentSchema, RuleStatus } from "../override-rules/override-rules.schema.js";
-import { Experiment } from "../shared/imputed.js";
+import { RequireOnly } from "../helpers/utility-types.js";
 
 export class Enrollment implements z.infer<typeof enrollmentSchema> {
   attributes: string[];
   proportion: number;
 
-  constructor({ attributes, proportion }: Enrollment) {
-    this.attributes = attributes;
-    this.proportion = proportion;
+  constructor(enrollment: Enrollment) {
+    this.attributes = enrollment.attributes;
+    this.proportion = enrollment.proportion;
   }
 }
 
 export class EnrollmentTemplate extends Enrollment {
-  constructor() {
+  constructor(partialEnrollment?: Partial<Enrollment>) {
     const defaults = {
       attributes: [],
       proportion: 0,
     };
 
-    super(defaults);
+    super({ ...defaults, ...partialEnrollment });
   }
 }
 
@@ -38,24 +38,22 @@ export class Treatment implements z.infer<typeof treatmentSchema> {
   duration: number;
   flagStates: FlagState[];
 
-  constructor({
-    name, duration, flagStates,
-  }: Omit<Treatment, 'id'>) {
-    this.id = crypto.randomUUID(),
-
-    this.name = name;
-    this.duration = duration;
-    this.flagStates = flagStates;
+  constructor(treatment: Treatment) {
+    this.id = treatment.id;
+    this.name = treatment.name;
+    this.duration = treatment.duration;
+    this.flagStates = treatment.flagStates;
   }
 }
 
 export class TreatmentTemplate extends Treatment {
-  constructor(name: string) {
+  constructor(partialTreatment: RequireOnly<Treatment, 'name'>) {
     const defaults = {
+      id: crypto.randomUUID(),
       duration: 0,
       flagStates: [],
     };
-    super({ name, ...defaults });
+    super({ ...defaults, ...partialTreatment });
   }
 }
 
@@ -65,31 +63,33 @@ export class TreatmentTemplate extends Treatment {
 export class ExperimentGroup implements z.infer<typeof experimentGroupSchema> {
   id: string;
   name: string;
+  description: string | null;
   proportion: number;
   sequence: string[];
   cycles: number;
 
-  constructor({
-    name, proportion, sequence, cycles,
-  }: Omit<ExperimentGroup, 'id'>) {
-    this.id = crypto.randomUUID();
-    this.name = name;
-    this.proportion = proportion;
-    this.sequence = sequence;
-    this.cycles = cycles;
+  constructor(group: ExperimentGroup) {
+    this.id = group.id;
+    this.name = group.name;
+    this.description = group.description;
+    this.proportion = group.proportion;
+    this.sequence = group.sequence;
+    this.cycles = group.cycles;
   }
 }
 
 export class ExperimentGroupTemplate extends ExperimentGroup {
-  constructor(name: string) {
+  constructor(partialGroup: RequireOnly<ExperimentGroup, 'name'>) {
 
     const defaults = {
+      id: crypto.randomUUID(),
+      description: null,
       proportion: 0,
       sequence: [],
       cycles: 1,
     };
 
-    super({ name, ...defaults });
+    super({ ...defaults, ...partialGroup });
   }
 }
 
@@ -102,34 +102,32 @@ export class ExperimentReference implements z.infer<typeof experimentReferenceSc
   type: 'ExperimentReference';
   status: RuleStatus;
   environmentName: string;
-  startTimestamp?: number;
-  endTimestamp?: number;
+  startTimestamp: number | null;
+  endTimestamp: number | null;
   enrollment: Enrollment;
 
-  constructor(experiment: Omit<ExperimentReference, 'type'>) {
-    this.id = experiment.id;
-    this.name = experiment.name;
+  constructor(experimentReference: Omit<ExperimentReference, 'type'>) {
+    this.id = experimentReference.id;
+    this.name = experimentReference.name;
     this.type = 'ExperimentReference';
-    this.status = experiment.status;
-    this.environmentName = experiment.environmentName;
-    this.startTimestamp = experiment.startTimestamp;
-    this.endTimestamp = experiment.endTimestamp;
-    this.enrollment = experiment.enrollment;
+    this.status = experimentReference.status;
+    this.environmentName = experimentReference.environmentName;
+    this.startTimestamp = experimentReference.startTimestamp;
+    this.endTimestamp = experimentReference.endTimestamp;
+    this.enrollment = experimentReference.enrollment;
   }
 }
 
 export class ExperimentReferenceTemplate extends ExperimentReference {
-  constructor(experimentId: string, experimentName: string, environmentName: string) {
+  constructor(partialExpRef: RequireOnly<ExperimentReference, 'id' | 'name' | 'environmentName'>) {
     const defaults = {
       status: 'draft' as const,
+      description: null,
+      startTimestamp: null,
+      endTimestamp: null,
       enrollment: new EnrollmentTemplate(),
     }
 
-    super({
-      id: experimentId,
-      name: experimentName,
-      environmentName,
-      ...defaults,
-    });
+    super({ ...defaults, ...partialExpRef });
   }
 }

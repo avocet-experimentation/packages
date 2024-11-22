@@ -35,7 +35,7 @@ export const treatmentSchema = z.object({
 export const experimentGroupSchema = z.object({
   id: z.string(),
   name: nonEmptyStringSchema,
-  description: z.string().optional(),
+  description: z.string().nullable(),
   proportion: z.number(),
   sequence: z.array(treatmentIdSchema),
   cycles: positiveIntegerSchema,
@@ -43,7 +43,7 @@ export const experimentGroupSchema = z.object({
 
 export const experimentDraftSchema = overrideRuleSchema.extend({
   name: nonEmptyStringSchema,
-  hypothesis: z.string().optional(),
+  hypothesis: z.string().nullable(),
   type: z.literal("Experiment"),
   groups: z.array(experimentGroupSchema),
   flagIds: z.array(z.string()),
@@ -57,7 +57,7 @@ export const experimentReferenceSchema = z.object({
   status: ruleStatusSchema,
   name: nonEmptyStringSchema,
   environmentName: environmentNameSchema,
-  startTimestamp: nonNegativeIntegerSchema.optional(),
-  endTimestamp: nonNegativeIntegerSchema.optional(),
+  startTimestamp: nonNegativeIntegerSchema.nullable(),
+  endTimestamp: nonNegativeIntegerSchema.nullable(),
   enrollment: enrollmentSchema,
 });

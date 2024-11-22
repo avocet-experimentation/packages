@@ -8,7 +8,7 @@ import { flagCurrentValueSchema } from "../helpers/flag-value.js";
  */
 export const clientConnectionDraftSchema = z.object({
   name: nonEmptyStringSchema,
-  description: z.string().optional(),
+  description: z.string().nullable(),
   environmentId: z.string(),
   // clientKeyHash: z.string(), // TBD
 });

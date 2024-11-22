@@ -22,7 +22,7 @@ export type ClientPropEntries = z.infer<typeof clientPropEntriesSchema>;
 
 export const clientPropDefDraftSchema = z.object({
   name: nonEmptyStringSchema,
-  description: z.string().optional(),
+  description: z.string().nullable(),
   dataType: clientPropValueSchema,
   isIdentifier: z.boolean(),
 });

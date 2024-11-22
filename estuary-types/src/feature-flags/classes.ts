@@ -8,18 +8,19 @@ import {
  } from "./child-classes.js";
 import { FeatureFlag } from "../shared/imputed.js";
 import { FlagValueDef } from "../helpers/flag-value.js";
+import { RequireOnly } from "../helpers/utility-types.js";
 
 export class FeatureFlagDraft implements z.infer<typeof featureFlagDraftSchema> {
   name: string;
-  description?: string;
+  description: string | null;
   value: FlagValueDef;
   environments: FlagEnvironmentMapping;
 
-  constructor(draft: FeatureFlagDraft) {
-    this.name = draft.name;
-    this.description = draft.description;
-    this.value = draft.value;
-    this.environments = draft.environments;
+  constructor(featureFlagDraft: FeatureFlagDraft) {
+    this.name = featureFlagDraft.name;
+    this.description = featureFlagDraft.description;
+    this.value = featureFlagDraft.value;
+    this.environments = featureFlagDraft.environments;
   }
 
   /* Helpers for working with FeatureFlags */
@@ -30,7 +31,7 @@ export class FeatureFlagDraft implements z.infer<typeof featureFlagDraftSchema> 
     if (!(environmentName in flag.environments)) {
       Object.assign(
         flag.environments, {
-        [environmentName]: new FlagEnvironmentPropsTemplate(environmentName),
+        [environmentName]: new FlagEnvironmentPropsTemplate({ name: environmentName }),
       });
     }
 
@@ -57,7 +58,10 @@ export class FeatureFlagDraft implements z.infer<typeof featureFlagDraftSchema> 
   }
 }
 
-function isKeyOf<T extends Record<any, any>, K extends keyof T>(possibleKey: string | number | symbol, obj: T): possibleKey is keyof T {
+function isKeyOf<T extends Record<any, any>>(
+  possibleKey: string | number | symbol,
+  obj: T,
+): possibleKey is keyof T {
   return (possibleKey in obj 
     && (
       typeof possibleKey !== 'symbol' && obj[possibleKey] !== undefined
@@ -67,13 +71,13 @@ function isKeyOf<T extends Record<any, any>, K extends keyof T>(possibleKey: str
 }
 
 export class FeatureFlagDraftTemplate extends FeatureFlagDraft {
-  constructor(name: string, dataType: "string" | "number" | "boolean") {
+  constructor(partialFlagDraft: RequireOnly<FeatureFlagDraft, 'name' | 'value'>) {
     const defaults = {
-      value: new FlagValueDefTemplate(dataType) as FlagValueDef,
+      description: null,
       environments: new FlagEnvironmentMappingTemplate(),
     };
 
-    super({ name, ...defaults });
+    super({ ...defaults, ...partialFlagDraft });
   }
 }
 

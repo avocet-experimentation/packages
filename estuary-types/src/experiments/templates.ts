@@ -3,35 +3,31 @@ import {
   TreatmentTemplate,
   ExperimentGroup,
   ExperimentGroupTemplate,
+  EnrollmentTemplate,
 } from "./child-classes.js";
-import { idMap } from '../helpers/index.js';
+import { RequireOnly, idMap } from '../helpers/index.js';
 
-
-type ExperimentDraftDefaults = Pick<ExperimentDraft, 'groups' |
-  'enrollment' |
-  'flagIds' |
-  'dependents' |
-  'definedTreatments'
->;
 /**
  * Uses defaults where possible to make a bare-bones ExperimentDraft
  */
 
 export class ExperimentDraftTemplate extends ExperimentDraft {
-  constructor(name: string, environmentName: string) {
-    const status = 'draft';
+  constructor(partialDraft: RequireOnly<ExperimentDraft, 'name' | 'environmentName'>) {
 
-    const defaults: ExperimentDraftDefaults = {
+    const defaults = {
+      status: 'draft' as const,
+      description: null,
+      hypothesis: null,
+      startTimestamp: null,
+      endTimestamp: null,
       groups: [],
-      enrollment: {
-        attributes: [],
-        proportion: 0,
-      },
+      enrollment: new EnrollmentTemplate(),
       flagIds: [],
       dependents: [],
       definedTreatments: {},
     };
-    super({ name, environmentName, status, ...defaults });
+
+    super({ ...defaults, ...partialDraft });
   }
 }
 /**
@@ -40,15 +36,14 @@ export class ExperimentDraftTemplate extends ExperimentDraft {
  */
 
 export class SwitchbackTemplate extends ExperimentDraft {
-  constructor(name: string, environmentName: string) {
-    const status = 'draft';
+  constructor(partialSwitchback: RequireOnly<ExperimentDraft, 'name' | 'environmentName'>) {
 
     const treatments = [
-      new TreatmentTemplate('Control'),
-      new TreatmentTemplate('Experimental'),
+      new TreatmentTemplate({ name: 'Control'}),
+      new TreatmentTemplate({ name: 'Experimental'}),
     ];
 
-    const group = new ExperimentGroup({
+    const group = new ExperimentGroupTemplate({
       name: 'Experimental',
       proportion: 1,
       sequence: [],
@@ -56,6 +51,11 @@ export class SwitchbackTemplate extends ExperimentDraft {
     });
 
     const defaults = {
+      description: null,
+      hypothesis: null,
+      status: 'draft' as const,
+      startTimestamp: null,
+      endTimestamp: null,
       groups: [group],
       enrollment: { attributes: [], proportion: 0 },
       flagIds: [],
@@ -63,7 +63,7 @@ export class SwitchbackTemplate extends ExperimentDraft {
       definedTreatments: idMap(treatments),
     };
 
-    super({ name, environmentName, status, ...defaults });
+    super({ ...defaults, ...partialSwitchback });
   }
 }
 
@@ -71,20 +71,24 @@ export class SwitchbackTemplate extends ExperimentDraft {
  * Creates an experiment with two groups and one treatment assigned to each
  */
 export class ABExperimentTemplate extends ExperimentDraft {
-  constructor(name: string, environmentName: string) {
-    const status = 'draft';
+  constructor(partialABExperiment: RequireOnly<ExperimentDraft, 'name' | 'environmentName'>) {
 
     const treatments = [
-      new TreatmentTemplate('Control'),
-      new TreatmentTemplate('Experimental'),
+      new TreatmentTemplate({ name: 'Control'}),
+      new TreatmentTemplate({ name: 'Experimental'}),
     ];
 
     const groups = [
-      new ExperimentGroupTemplate('Group 1'),
-      new ExperimentGroupTemplate('Group 2'),
+      new ExperimentGroupTemplate({ name: 'Group 1' }),
+      new ExperimentGroupTemplate({ name: 'Group 2' }),
     ];
 
     const defaults = {
+      description: null,
+      hypothesis: null,
+      startTimestamp: null,
+      endTimestamp: null,
+      status: 'draft' as const,
       groups,
       enrollment: { attributes: [], proportion: 0 },
       flagIds: [],
@@ -92,6 +96,6 @@ export class ABExperimentTemplate extends ExperimentDraft {
       definedTreatments: idMap(treatments),
     };
 
-    super({ name, environmentName, status, ...defaults });
+    super({ ...defaults, ...partialABExperiment });
   }
 }
