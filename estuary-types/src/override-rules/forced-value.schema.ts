@@ -3,6 +3,7 @@ import { flagCurrentValueSchema } from "../helpers/flag-value.js";
 import { overrideRuleSchema } from "./override-rules.schema.js";
 
 export const forcedValueSchema = overrideRuleSchema.extend({
+  id: z.string(),
   type: z.literal('ForcedValue'),
   value: flagCurrentValueSchema,
 });
@@ -10,4 +11,4 @@ export const forcedValueSchema = overrideRuleSchema.extend({
  * A value forced for all users. Permits a simple override of a flag's default value
  * on a per-environment basis, optionally with a start or end time.
  */
-export interface ForcedValue extends z.infer<typeof forcedValueSchema> {};
+// export interface ForcedValue extends z.infer<typeof forcedValueSchema> {};

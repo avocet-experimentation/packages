@@ -41,7 +41,7 @@ export class Treatment implements z.infer<typeof treatmentSchema> {
   constructor({
     name, duration, flagStates,
   }: Omit<Treatment, 'id'>) {
-    this.id = self.crypto.randomUUID();
+    this.id = crypto.randomUUID(),
 
     this.name = name;
     this.duration = duration;
@@ -72,7 +72,7 @@ export class ExperimentGroup implements z.infer<typeof experimentGroupSchema> {
   constructor({
     name, proportion, sequence, cycles,
   }: Omit<ExperimentGroup, 'id'>) {
-    this.id = self.crypto.randomUUID();
+    this.id = crypto.randomUUID();
     this.name = name;
     this.proportion = proportion;
     this.sequence = sequence;
