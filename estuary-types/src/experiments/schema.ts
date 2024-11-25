@@ -1,9 +1,5 @@
 import { z } from "zod";
-import {
-  enrollmentSchema,
-  overrideRuleSchema,
-  ruleStatusSchema,
-} from "../override-rules/override-rules.schema.js";
+import { overrideRuleSchema } from "../override-rules/override-rules.schema.js";
 import { 
   bsonObjectIdHexStringSchema, 
   nonEmptyStringSchema, 
@@ -11,8 +7,7 @@ import {
   positiveIntegerSchema,
  } from "../helpers/bounded-primitives.js";
 import { metricSchema } from "../metrics/schema.js";
-import { flagCurrentValueSchema } from "../helpers/flag-value.js";
-import { environmentNameSchema } from "../helpers/names.js";
+import { flagCurrentValueSchema } from "../feature-flags/flag-value.js";
 
 export const flagStateSchema = z.object({ 
   id: bsonObjectIdHexStringSchema,
@@ -54,10 +49,5 @@ export const experimentDraftSchema = overrideRuleSchema.extend({
 export const experimentReferenceSchema = overrideRuleSchema.extend({
   id: bsonObjectIdHexStringSchema, // object id of the full experiment document
   type: z.literal('ExperimentReference'),
-  // status: ruleStatusSchema,
   name: nonEmptyStringSchema,
-  // environmentName: environmentNameSchema,
-  // startTimestamp: nonNegativeIntegerSchema.nullable(),
-  // endTimestamp: nonNegativeIntegerSchema.nullable(),
-  // enrollment: enrollmentSchema,
 });

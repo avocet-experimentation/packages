@@ -1,8 +1,11 @@
 import { z } from "zod";
 import { featureFlagDraftSchema, OverrideRuleUnion } from "./schema.js";
-import { FlagValueDefImpl } from "./child-classes.js";
+import {
+  FlagValueDefImpl,
+  FlagValueFromTypeDef,
+  FlagValueTypeDef,
+ } from "./flag-value.js";
 import { FeatureFlag } from "../shared/imputed.js";
-import { FlagValueFromTypeDef, FlagValueTypeDef } from "../helpers/flag-value.js";
 import { RequireOnly } from "../helpers/utility-types.js";
 
 

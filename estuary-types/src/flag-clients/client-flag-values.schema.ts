@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { nonEmptyStringSchema } from "../helpers/bounded-primitives.js";
 import { flagNameSchema } from "../helpers/names.js";
-import { flagCurrentValueSchema } from "../helpers/flag-value.js";
+import { flagCurrentValueSchema } from "../feature-flags/flag-value.js";
 
 export const flagClientValueSchema = z.object({
   value: flagCurrentValueSchema,

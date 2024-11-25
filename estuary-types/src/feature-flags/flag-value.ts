@@ -75,3 +75,25 @@ D extends 'string' ? FlagStringValue :
 D extends 'number' ? FlagNumberValue :
 D extends 'boolean' ? FlagBooleanValue :
 never;
+
+export class FlagValueDefImpl<T extends FlagValueTypeDef> {
+  type: T;
+  initial: FlagCurrentValueFromTypeDef<T>;
+
+  constructor(flagValueDef: FlagValueDefImpl<T>) {
+    this.type = flagValueDef.type;
+    this.initial = flagValueDef.initial;
+  }
+
+  static template<T extends FlagValueTypeDef>(type: T) {
+    if (type === 'boolean') {
+      return new FlagValueDefImpl({ type: 'boolean', initial: false });
+    } else if (type === 'string') {
+      return new FlagValueDefImpl({ type: 'string', initial: '' });
+    } else if (type === 'number') {
+      return new FlagValueDefImpl({ type: 'number', initial: 0 });
+    } else {
+      throw new TypeError(`Argument ${type} must be a FlagValueTypeDef`);
+    }
+  }
+}
