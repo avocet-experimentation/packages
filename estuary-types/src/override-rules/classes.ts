@@ -46,7 +46,7 @@ export class ForcedValue implements z.infer<typeof forcedValueSchema> {
       description: null,
       startTimestamp: null,
       endTimestamp: null,
-      enrollment: new EnrollmentTemplate(),
+      enrollment: Enrollment.template(),
     }
 
     return new ForcedValue({ ...defaults, ...partialForcedValue });

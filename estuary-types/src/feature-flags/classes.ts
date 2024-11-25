@@ -24,20 +24,7 @@ export class FeatureFlagDraft<T extends FlagValueTypeDef = FlagValueTypeDef> imp
     this.overrideRules = featureFlagDraft.overrideRules;
   }
 
-  static template<T extends FlagValueTypeDef>(
-    partialFlagDraft: RequireOnly<FeatureFlagDraft<T>, 'name' | 'value'> 
-      & { value: FlagValueDefImpl<T> },
-  ) {
-    const defaults = {
-      description: null,
-      environmentNames: [],
-      overrideRules: [],
-    };
-
-    return new FeatureFlagDraft({ ...defaults, ...partialFlagDraft });
-  }
-
-  /* Helpers for working with FeatureFlags */
+  // #region Helpers for working with FeatureFlags
   /**
    * Get all rules on a flag corresponding to the passed environment name
    */
@@ -48,4 +35,47 @@ export class FeatureFlagDraft<T extends FlagValueTypeDef = FlagValueTypeDef> imp
       return flag.overrideRules
         .filter((rule) => rule.environmentName === environmentName);
   }
+  // #endregion
+  
+  // #region Templates
+  static template<T extends FlagValueTypeDef>(
+    partialFlagDraft: RequireOnly<FeatureFlagDraft<T>, 'name' | 'value'> 
+      & { value: FlagValueDefImpl<T> },
+  ) {
+    const defaults = {
+      description: null,
+      environmentNames: [],
+      overrideRules: [],
+    };
+
+    return new FeatureFlagDraft<T>({ ...defaults, ...partialFlagDraft });
+  }
+
+  static templateBoolean(
+    partialFlagDraft: RequireOnly<FeatureFlagDraft<'boolean'>, 'name'>
+  ): FeatureFlagDraft<'boolean'> {
+    return this.template({
+      ...partialFlagDraft,
+      value: FlagValueDefImpl.template('boolean'),
+    });
+  }
+
+  static templateString(
+    partialFlagDraft: RequireOnly<FeatureFlagDraft<'string'>, 'name'>
+  ): FeatureFlagDraft<'string'> {
+    return this.template({
+      ...partialFlagDraft,
+      value: FlagValueDefImpl.template('string'),
+    });
+  }
+
+  static templateNumber(
+    partialFlagDraft: RequireOnly<FeatureFlagDraft<'number'>, 'name'>
+  ): FeatureFlagDraft<'number'> {
+    return this.template({
+      ...partialFlagDraft,
+      value: FlagValueDefImpl.template('number'),
+    });
+  }
+  // #endregion
 }
