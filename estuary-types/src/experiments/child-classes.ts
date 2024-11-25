@@ -159,7 +159,7 @@ export class ExperimentReference implements z.infer<typeof experimentReferenceSc
       description: null,
       startTimestamp: null,
       endTimestamp: null,
-      enrollment: new EnrollmentTemplate(),
+      enrollment: Enrollment.template(),
     }
 
     return new ExperimentReference({ ...defaults, ...partialExpRef });

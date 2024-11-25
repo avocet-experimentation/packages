@@ -12,6 +12,7 @@ import {
 import { Experiment, experimentSchema } from "../shared/imputed.js";
 import { RuleStatus } from "../override-rules/override-rules.schema.js";
 import { RequireOnly } from "../helpers/utility-types.js";
+import { idMap } from "../helpers/utility-functions.js";
 
 /**
  * Creates a full ExperimentDraft
@@ -29,7 +30,7 @@ export class ExperimentDraft implements z.infer<typeof experimentDraftSchema> {
   enrollment: Enrollment;
   flagIds: string[];
   dependents: Metric[];
-  definedTreatments: Record<string,Treatment>;
+  definedTreatments: Record<string, Treatment>;
 
   constructor(experimentDraft: Omit<ExperimentDraft, 'type'>) {
     this.name = experimentDraft.name;
@@ -77,7 +78,7 @@ export class ExperimentDraft implements z.infer<typeof experimentDraftSchema> {
       startTimestamp: null,
       endTimestamp: null,
       groups: [],
-      enrollment: new EnrollmentTemplate(),
+      enrollment: Enrollment.template(),
       flagIds: [],
       dependents: [],
       definedTreatments: {},
@@ -86,5 +87,52 @@ export class ExperimentDraft implements z.infer<typeof experimentDraftSchema> {
     return new ExperimentDraft({ ...defaults, ...partialDraft });
   }
 
+  static templateSwitchback(partialSwitchback: RequireOnly<ExperimentDraft, 'name' | 'environmentName'>) {
+
+    const treatments = [
+      Treatment.template({ name: 'Control' }),
+      Treatment.template({ name: 'Experimental' }),
+    ];
+
+    const group = ExperimentGroup.template({
+      name: 'Experimental',
+      proportion: 1,
+      sequence: treatments.map((el) => el.id),
+      cycles: 2,
+    });
+
+    const defaults = {
+      groups: [group],
+      definedTreatments: idMap(treatments),
+    };
+
+    return this.template({ ...defaults, ...partialSwitchback });
+  }
+
+  static templateAB(partialABExperiment: RequireOnly<ExperimentDraft, 'name' | 'environmentName'>) {
+
+    const treatments = [
+      Treatment.template({ name: 'Control' }),
+      Treatment.template({ name: 'Experimental' }),
+    ];
+
+    const groups = [
+      ExperimentGroup.template({
+        name: 'Control Group',
+        sequence: [treatments[0].id],
+      }),
+      ExperimentGroup.template({
+        name: 'Experimental Group',
+        sequence: [treatments[1].id],
+      }),
+    ];
+
+    const defaults = {
+      groups,
+      definedTreatments: idMap(treatments),
+    };
+
+    return this.template({ ...defaults, ...partialABExperiment });
+  }
   // #endregion
 }
