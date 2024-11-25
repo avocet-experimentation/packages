@@ -16,6 +16,15 @@ export class Enrollment implements z.infer<typeof enrollmentSchema> {
     this.attributes = enrollment.attributes;
     this.proportion = enrollment.proportion;
   }
+
+  static template(partialEnrollment?: Partial<Enrollment>) {
+    const defaults = {
+      attributes: [],
+      proportion: 0,
+    };
+
+    return new Enrollment({ ...defaults, ...partialEnrollment });
+  }
 }
 
 export class EnrollmentTemplate extends Enrollment {
@@ -43,6 +52,16 @@ export class Treatment implements z.infer<typeof treatmentSchema> {
     this.name = treatment.name;
     this.duration = treatment.duration;
     this.flagStates = treatment.flagStates;
+  }
+
+  static template(partialTreatment: RequireOnly<Treatment, 'name'>) {
+    const defaults = {
+      id: crypto.randomUUID(),
+      duration: 0,
+      flagStates: [],
+    };
+
+    return new Treatment({ ...defaults, ...partialTreatment });
   }
 }
 
@@ -75,6 +94,19 @@ export class ExperimentGroup implements z.infer<typeof experimentGroupSchema> {
     this.proportion = group.proportion;
     this.sequence = group.sequence;
     this.cycles = group.cycles;
+  }
+
+  static template(partialGroup: RequireOnly<ExperimentGroup, 'name'>) {
+
+    const defaults = {
+      id: crypto.randomUUID(),
+      description: null,
+      proportion: 0,
+      sequence: [],
+      cycles: 1,
+    };
+
+    return new ExperimentGroup({ ...defaults, ...partialGroup });
   }
 }
 
@@ -117,6 +149,20 @@ export class ExperimentReference implements z.infer<typeof experimentReferenceSc
     this.startTimestamp = experimentReference.startTimestamp;
     this.endTimestamp = experimentReference.endTimestamp;
     this.enrollment = experimentReference.enrollment;
+  }
+
+  static template(
+    partialExpRef: RequireOnly<ExperimentReference, 'id' | 'name' | 'environmentName'>
+  ) {
+    const defaults = {
+      status: 'draft' as const,
+      description: null,
+      startTimestamp: null,
+      endTimestamp: null,
+      enrollment: new EnrollmentTemplate(),
+    }
+
+    return new ExperimentReference({ ...defaults, ...partialExpRef });
   }
 }
 
