@@ -26,7 +26,3 @@ export const clientPropDefDraftSchema = z.object({
   dataType: clientPropValueSchema,
   isIdentifier: z.boolean(),
 });
-/**
- * Definition of a client property visible server-side
- */
-export interface ClientPropDefDraft extends z.infer<typeof clientPropDefDraftSchema> {};
