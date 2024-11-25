@@ -18,11 +18,12 @@ import {
   userSchema,
   User,
  } from './imputed.js';
-import { UserDraft, userDraftSchema } from '../users/schema.js';
+import { userDraftSchema } from '../users/schema.js';
 import { FeatureFlagDraft } from '../feature-flags/classes.js';
 import { ExperimentDraft } from '../experiments/classes.js';
 import { clientPropDefDraftSchema } from '../flag-clients/client-props.schema.js';
 import { ClientPropDefDraft } from '../flag-clients/classes.js';
+import { UserDraft } from '../users/classes.js';
 
 export const estuaryDraftSchema = z.union([
   featureFlagDraftSchema,

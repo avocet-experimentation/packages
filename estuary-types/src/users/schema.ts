@@ -12,13 +12,9 @@ export type PermissionLevel = z.infer<typeof permissionLevelSchema>;
 
 export const userPermissionsSchema = z.record(estuaryMongoCollectionNameSchema, permissionLevelSchema);
 
-export interface UserPermissions extends z.infer<typeof userPermissionsSchema> {};
-
 export const userDraftSchema = z.object({
   // name: z.string(),
-  email: z.string().nullable(),
+  email: z.string(),
   // passwordHash: z.string(), // todo: clecan up once deciding on user auth system
   permissions: userPermissionsSchema,
 });
-
-export interface UserDraft extends z.infer<typeof userDraftSchema> {};
