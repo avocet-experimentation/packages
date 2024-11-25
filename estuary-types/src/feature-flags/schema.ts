@@ -1,9 +1,9 @@
 import { z } from "zod";
-import { environmentNameSchema, flagNameSchema } from "../helpers/names.js";
+import { flagNameSchema } from "../helpers/names.js";
 import { nonEmptyStringSchema } from "../helpers/bounded-primitives.js";
 import { experimentReferenceSchema } from "../experiments/schema.js";
 import { forcedValueSchema } from "../override-rules/forced-value.schema.js";
-import { flagValueDefSchema } from "../helpers/flag-value.js";
+import { flagValueDefSchema } from "./flag-value.js";
 
 export const overrideRuleUnionSchema = z.union([
   experimentReferenceSchema,
@@ -11,17 +11,6 @@ export const overrideRuleUnionSchema = z.union([
 ]);
 
 export type OverrideRuleUnion = z.infer<typeof overrideRuleUnionSchema>;
-
-// export const flagEnvironmentPropsSchema = z.object({
-//   name: environmentNameSchema,
-//   enabled: z.boolean(),
-//   overrideRules: z.array(overrideRuleUnionSchema),
-// });
-
-// export const flagEnvironmentMappingSchema = z.record(
-//   z.string(),
-//   flagEnvironmentPropsSchema
-// );
 
 export const featureFlagDraftSchema = z.object({
   name: nonEmptyStringSchema,

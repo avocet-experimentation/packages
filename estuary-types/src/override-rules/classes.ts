@@ -1,10 +1,14 @@
 import { z } from "zod";
 import { forcedValueSchema } from "./forced-value.schema.js";
 import { RuleStatus } from "./override-rules.schema.js";
-import { FlagCurrentValue } from "../helpers/flag-value.js";
+import { FlagCurrentValue } from "../feature-flags/flag-value.js";
 import { Enrollment, EnrollmentTemplate } from "../experiments/child-classes.js";
 import { RequireOnly } from "../helpers/utility-types.js";
 
+/**
+ * A value forced for all users. Permits a blanket override of a flag's default value
+ * on a per-environment basis, optionally with a start or end time.
+ */
 export class ForcedValue implements z.infer<typeof forcedValueSchema> {
   id: string;
   type: 'ForcedValue';
