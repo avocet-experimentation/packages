@@ -3,9 +3,15 @@ import {
   experimentDraftSchema,
 } from "./schema.js";
 import { Metric } from "../metrics/schema.js";
-import { Enrollment, ExperimentGroup, Treatment } from "./child-classes.js";
+import {
+  Enrollment,
+  EnrollmentTemplate,
+  ExperimentGroup,
+  Treatment,
+} from "./child-classes.js";
 import { Experiment, experimentSchema } from "../shared/imputed.js";
 import { RuleStatus } from "../override-rules/override-rules.schema.js";
+import { RequireOnly } from "../helpers/utility-types.js";
 
 /**
  * Creates a full ExperimentDraft
@@ -59,5 +65,26 @@ export class ExperimentDraft implements z.infer<typeof experimentDraftSchema> {
 
     return group.sequence.map((treatmentId) => experiment.definedTreatments[treatmentId]);
   }
+  // #endregion
+
+  // #region Templates
+  static template(partialDraft: RequireOnly<ExperimentDraft, 'name' | 'environmentName'>) {
+
+    const defaults = {
+      status: 'draft' as const,
+      description: null,
+      hypothesis: null,
+      startTimestamp: null,
+      endTimestamp: null,
+      groups: [],
+      enrollment: new EnrollmentTemplate(),
+      flagIds: [],
+      dependents: [],
+      definedTreatments: {},
+    };
+
+    return new ExperimentDraft({ ...defaults, ...partialDraft });
+  }
+
   // #endregion
 }
