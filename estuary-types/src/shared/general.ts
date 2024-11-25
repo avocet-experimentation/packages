@@ -21,7 +21,8 @@ import {
 import { UserDraft, userDraftSchema } from '../users/schema.js';
 import { FeatureFlagDraft } from '../feature-flags/classes.js';
 import { ExperimentDraft } from '../experiments/classes.js';
-import { clientPropDefDraftSchema, ClientPropDefDraft } from '../flag-clients/client-props.schema.js';
+import { clientPropDefDraftSchema } from '../flag-clients/client-props.schema.js';
+import { ClientPropDefDraft } from '../flag-clients/classes.js';
 
 export const estuaryDraftSchema = z.union([
   featureFlagDraftSchema,
