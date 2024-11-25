@@ -1,6 +1,5 @@
 import { z } from "zod";
 import { PermissionLevel, userDraftSchema, userPermissionsSchema } from "./schema.js";
-import { EstuaryMongoCollectionName } from "../helpers/names.js";
 import { RequireOnly } from "../helpers/utility-types.js";
 
 export class UserPermissions implements z.infer<typeof userPermissionsSchema> {
