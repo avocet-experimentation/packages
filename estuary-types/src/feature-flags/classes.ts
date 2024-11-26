@@ -9,11 +9,13 @@ import { FeatureFlag } from "../shared/imputed.js";
 import { RequireOnly } from "../helpers/utility-types.js";
 
 
-export class FeatureFlagDraft<T extends FlagValueTypeDef = FlagValueTypeDef> implements z.infer<typeof featureFlagDraftSchema> {
+export class FeatureFlagDraft<T extends FlagValueTypeDef = FlagValueTypeDef> 
+  implements z.infer<typeof featureFlagDraftSchema> {
+
   name: string;
   description: string | null;
   value: FlagValueFromTypeDef<T>;
-  environmentNames: string[];
+  environmentNames: Record<string, true>;
   overrideRules: OverrideRuleUnion[];
 
   constructor(featureFlagDraft: FeatureFlagDraft<T>) {
@@ -44,7 +46,7 @@ export class FeatureFlagDraft<T extends FlagValueTypeDef = FlagValueTypeDef> imp
   ) {
     const defaults = {
       description: null,
-      environmentNames: [],
+      environmentNames: {},
       overrideRules: [],
     };
 
