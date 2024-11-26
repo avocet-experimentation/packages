@@ -21,3 +21,5 @@ export const bsonObjectIdHexStringSchema = z.string().length(24);
  * See https://www.mongodb.com/docs/manual/reference/bson-types/#std-label-document-bson-type-date
  */
 export const bsonDateSchema = z.number().int();
+
+export const trueSchema = z.boolean().refine((data) => data === true);
