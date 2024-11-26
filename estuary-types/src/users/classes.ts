@@ -59,4 +59,12 @@ export class UserDraft implements z.infer<typeof userDraftSchema> {
 
     return new UserDraft({ ...defaults, ...partial });
   }
+
+  static templateViewOnly(partial: RequireOnly<UserDraft, 'email'>) {
+    const defaults = {
+      permissions: UserPermissions.templateLevel('view'),
+    }
+
+    return new UserDraft({ ...defaults, ...partial });
+  }
 }
