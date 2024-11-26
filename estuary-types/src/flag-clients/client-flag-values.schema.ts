@@ -4,8 +4,8 @@ import { flagNameSchema } from "../helpers/names.js";
 import { flagCurrentValueSchema } from "../feature-flags/flag-value.js";
 
 export const flagClientValueSchema = z.object({
-  value: flagCurrentValueSchema,
-  hash: z.string(),
+  value: flagCurrentValueSchema.nullable(),
+  hash: z.string().nullable(),
 });
 /**
  * The response sent to the client when checking the value of a flag
