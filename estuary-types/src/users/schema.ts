@@ -12,7 +12,7 @@ export type PermissionLevel = z.infer<typeof permissionLevelSchema>;
 
 export const userPermissionsSchema = z.record(estuaryMongoCollectionNameSchema, permissionLevelSchema)
   .refine((obj): obj is Required<typeof obj> => {
-    return estuaryMongoCollectionNameSchema.options.every((key) => obj[key] != null);
+    return estuaryMongoCollectionNameSchema.options.every((key) => key in obj);
   });
 
 export const userDraftSchema = z.object({
