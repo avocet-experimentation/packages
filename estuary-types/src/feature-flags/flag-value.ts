@@ -6,11 +6,20 @@ export const flagValueTypeDefSchema = z.enum(flagValueTypeDefArray);
 export type FlagValueTypeDef = z.infer<typeof flagValueTypeDefSchema>;
 
 export const flagCurrentValueSchema = z.union([z.boolean(), z.string(), z.number()]);
+
 /**
  * All supported flag value types
  */
 export type FlagCurrentValue = z.infer<typeof flagCurrentValueSchema>;
 
+export type FlagDefaultValueMapping = { [T in FlagValueTypeDef]: FlagCurrentValueFromTypeDef<T> };
+
+export const flagDefaultValueMap: FlagDefaultValueMapping = {
+  'string': '',
+  'number': 0,
+  'boolean': false,
+}
+  
 export const flagBooleanValueSchema = z.object({
   type: z.literal("boolean"),
   initial: z.boolean(),
