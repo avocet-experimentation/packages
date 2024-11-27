@@ -43,10 +43,24 @@ export class FeatureFlagDraft<T extends FlagValueTypeDef = FlagValueTypeDef>
     environmentName: string,
   ) {
     if (environmentName in flag.environmentNames) {
-      delete flag.environmentNames[environmentName];
+      this.disableEnvironment(flag, environmentName);
     } else {
-      Object.assign(flag.environmentNames, { [environmentName]: true });
+      this.enableEnvironment(flag, environmentName);
     }
+  }
+
+  static enableEnvironment(
+    flag: FeatureFlagDraft | FeatureFlag,
+    environmentName: string,
+  ) {
+    Object.assign(flag.environmentNames, { [environmentName]: true });
+  }
+
+  static disableEnvironment(
+    flag: FeatureFlagDraft | FeatureFlag,
+    environmentName: string,
+  ) {
+    delete flag.environmentNames[environmentName];
   }
   // #endregion
   
