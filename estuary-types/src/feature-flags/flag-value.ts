@@ -1,6 +1,7 @@
 import { z } from "zod";
 
-export const flagValueTypeDefSchema = z.enum(['string', 'number', 'boolean']);
+export const flagValueTypeDefArray = ['string', 'number', 'boolean'] as const;
+export const flagValueTypeDefSchema = z.enum(flagValueTypeDefArray);
 
 export type FlagValueTypeDef = z.infer<typeof flagValueTypeDefSchema>;
 
