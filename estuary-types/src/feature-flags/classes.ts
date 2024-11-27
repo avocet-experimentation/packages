@@ -34,8 +34,19 @@ export class FeatureFlagDraft<T extends FlagValueTypeDef = FlagValueTypeDef>
     flag: FeatureFlagDraft | FeatureFlag,
     environmentName: string,
   ) {
-      return flag.overrideRules
-        .filter((rule) => rule.environmentName === environmentName);
+    return flag.overrideRules
+      .filter((rule) => rule.environmentName === environmentName);
+  }
+
+  static toggleEnvironment(
+    flag: FeatureFlagDraft | FeatureFlag,
+    environmentName: string,
+  ) {
+    if (environmentName in flag.environmentNames) {
+      delete flag.environmentNames[environmentName];
+    } else {
+      Object.assign(flag.environmentNames, { [environmentName]: true });
+    }
   }
   // #endregion
   
