@@ -97,11 +97,11 @@ export class FlagValueDefImpl<T extends FlagValueTypeDef> {
 
   static template<T extends FlagValueTypeDef>(type: T) {
     if (type === 'boolean') {
-      return new FlagValueDefImpl({ type: 'boolean', initial: false });
+      return new FlagValueDefImpl({ type: 'boolean', initial: flagDefaultValueMap['boolean'] });
     } else if (type === 'string') {
-      return new FlagValueDefImpl({ type: 'string', initial: '' });
+      return new FlagValueDefImpl({ type: 'string', initial: flagDefaultValueMap['string'] });
     } else if (type === 'number') {
-      return new FlagValueDefImpl({ type: 'number', initial: 0 });
+      return new FlagValueDefImpl({ type: 'number', initial: flagDefaultValueMap['number'] });
     } else {
       throw new TypeError(`Argument ${type} must be a FlagValueTypeDef`);
     }
