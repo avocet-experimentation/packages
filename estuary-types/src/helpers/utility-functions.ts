@@ -1,11 +1,24 @@
 import { GeneralRecord } from "./utility-types.js";
 
+/**
+ * Convert an array of objects of type `T` to `Record<T[K], T>`,
+ * where `K` is a key that can be cast to a string
+ */
+export const mapToUniqueKey = <T, K extends keyof T>(
+  objects: T[],
+  key: K,
+) => {
+  return objects.reduce(
+    (acc, el) => Object.assign(acc, { [String(el[key])]: el }), 
+    {} as Record<K, T>,
+  )
+}
+
 export const idMap = <T extends { id: string; }>(
-  records: T[]
-): Record<string, T> => records.reduce((acc, el) => {
+  objects: T[]
+): Record<string, T> => objects.reduce((acc, el) => {
   return Object.assign(acc, { [el.id]: el });
 }, {} as Record<string, T>);
-
 
 export function isKeyOf<T extends Record<any, any>>(
   possibleKey: string | number | symbol,
