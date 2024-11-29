@@ -1,5 +1,6 @@
 import { z } from "zod";
-import { featureFlagDraftSchema, OverrideRuleUnion } from "./schema.js";
+import { featureFlagDraftSchema } from "./schema.js";
+import { OverrideRuleUnion } from "../override-rules/override-rule-union.schema.js";
 import {
   FlagValueDefImpl,
   FlagValueFromTypeDef,
