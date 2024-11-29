@@ -132,7 +132,7 @@ export class ExperimentReference implements z.infer<typeof experimentReferenceSc
   id: string;
   name: string;
   description: string | null;
-  type: 'ExperimentReference';
+  type: 'Experiment';
   status: RuleStatus;
   environmentName: string;
   startTimestamp: number | null;
@@ -143,7 +143,7 @@ export class ExperimentReference implements z.infer<typeof experimentReferenceSc
     this.id = experimentReference.id;
     this.name = experimentReference.name;
     this.description = experimentReference.description;
-    this.type = 'ExperimentReference';
+    this.type = 'Experiment';
     this.status = experimentReference.status;
     this.environmentName = experimentReference.environmentName;
     this.startTimestamp = experimentReference.startTimestamp;

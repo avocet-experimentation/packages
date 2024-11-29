@@ -48,6 +48,6 @@ export const experimentDraftSchema = overrideRuleSchema.extend({
 
 export const experimentReferenceSchema = overrideRuleSchema.extend({
   id: bsonObjectIdHexStringSchema, // object id of the full experiment document
-  type: z.literal('ExperimentReference'),
+  type: z.literal('Experiment'),
   name: nonEmptyStringSchema,
 });
