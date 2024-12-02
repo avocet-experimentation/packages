@@ -1,10 +1,9 @@
 import { z } from 'zod';
-import { ClientPropDefDraft, clientPropDefDraftSchema } from './flagClients.js';
-import { ClientConnectionDraft, clientConnectionDraftSchema } from "./flagClients.js";
-import { EnvironmentDraft, environmentDraftSchema } from "./environments.js";
-import { ExperimentDraft, experimentDraftSchema } from './experiments.js';
-import { FeatureFlagDraft, featureFlagDraftSchema } from './featureFlags.js';
-import { RequireOnly } from './util.js';
+import { ClientConnectionDraft, clientConnectionDraftSchema } from "../flag-clients/client-connections.schema.js";
+import { EnvironmentDraft, environmentDraftSchema } from "../environments/schema.js";
+import { experimentDraftSchema } from '../experiments/schema.js';
+import { featureFlagDraftSchema } from '../feature-flags/schema.js';
+import { RequireOnly } from '../helpers/utility-types.js';
 import {
   FeatureFlag,
   featureFlagSchema,
@@ -19,25 +18,14 @@ import {
   userSchema,
   User,
  } from './imputed.js';
-import { UserDraft, userDraftSchema } from './users.js';
+import { userDraftSchema } from '../users/schema.js';
+import { FeatureFlagDraft } from '../feature-flags/classes.js';
+import { ExperimentDraft } from '../experiments/classes.js';
+import { clientPropDefDraftSchema } from '../flag-clients/client-props.schema.js';
+import { ClientPropDefDraft } from '../flag-clients/classes.js';
+import { UserDraft } from '../users/classes.js';
 
-/**
- * Generic type representing all Zod schema.
- */
-export type AnyZodSchema = z.ZodTypeAny;
-
-export type EstuaryObjectSchema = z.AnyZodObject;
-
-/**
- * Infer a type from a schema
- */
-export type InferFromSchema<Z extends z.ZodTypeAny> = z.infer<Z>;
-/**
- * Infer an object type from a schema - might be useless
- */
-export type InferFromObjectSchema<S extends z.AnyZodObject> = InferFromSchema<S>;
-
-export const estuaryDraftTypesSchema = z.union([
+export const estuaryDraftSchema = z.union([
   featureFlagDraftSchema,
   experimentDraftSchema,
   environmentDraftSchema,
@@ -48,7 +36,7 @@ export const estuaryDraftTypesSchema = z.union([
 /**
  * Union of draft types
  */
-export type EstuaryDraftTypes = 
+export type EstuaryDraft = 
 | FeatureFlagDraft
 | ExperimentDraft
 | EnvironmentDraft
@@ -106,7 +94,7 @@ never;
 /**
  * Version that is complete but not yet assigned an ObjectId by MongoDB
  */
-export type BeforeId<T extends EstuaryMongoTypes> = Omit<T, 'id' | '_id'>;
+export type BeforeId<T extends EstuaryDraft> = Omit<T, 'id' | '_id'>;
 /**
  * Partial object used to update only the provided fields. Only the `id` field is required.
  */
