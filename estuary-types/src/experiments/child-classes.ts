@@ -27,17 +27,6 @@ export class Enrollment implements z.infer<typeof enrollmentSchema> {
   }
 }
 
-export class EnrollmentTemplate extends Enrollment {
-  constructor(partialEnrollment?: Partial<Enrollment>) {
-    const defaults = {
-      attributes: [],
-      proportion: 0,
-    };
-
-    super({ ...defaults, ...partialEnrollment });
-  }
-}
-
 /**
  * A time interval in which a specific combination of flag states is to be applied to subjects
  */
@@ -62,17 +51,6 @@ export class Treatment implements z.infer<typeof treatmentSchema> {
     };
 
     return new Treatment({ ...defaults, ...partialTreatment });
-  }
-}
-
-export class TreatmentTemplate extends Treatment {
-  constructor(partialTreatment: RequireOnly<Treatment, 'name'>) {
-    const defaults = {
-      id: crypto.randomUUID(),
-      duration: 0,
-      flagStates: [],
-    };
-    super({ ...defaults, ...partialTreatment });
   }
 }
 
@@ -107,21 +85,6 @@ export class ExperimentGroup implements z.infer<typeof experimentGroupSchema> {
     };
 
     return new ExperimentGroup({ ...defaults, ...partialGroup });
-  }
-}
-
-export class ExperimentGroupTemplate extends ExperimentGroup {
-  constructor(partialGroup: RequireOnly<ExperimentGroup, 'name'>) {
-
-    const defaults = {
-      id: crypto.randomUUID(),
-      description: null,
-      proportion: 0,
-      sequence: [],
-      cycles: 1,
-    };
-
-    super({ ...defaults, ...partialGroup });
   }
 }
 
@@ -163,19 +126,5 @@ export class ExperimentReference implements z.infer<typeof experimentReferenceSc
     }
 
     return new ExperimentReference({ ...defaults, ...partialExpRef });
-  }
-}
-
-export class ExperimentReferenceTemplate extends ExperimentReference {
-  constructor(partialExpRef: RequireOnly<ExperimentReference, 'id' | 'name' | 'environmentName'>) {
-    const defaults = {
-      status: 'draft' as const,
-      description: null,
-      startTimestamp: null,
-      endTimestamp: null,
-      enrollment: new EnrollmentTemplate(),
-    }
-
-    super({ ...defaults, ...partialExpRef });
   }
 }

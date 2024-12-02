@@ -2,7 +2,7 @@ import { z } from "zod";
 import { forcedValueSchema } from "./forced-value.schema.js";
 import { RuleStatus } from "./override-rules.schema.js";
 import { FlagCurrentValue } from "../feature-flags/flag-value.js";
-import { Enrollment, EnrollmentTemplate } from "../experiments/child-classes.js";
+import { Enrollment } from "../experiments/child-classes.js";
 import { RequireOnly } from "../helpers/utility-types.js";
 
 /**

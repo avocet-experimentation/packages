@@ -8,6 +8,7 @@ import {
  } from "./flag-value.js";
 import { FeatureFlag } from "../shared/imputed.js";
 import { RequireOnly } from "../helpers/utility-types.js";
+import { FlagState } from "../experiments/schema.js";
 
 
 export class FeatureFlagDraft<T extends FlagValueTypeDef = FlagValueTypeDef> 
@@ -63,6 +64,11 @@ export class FeatureFlagDraft<T extends FlagValueTypeDef = FlagValueTypeDef>
   ) {
     delete flag.environmentNames[environmentName];
   }
+
+  static getDefaultFlagStates(flags: FeatureFlag[]): FlagState[] {
+    return flags.map(({ id, value }) => ({ id, value: value.initial }));
+  }
+
   // #endregion
   
   // #region Templates
