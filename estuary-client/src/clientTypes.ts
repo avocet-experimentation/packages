@@ -1,12 +1,9 @@
 import {
-  EnvironmentName,
   ClientPropMapping,
-  FlagAttributes,
-  FlagClientValue,
 } from "@estuary/types";
 
 export type ClientOptions = {
-  environment: EnvironmentName; // placeholder until API keys are implemented
+  environment: string; // placeholder until API keys are implemented
   autoRefresh: boolean;
   refreshIntervalInSeconds?: number;
   attributeAssignmentCb?: <SpanType>(
@@ -16,10 +13,3 @@ export type ClientOptions = {
   apiUrl: string;
   clientProps: ClientPropMapping;
 };
-
-// // is this needed?
-// export {
-//   ClientPropMapping,
-//   FlagAttributes,
-//   FlagClientValue,
-// }

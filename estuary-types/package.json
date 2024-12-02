@@ -16,6 +16,7 @@
   ],
   "scripts": {
     "build": "npm i && rm -rf ./dist && tsc",
+    "rebuild": "rm -rf ./dist && tsc",
     "test": "vitest run"
   },
   "type": "module",

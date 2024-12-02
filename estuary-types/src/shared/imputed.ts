@@ -1,11 +1,11 @@
-
 import { z } from "zod";
-import { featureFlagDraftSchema } from "./featureFlags.js";
-import { clientConnectionDraftSchema, clientPropDefDraftSchema } from "./flagClients.js";
-import { environmentDraftSchema, environmentNameSchema } from "./environments.js";
-import { bsonObjectIdHexStringSchema, bsonDateSchema } from "./util.js";
-import { experimentDraftSchema } from "./experiments.js";
-import { userDraftSchema } from "./users.js";
+import { featureFlagDraftSchema } from "../feature-flags/schema.js";
+import { clientConnectionDraftSchema } from "../flag-clients/client-connections.schema.js";
+import { environmentDraftSchema } from "../environments/schema.js";
+import { bsonObjectIdHexStringSchema, bsonDateSchema } from "../helpers/bounded-primitives.js";
+import { experimentDraftSchema } from "../experiments/schema.js";
+import { userDraftSchema } from "../users/schema.js";
+import { clientPropDefDraftSchema } from "../flag-clients/client-props.schema.js";
 
 /* SCHEMA FOR TYPES WITH PROPERTIES IMPUTED BY CATTAILS */
 
@@ -27,6 +27,18 @@ export interface FeatureFlag extends z.infer<typeof featureFlagSchema> {};
 
 export const experimentSchema = experimentDraftSchema.merge(imputedBaseSchema);
 export interface Experiment extends z.infer<typeof experimentSchema> {};
+
+
+export interface ExperimentSummary extends Pick<Experiment,
+  'id' | 
+  'type' | 
+  'name' | 
+  'groups' | 
+  'status' | 
+  'enrollment' | 
+  'createdAt' |
+  'updatedAt'
+> {};
 
 
 export const environmentSchema = environmentDraftSchema.merge(imputedBaseSchema);

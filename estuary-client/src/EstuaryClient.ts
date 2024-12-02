@@ -1,10 +1,8 @@
 import {
-  EnvironmentName,
   flagClientMappingSchema,
   FlagClientMapping,
   ClientPropMapping,
   FlagClientValue,
-  FlagAttributes,
 } from "@estuary/types";
 import { ClientOptions } from "./clientTypes.js";
 
@@ -15,7 +13,7 @@ export class EstuaryClient {
     span: SpanType,
     attributes: Record<string, string>,
   ) => void;
-  private readonly environment: EnvironmentName;
+  private readonly environment: string;
   // private readonly clientKey: string; // to replace .environment eventually
   private flagMap: FlagClientMapping = {}; // represents cached data in memory
   private readonly apiUrl: string;

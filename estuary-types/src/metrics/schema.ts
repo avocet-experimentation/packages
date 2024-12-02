@@ -1,6 +1,6 @@
 import { z } from 'zod';
-import { oTelAttributeValueSchema } from './attributes.js';
-import { nonNegativeIntegerSchema } from './util.js';
+import { oTelAttributeValueSchema } from '../attributes.js';
+import { nonNegativeIntegerSchema } from '../helpers/bounded-primitives.js';
 
 /* TYPES FOR TRANSFORMED EVENTS AND DASHBOARD-DEFINED METRICS */
 
