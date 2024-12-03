@@ -1,8 +1,8 @@
-import { z } from "zod";
+import { ZodArray, z } from "zod";
 import { EstuaryMongoTypes } from '../shared/general.js';
-import { GeneralRecord } from './utility-types.js';
+import { EstuaryObjectSchema, GeneralRecord } from './utility-types.js';
 
-export class SchemaParseError<T extends EstuaryMongoTypes> extends Error {
+export class SchemaParseError<T> extends Error {
   constructor(safeParseError: z.SafeParseError<T>) {
     const formattedError = safeParseError.error.format();
     super(JSON.stringify(formattedError, null, 2));
