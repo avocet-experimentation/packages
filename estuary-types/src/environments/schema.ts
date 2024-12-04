@@ -1,5 +1,5 @@
-import { z } from "zod";
-import { environmentNameSchema } from "../helpers/names.js";
+import { z } from 'zod';
+import { environmentNameSchema } from '../helpers/names.js';
 
 // export const environmentNameSchema = z.enum(['prod', 'dev', 'testing', 'staging']);
 // /**
@@ -7,10 +7,8 @@ import { environmentNameSchema } from "../helpers/names.js";
 //  */
 // export type EnvironmentName = z.infer<typeof environmentNameSchema>;
 
-
 export const environmentDraftSchema = z.object({
   name: environmentNameSchema,
   defaultEnabled: z.boolean(),
+  pinToLists: z.boolean(),
 });
-
-export interface EnvironmentDraft extends z.infer<typeof environmentDraftSchema> {};
