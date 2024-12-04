@@ -1,41 +1,59 @@
-import { GeneralRecord } from "./utility-types.js";
+import { GeneralRecord } from './utility-types.js';
 
 /**
  * Convert an array of objects of type `T` to `Record<T[K], T>`,
- * where `K` is a key that can be cast to a string
+ * where `K` is a key to a value that can be cast to a string
  */
 export const mapToUniqueKey = <T, K extends keyof T>(
   objects: T[],
   key: K,
-) => {
-  return objects.reduce(
-    (acc, el) => Object.assign(acc, { [String(el[key])]: el }), 
-    {} as Record<K, T>,
-  )
-}
+): Record<string, T> =>
+    objects.reduce(
+      (acc: Record<string, T>, el) =>
+        Object.assign(acc, { [String(el[key])]: el }),
+      {},
+    );
 
-export const idMap = <T extends { id: string; }>(
-  objects: T[]
-): Record<string, T> => objects.reduce((acc, el) => {
-  return Object.assign(acc, { [el.id]: el });
-}, {} as Record<string, T>);
+const isNullish = (arg: unknown): arg is null | undefined =>
+  arg === null || arg === undefined;
+/**
+ * Mutably sorts an array of objects by the string order of the value on the
+ * specified key. The sort order of nullish values is not modified.
+ * Otherwise assumes that values can be cast to strings.
+ * @param key A top-level key on the objects passed
+ * @returns
+ */
+export const sortByKey = <T, K extends keyof T>(objects: T[], key: K): T[] =>
+  objects.sort((a, b) => {
+    if (isNullish(a[key])) return -1;
+    if (isNullish(b[key])) return 1;
+    const valueA = String(a[key]);
+    const valueB = String(b[key]);
+    if (valueA === valueB) return 0;
+    return valueA < valueB ? -1 : 1;
+  });
 
-export function isKeyOf<T extends Record<any, any>>(
+export const idMap = <T extends { id: string }>(
+  objects: T[],
+): Record<string, T> =>
+    objects.reduce(
+      (acc: Record<string, T>, el) => Object.assign(acc, { [el.id]: el }),
+      {},
+    );
+
+export function isKeyOf<T extends GeneralRecord>(
   possibleKey: string | number | symbol,
   obj: T,
 ): possibleKey is keyof T {
-  return (possibleKey in obj 
-    && (
-      typeof possibleKey !== 'symbol' && obj[possibleKey] !== undefined
-      || obj.possibleKey !== undefined
-    )
+  return (
+    possibleKey in obj
+    && ((typeof possibleKey !== 'symbol' && obj[possibleKey] !== undefined)
+      || obj.possibleKey !== undefined)
   );
 }
 
 function isObject(arg: unknown): arg is GeneralRecord {
-  const passedChecks = typeof arg === "object"
-    && arg !== null
-    && !Array.isArray(arg);
+  const passedChecks = typeof arg === 'object' && arg !== null && !Array.isArray(arg);
   return passedChecks;
 }
 
@@ -46,8 +64,8 @@ export function assertObject(arg: unknown): asserts arg is GeneralRecord {
 }
 
 export function isObjectWithProps(arg: unknown): arg is GeneralRecord {
-  const passedChecks = isObject(arg) && Object.keys(arg)
-    .filter(((key) => typeof key !== 'symbol')).length >= 1;
+  const passedChecks = isObject(arg)
+    && Object.keys(arg).filter((key) => typeof key !== 'symbol').length >= 1;
   return passedChecks;
 }
 /**
@@ -59,7 +77,7 @@ export function stripKeysWithUndefined(input: object) {
 
   const rec = (obj: GeneralRecord) => {
     const result = { ...obj };
-  
+
     Object.keys(result).forEach((key) => {
       const value = obj[key];
       if (result[key] === undefined) {
@@ -68,9 +86,9 @@ export function stripKeysWithUndefined(input: object) {
         result[key] = rec(value);
       }
     });
-  
+
     return result;
-  }
+  };
 
   return rec(input);
 }
