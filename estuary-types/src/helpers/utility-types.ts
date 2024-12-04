@@ -50,7 +50,9 @@ export const schemaOmit = <S extends z.ZodTypeAny>(schema: S, keys: string[]) =>
 
 export type AnyZodSchema = z.ZodTypeAny;
 
-export type EstuaryObjectSchema = z.AnyZodObject;
+export type ZodObjectSchema = z.AnyZodObject;
+
+export type ZodArraySchema<T extends AnyZodSchema> = z.ZodArray<T>;
 /**
  * Infer a type from a schema
  */
