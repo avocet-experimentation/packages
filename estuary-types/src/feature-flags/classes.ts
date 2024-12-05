@@ -1,23 +1,25 @@
-import { z } from "zod";
-import { featureFlagDraftSchema } from "./schema.js";
-import { OverrideRuleUnion } from "../override-rules/override-rule-union.schema.js";
+import { z } from 'zod';
+import { featureFlagDraftSchema } from './schema.js';
+import { OverrideRuleUnion } from '../override-rules/override-rule-union.schema.js';
 import {
   FlagValueDefImpl,
   FlagValueFromTypeDef,
   FlagValueTypeDef,
- } from "./flag-value.js";
-import { FeatureFlag } from "../shared/imputed.js";
-import { RequireOnly } from "../helpers/utility-types.js";
-import { FlagState } from "../experiments/schema.js";
+} from './flag-value.js';
+import { FeatureFlag } from '../shared/imputed.js';
+import { RequireOnly } from '../helpers/utility-types.js';
+import { FlagState } from '../experiments/schema.js';
 
-
-export class FeatureFlagDraft<T extends FlagValueTypeDef = FlagValueTypeDef> 
-  implements z.infer<typeof featureFlagDraftSchema> {
-
+export class FeatureFlagDraft<T extends FlagValueTypeDef = FlagValueTypeDef>
+implements z.infer<typeof featureFlagDraftSchema> {
   name: string;
+
   description: string | null;
+
   value: FlagValueFromTypeDef<T>;
+
   environmentNames: Record<string, true>;
+
   overrideRules: OverrideRuleUnion[];
 
   constructor(featureFlagDraft: FeatureFlagDraft<T>) {
@@ -36,8 +38,9 @@ export class FeatureFlagDraft<T extends FlagValueTypeDef = FlagValueTypeDef>
     flag: FeatureFlagDraft | FeatureFlag,
     environmentName: string,
   ) {
-    return flag.overrideRules
-      .filter((rule) => rule.environmentName === environmentName);
+    return flag.overrideRules.filter(
+      (rule) => rule.environmentName === environmentName,
+    );
   }
 
   static toggleEnvironment(
@@ -62,7 +65,8 @@ export class FeatureFlagDraft<T extends FlagValueTypeDef = FlagValueTypeDef>
     flag: FeatureFlagDraft | FeatureFlag,
     environmentName: string,
   ) {
-    delete flag.environmentNames[environmentName];
+    const { environmentNames } = flag;
+    delete environmentNames[environmentName];
   }
 
   static getDefaultFlagStates(flags: FeatureFlag[]): FlagState[] {
@@ -70,11 +74,12 @@ export class FeatureFlagDraft<T extends FlagValueTypeDef = FlagValueTypeDef>
   }
 
   // #endregion
-  
+
   // #region Templates
   static template<T extends FlagValueTypeDef>(
-    partialFlagDraft: RequireOnly<FeatureFlagDraft<T>, 'name' | 'value'> 
-      & { value: FlagValueDefImpl<T> },
+    partialFlagDraft: RequireOnly<FeatureFlagDraft<T>, 'name' | 'value'> & {
+      value: FlagValueDefImpl<T>;
+    },
   ) {
     const defaults = {
       description: null,
@@ -86,7 +91,7 @@ export class FeatureFlagDraft<T extends FlagValueTypeDef = FlagValueTypeDef>
   }
 
   static templateBoolean(
-    partialFlagDraft: RequireOnly<FeatureFlagDraft<'boolean'>, 'name'>
+    partialFlagDraft: RequireOnly<FeatureFlagDraft<'boolean'>, 'name'>,
   ): FeatureFlagDraft<'boolean'> {
     return this.template({
       ...partialFlagDraft,
@@ -95,7 +100,7 @@ export class FeatureFlagDraft<T extends FlagValueTypeDef = FlagValueTypeDef>
   }
 
   static templateString(
-    partialFlagDraft: RequireOnly<FeatureFlagDraft<'string'>, 'name'>
+    partialFlagDraft: RequireOnly<FeatureFlagDraft<'string'>, 'name'>,
   ): FeatureFlagDraft<'string'> {
     return this.template({
       ...partialFlagDraft,
@@ -104,7 +109,7 @@ export class FeatureFlagDraft<T extends FlagValueTypeDef = FlagValueTypeDef>
   }
 
   static templateNumber(
-    partialFlagDraft: RequireOnly<FeatureFlagDraft<'number'>, 'name'>
+    partialFlagDraft: RequireOnly<FeatureFlagDraft<'number'>, 'name'>,
   ): FeatureFlagDraft<'number'> {
     return this.template({
       ...partialFlagDraft,

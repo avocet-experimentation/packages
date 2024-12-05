@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { z } from 'zod';
 
 /* TYPES FOR RAW OPENTELEMETRY DATA */
 
@@ -8,7 +8,7 @@ export const scopeSchema = z.object({
   version: z.string(),
 });
 
-export interface Scope extends z.infer<typeof scopeSchema> {};
+export interface Scope extends z.infer<typeof scopeSchema> {}
 
 export const spanStringAttributeSchema = z.object({
   key: z.string(),
@@ -17,7 +17,8 @@ export const spanStringAttributeSchema = z.object({
   }),
 });
 
-export interface SpanStringAttribute extends z.infer<typeof spanStringAttributeSchema> {};
+export interface SpanStringAttribute
+  extends z.infer<typeof spanStringAttributeSchema> {}
 
 export const spanIntAttributeSchema = z.object({
   key: z.string(),
@@ -26,7 +27,8 @@ export const spanIntAttributeSchema = z.object({
   }),
 });
 
-export interface SpanIntAttribute extends z.infer<typeof spanIntAttributeSchema> {};
+export interface SpanIntAttribute
+  extends z.infer<typeof spanIntAttributeSchema> {}
 
 // export const spanPrimitiveAttributeSchema = z.union([
 //   spanStringAttributeSchema,
@@ -65,14 +67,14 @@ export const spanSchema = z.object({
   status: z.object({}), // placeholder type
 });
 
-export interface Span extends z.infer<typeof spanSchema> {}; 
+export interface Span extends z.infer<typeof spanSchema> {}
 
 export const scopeSpanSchema = z.object({
   scope: scopeSchema,
   spans: z.array(spanSchema),
 });
 
-export interface ScopeSpan extends z.infer<typeof scopeSpanSchema> {};
+export interface ScopeSpan extends z.infer<typeof scopeSpanSchema> {}
 
 export const resourceSpanSchema = z.object({
   resource: z.object({
@@ -81,7 +83,7 @@ export const resourceSpanSchema = z.object({
   scopeSpans: z.array(scopeSpanSchema),
 });
 
-export interface ResourceSpan extends z.infer<typeof resourceSpanSchema> {};
+export interface ResourceSpan extends z.infer<typeof resourceSpanSchema> {}
 
 export const spanTransformedAttributeSchema = z.object({
   key: z.string(),
@@ -89,7 +91,8 @@ export const spanTransformedAttributeSchema = z.object({
   value: z.string(),
 });
 
-export interface SpanTransformedAttribute extends z.infer<typeof spanTransformedAttributeSchema> {};
+export interface SpanTransformedAttribute
+  extends z.infer<typeof spanTransformedAttributeSchema> {}
 
 export const transformedSpanSchema = spanSchema
   .omit({ attributes: true })
@@ -98,9 +101,10 @@ export const transformedSpanSchema = spanSchema
     attributes: z.array(spanTransformedAttributeSchema),
   });
 
-  export interface TransformedSpan extends z.infer<typeof transformedSpanSchema> {};
+export interface TransformedSpan
+  extends z.infer<typeof transformedSpanSchema> {}
 
 // spans, traces, etc
 export const eventTelemetrySchema = transformedSpanSchema; // or potentially more
 
-export interface EventTelemetry extends z.infer<typeof eventTelemetrySchema> {};
+export interface EventTelemetry extends z.infer<typeof eventTelemetrySchema> {}

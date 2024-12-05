@@ -1,5 +1,4 @@
-import { ZodArray, z } from "zod";
-import { EstuaryMongoTypes } from '../shared/general.js';
+import { ZodArray, z } from 'zod';
 import { ZodObjectSchema, GeneralRecord } from './utility-types.js';
 
 export class SchemaParseError<T> extends Error {
@@ -10,8 +9,9 @@ export class SchemaParseError<T> extends Error {
   }
 }
 /**
- * parse and throw a concise SchemaParseError if it fails. Currently doesn't preserve type inferences
- * todo: 
+ * parse and throw a concise SchemaParseError if it fails. Currently doesn't
+ * preserve type inferences
+ * todo:
  * replace this placeholder function by modifying Zod's error map
  */
 export function parseWithConciseError(

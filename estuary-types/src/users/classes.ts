@@ -1,13 +1,22 @@
-import { z } from "zod";
-import { PermissionLevel, userDraftSchema, userPermissionsSchema } from "./schema.js";
-import { RequireOnly } from "../helpers/utility-types.js";
+import { z } from 'zod';
+import {
+  PermissionLevel,
+  userDraftSchema,
+  userPermissionsSchema,
+} from './schema.js';
+import { RequireOnly } from '../helpers/utility-types.js';
 
 export class UserPermissions implements z.infer<typeof userPermissionsSchema> {
   featureFlag: PermissionLevel;
+
   experiment: PermissionLevel;
+
   clientPropDef: PermissionLevel;
+
   clientConnection: PermissionLevel;
+
   environment: PermissionLevel;
+
   user: PermissionLevel;
 
   constructor(permissions: UserPermissions) {
@@ -30,7 +39,7 @@ export class UserPermissions implements z.infer<typeof userPermissionsSchema> {
       clientConnection: level,
       environment: level,
       user: level,
-    })
+    });
   }
 
   /**
@@ -45,6 +54,7 @@ export class UserPermissions implements z.infer<typeof userPermissionsSchema> {
 
 export class UserDraft implements z.infer<typeof userDraftSchema> {
   email: string;
+
   permissions: UserPermissions;
 
   constructor(draft: UserDraft) {
@@ -55,7 +65,7 @@ export class UserDraft implements z.infer<typeof userDraftSchema> {
   static templateAdmin(partial: RequireOnly<UserDraft, 'email'>) {
     const defaults = {
       permissions: UserPermissions.templateFull(),
-    }
+    };
 
     return new UserDraft({ ...defaults, ...partial });
   }
@@ -63,7 +73,7 @@ export class UserDraft implements z.infer<typeof userDraftSchema> {
   static templateViewOnly(partial: RequireOnly<UserDraft, 'email'>) {
     const defaults = {
       permissions: UserPermissions.templateLevel('view'),
-    }
+    };
 
     return new UserDraft({ ...defaults, ...partial });
   }
