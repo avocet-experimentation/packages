@@ -2,7 +2,7 @@ import { z } from 'zod';
 import { estuaryMongoCollectionNameSchema } from '../helpers/names.js';
 /*
   Dashboard user account types.
-  These are placeholders, likely to be revised once 
+  These are placeholders, likely to be revised once
   authentication is implemented
 */
 
@@ -10,10 +10,10 @@ export const permissionLevelSchema = z.enum(['none', 'view', 'edit', 'full']);
 
 export type PermissionLevel = z.infer<typeof permissionLevelSchema>;
 
-export const userPermissionsSchema = z.record(estuaryMongoCollectionNameSchema, permissionLevelSchema)
-  .refine((obj): obj is Required<typeof obj> => {
-    return estuaryMongoCollectionNameSchema.options.every((key) => key in obj);
-  });
+export const userPermissionsSchema = z
+  .record(estuaryMongoCollectionNameSchema, permissionLevelSchema)
+  .refine((obj): obj is Required<typeof obj> =>
+    estuaryMongoCollectionNameSchema.options.every((key) => key in obj));
 
 export const userDraftSchema = z.object({
   // name: z.string(),

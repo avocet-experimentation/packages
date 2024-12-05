@@ -1,7 +1,7 @@
-import { z } from "zod";
-import { nonEmptyStringSchema } from "../helpers/bounded-primitives.js";
-import { flagNameSchema } from "../helpers/names.js";
-import { flagCurrentValueSchema } from "../feature-flags/flag-value.js";
+import { z } from 'zod';
+import { nonEmptyStringSchema } from '../helpers/bounded-primitives.js';
+import { flagNameSchema } from '../helpers/names.js';
+import { flagCurrentValueSchema } from '../feature-flags/flag-value.js';
 
 export const flagClientValueSchema = z.object({
   value: flagCurrentValueSchema.nullable(),
@@ -10,18 +10,18 @@ export const flagClientValueSchema = z.object({
 /**
  * The response sent to the client when checking the value of a flag
  */
-export interface FlagClientValue extends z.infer<typeof flagClientValueSchema> {};
-
+export interface FlagClientValue
+  extends z.infer<typeof flagClientValueSchema> {}
 
 export const flagClientMappingSchema = z.record(
   flagNameSchema,
-  flagClientValueSchema
+  flagClientValueSchema,
 );
 /**
  * Mapping of flag names to their client-side data
  */
-export interface FlagClientMapping extends z.infer<typeof flagClientMappingSchema> {};
-
+export interface FlagClientMapping
+  extends z.infer<typeof flagClientMappingSchema> {}
 
 export const flagAttributesSchema = z.object({
   'feature_flag.key': nonEmptyStringSchema,
@@ -33,4 +33,4 @@ export const flagAttributesSchema = z.object({
  * For embedding in telemetry data. See https://opentelemetry.io/docs/specs/semconv/feature-flags/feature-flags-spans/
  * and https://opentelemetry.io/docs/specs/semconv/general/attribute-requirement-level/
  */
-export interface FlagAttributes extends z.infer<typeof flagAttributesSchema> {};
+export interface FlagAttributes extends z.infer<typeof flagAttributesSchema> {}

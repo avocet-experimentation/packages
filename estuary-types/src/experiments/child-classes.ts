@@ -1,15 +1,19 @@
-import { z } from "zod";
+import { z } from 'zod';
 import {
   FlagState,
   experimentGroupSchema,
   treatmentSchema,
   experimentReferenceSchema,
-} from "./schema.js";
-import { enrollmentSchema, RuleStatus } from "../override-rules/override-rules.schema.js";
-import { RequireOnly } from "../helpers/utility-types.js";
+} from './schema.js';
+import {
+  enrollmentSchema,
+  RuleStatus,
+} from '../override-rules/override-rules.schema.js';
+import { RequireOnly } from '../helpers/utility-types.js';
 
 export class Enrollment implements z.infer<typeof enrollmentSchema> {
   attributes: string[];
+
   proportion: number;
 
   constructor(enrollment: Enrollment) {
@@ -32,8 +36,11 @@ export class Enrollment implements z.infer<typeof enrollmentSchema> {
  */
 export class Treatment implements z.infer<typeof treatmentSchema> {
   id: string;
+
   name: string;
+
   duration: number;
+
   flagStates: FlagState[];
 
   constructor(treatment: Treatment) {
@@ -59,10 +66,15 @@ export class Treatment implements z.infer<typeof treatmentSchema> {
  */
 export class ExperimentGroup implements z.infer<typeof experimentGroupSchema> {
   id: string;
+
   name: string;
+
   description: string | null;
+
   proportion: number;
+
   sequence: string[];
+
   cycles: number;
 
   constructor(group: ExperimentGroup) {
@@ -75,7 +87,6 @@ export class ExperimentGroup implements z.infer<typeof experimentGroupSchema> {
   }
 
   static template(partialGroup: RequireOnly<ExperimentGroup, 'name'>) {
-
     const defaults = {
       id: crypto.randomUUID(),
       description: null,
@@ -91,15 +102,24 @@ export class ExperimentGroup implements z.infer<typeof experimentGroupSchema> {
 /**
  * Given an Experiment, create a reference object to embed into a feature flag
  */
-export class ExperimentReference implements z.infer<typeof experimentReferenceSchema> {
+export class ExperimentReference
+implements z.infer<typeof experimentReferenceSchema> {
   id: string;
+
   name: string;
+
   description: string | null;
+
   type: 'Experiment';
+
   status: RuleStatus;
+
   environmentName: string;
+
   startTimestamp: number | null;
+
   endTimestamp: number | null;
+
   enrollment: Enrollment;
 
   constructor(experimentReference: Omit<ExperimentReference, 'type'>) {
@@ -115,7 +135,10 @@ export class ExperimentReference implements z.infer<typeof experimentReferenceSc
   }
 
   static template(
-    partialExpRef: RequireOnly<ExperimentReference, 'id' | 'name' | 'environmentName'>
+    partialExpRef: RequireOnly<
+    ExperimentReference,
+    'id' | 'name' | 'environmentName'
+    >,
   ) {
     const defaults = {
       status: 'draft' as const,
@@ -123,7 +146,7 @@ export class ExperimentReference implements z.infer<typeof experimentReferenceSc
       startTimestamp: null,
       endTimestamp: null,
       enrollment: Enrollment.template(),
-    }
+    };
 
     return new ExperimentReference({ ...defaults, ...partialExpRef });
   }

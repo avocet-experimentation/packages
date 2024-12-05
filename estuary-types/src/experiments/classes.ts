@@ -1,36 +1,45 @@
-import { z } from "zod";
+import { z } from 'zod';
+import { FlagState, experimentDraftSchema } from './schema.js';
+import { Metric } from '../metrics/schema.js';
+import { Enrollment, ExperimentGroup, Treatment } from './child-classes.js';
 import {
-  FlagState,
-  experimentDraftSchema,
-} from "./schema.js";
-import { Metric } from "../metrics/schema.js";
-import {
-  Enrollment,
-  ExperimentGroup,
-  Treatment,
-} from "./child-classes.js";
-import { Experiment, FeatureFlag, experimentSchema } from "../shared/imputed.js";
-import { RuleStatus } from "../override-rules/override-rules.schema.js";
-import { RequireOnly } from "../helpers/utility-types.js";
-import { idMap } from "../helpers/utility-functions.js";
-import { FeatureFlagDraft } from "../feature-flags/classes.js";
+  Experiment,
+  FeatureFlag,
+  experimentSchema,
+} from '../shared/imputed.js';
+import { RuleStatus } from '../override-rules/override-rules.schema.js';
+import { RequireOnly } from '../helpers/utility-types.js';
+import { idMap } from '../helpers/utility-functions.js';
+import { FeatureFlagDraft } from '../feature-flags/classes.js';
 
 /**
  * Creates a full ExperimentDraft
  */
 export class ExperimentDraft implements z.infer<typeof experimentDraftSchema> {
   name: string;
+
   environmentName: string;
+
   status: RuleStatus;
+
   type: 'Experiment';
+
   description: string | null;
+
   hypothesis: string | null;
+
   startTimestamp: number | null;
+
   endTimestamp: number | null;
+
   groups: ExperimentGroup[];
+
   enrollment: Enrollment;
+
   flagIds: string[];
+
   dependents: Metric[];
+
   definedTreatments: Record<string, Treatment>;
 
   constructor(experimentDraft: Omit<ExperimentDraft, 'type'>) {
@@ -58,42 +67,45 @@ export class ExperimentDraft implements z.infer<typeof experimentDraftSchema> {
 
   static parsedExperiment<I>(arg: I) {
     const safeParseResult = experimentSchema.safeParse(arg);
-    return safeParseResult.success ? safeParseResult.data : safeParseResult.error;
+    return safeParseResult.success
+      ? safeParseResult.data
+      : safeParseResult.error;
   }
 
   static groupTreatments(
     experiment: ExperimentDraft | Experiment,
     groupId: string,
   ): Treatment[] | null {
-    const group = experiment.groups.find((group) => group.id === groupId);
-    if (!group) return null;
+    const matchingGroup = experiment.groups.find(
+      (group) => group.id === groupId,
+    );
+    if (!matchingGroup) return null;
 
-    return group.sequence.map((treatmentId) => experiment.definedTreatments[treatmentId]);
+    return matchingGroup.sequence.map(
+      (treatmentId) => experiment.definedTreatments[treatmentId],
+    );
   }
 
   /**
    * Mutates the passed Experiment, adding a FlagState to each Treatment.
    * Uses the flag's default value.
    */
-  static addFlag(
-    experiment: ExperimentDraft | Experiment,
-    flag: FeatureFlag,
-  ) {
+  static addFlag(experiment: ExperimentDraft | Experiment, flag: FeatureFlag) {
     if (experiment.flagIds.includes(flag.id)) {
       throw new Error(
-        `Flag "${flag.name}" already exists on experiment "${experiment.name}"`
+        `Flag "${flag.name}" already exists on experiment "${experiment.name}"`,
       );
     }
 
     const flagState: FlagState = {
       id: flag.id,
       value: flag.value.initial,
-    }
+    };
 
     experiment.flagIds.push(flag.id);
-    
+
     const { definedTreatments } = experiment;
-    
+
     Object.keys(definedTreatments).forEach((treatment) => {
       definedTreatments[treatment].flagStates.push(flagState);
     });
@@ -106,19 +118,20 @@ export class ExperimentDraft implements z.infer<typeof experimentDraftSchema> {
     flags: FeatureFlag[],
     treatmentName: string,
   ) {
-    
     const flagStates = FeatureFlagDraft.getDefaultFlagStates(flags);
     const treatment = Treatment.template({
       name: treatmentName,
       flagStates,
-    })
-    experiment.definedTreatments[treatment.id] = treatment;
+    });
+    const { definedTreatments } = experiment;
+    definedTreatments[treatment.id] = treatment;
   }
   // #endregion
 
   // #region Templates
-  static template(partialDraft: RequireOnly<ExperimentDraft, 'name' | 'environmentName'>) {
-
+  static template(
+    partialDraft: RequireOnly<ExperimentDraft, 'name' | 'environmentName'>,
+  ) {
     const defaults = {
       status: 'draft' as const,
       description: null,
@@ -135,8 +148,9 @@ export class ExperimentDraft implements z.infer<typeof experimentDraftSchema> {
     return new ExperimentDraft({ ...defaults, ...partialDraft });
   }
 
-  static templateSwitchback(partialSwitchback: RequireOnly<ExperimentDraft, 'name' | 'environmentName'>) {
-
+  static templateSwitchback(
+    partialSwitchback: RequireOnly<ExperimentDraft, 'name' | 'environmentName'>,
+  ) {
     const treatments = [
       Treatment.template({ name: 'Control' }),
       Treatment.template({ name: 'Experimental' }),
@@ -157,8 +171,12 @@ export class ExperimentDraft implements z.infer<typeof experimentDraftSchema> {
     return this.template({ ...defaults, ...partialSwitchback });
   }
 
-  static templateAB(partialABExperiment: RequireOnly<ExperimentDraft, 'name' | 'environmentName'>) {
-
+  static templateAB(
+    partialABExperiment: RequireOnly<
+    ExperimentDraft,
+    'name' | 'environmentName'
+    >,
+  ) {
     const treatments = [
       Treatment.template({ name: 'Control' }),
       Treatment.template({ name: 'Experimental' }),

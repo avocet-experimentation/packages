@@ -1,22 +1,22 @@
-import { z } from "zod";
-import { overrideRuleSchema } from "../override-rules/override-rules.schema.js";
-import { 
-  bsonObjectIdHexStringSchema, 
-  nonEmptyStringSchema, 
-  nonNegativeIntegerSchema, 
+import { z } from 'zod';
+import { overrideRuleSchema } from '../override-rules/override-rules.schema.js';
+import {
+  bsonObjectIdHexStringSchema,
+  nonEmptyStringSchema,
+  nonNegativeIntegerSchema,
   positiveIntegerSchema,
- } from "../helpers/bounded-primitives.js";
-import { metricSchema } from "../metrics/schema.js";
-import { flagCurrentValueSchema } from "../feature-flags/flag-value.js";
+} from '../helpers/bounded-primitives.js';
+import { metricSchema } from '../metrics/schema.js';
+import { flagCurrentValueSchema } from '../feature-flags/flag-value.js';
 
-export const flagStateSchema = z.object({ 
+export const flagStateSchema = z.object({
   id: bsonObjectIdHexStringSchema,
   value: flagCurrentValueSchema,
 });
 /**
  * A flag ID and the value it is to be set to during a treatment
  */
-export interface FlagState extends z.infer<typeof flagStateSchema> {};
+export interface FlagState extends z.infer<typeof flagStateSchema> {}
 
 const treatmentIdSchema = z.string();
 
@@ -39,15 +39,15 @@ export const experimentGroupSchema = z.object({
 export const experimentDraftSchema = overrideRuleSchema.extend({
   name: nonEmptyStringSchema,
   hypothesis: z.string().nullable(),
-  type: z.literal("Experiment"),
+  type: z.literal('Experiment'),
   groups: z.array(experimentGroupSchema),
   flagIds: z.array(z.string()),
   dependents: z.array(metricSchema),
-  definedTreatments: z.record(treatmentIdSchema, treatmentSchema), // treatments created on an Experiment are stored here for reuse
+  definedTreatments: z.record(treatmentIdSchema, treatmentSchema),
 });
 
 export const experimentReferenceSchema = overrideRuleSchema.extend({
-  id: bsonObjectIdHexStringSchema, // object id of the full experiment document
+  id: bsonObjectIdHexStringSchema,
   type: z.literal('Experiment'),
   name: nonEmptyStringSchema,
 });

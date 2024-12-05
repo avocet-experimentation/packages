@@ -4,7 +4,11 @@ import { nonNegativeIntegerSchema } from '../helpers/bounded-primitives.js';
 
 /* TYPES FOR TRANSFORMED EVENTS AND DASHBOARD-DEFINED METRICS */
 
-export const cqlDateSchema = z.number().int();  // placeholder until we figure out how dates are actually stored. See https://cassandra.apache.org/doc/stable/cassandra/cql/types.html#dates
+/**
+ * Placeholder until we figure out how dates are actually stored.
+ * See https://cassandra.apache.org/doc/stable/cassandra/cql/types.html#dates
+ */
+export const cqlDateSchema = z.number().int();
 
 export const oTelEventSchema = z.object({
   timestamp: cqlDateSchema,
@@ -12,7 +16,7 @@ export const oTelEventSchema = z.object({
   attributes: z.record(z.string(), z.string()),
 });
 
-export interface OtelEvent extends z.infer<typeof oTelEventSchema> {};
+export interface OtelEvent extends z.infer<typeof oTelEventSchema> {}
 
 export const oTelLinkSchema = z.object({
   traceid: z.string(),
@@ -21,7 +25,7 @@ export const oTelLinkSchema = z.object({
   attributes: z.record(z.string(), z.string()),
 });
 
-export interface OTelLink extends z.infer<typeof oTelLinkSchema> {};
+export interface OTelLink extends z.infer<typeof oTelLinkSchema> {}
 
 export const spanCoreSchema = z.object({
   duration: nonNegativeIntegerSchema,
@@ -31,7 +35,7 @@ export const spanCoreSchema = z.object({
   spanattributes: z.record(z.string(), z.string()),
 });
 
-export interface SpanCore extends z.infer<typeof spanCoreSchema> {};
+export interface SpanCore extends z.infer<typeof spanCoreSchema> {}
 
 /**
  * Use these to define dependent variables on Experiments
@@ -42,4 +46,4 @@ export const metricSchema = z.object({
   fieldDataType: oTelAttributeValueSchema,
 });
 
-export interface Metric extends z.infer<typeof metricSchema> {};
+export interface Metric extends z.infer<typeof metricSchema> {}
