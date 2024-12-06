@@ -16,9 +16,9 @@ export class EstuaryClient {
     attributes: Record<string, string>
   ) => void;
 
-  private readonly environment: string;
+  private readonly environmentName: string;
 
-  // private readonly clientKey: string; // to replace .environment eventually
+  // private readonly clientKey: string; // to replace .environmentName eventually
   private flagMap: FlagClientMapping = {}; // represents cached data in memory
 
   private readonly apiUrl: string;
@@ -47,7 +47,7 @@ export class EstuaryClient {
    * Refresh local flag data. Must call manually if `autoRefresh` is set to false
    */
   async refresh(): Promise<void> {
-    await this.load(this.environment);
+    await this.load(this.environmentName);
   }
 
   /**
@@ -93,9 +93,14 @@ export class EstuaryClient {
           `Failed to retrieve cached attributes for flag "${flagName}!`,
         );
       }
-      const userProps = Object.entries(this.clientProps)
-        .map(([key, value]) => [`${APP_NAME}-client-prop-${key}`, String(value)]);
-      const attributes = { ...flagAttributes, ...Object.fromEntries(userProps) };
+      const userProps = Object.entries(this.clientProps).map(([key, value]) => [
+        `${APP_NAME}.client-prop.${key}`,
+        String(value),
+      ]);
+      const attributes = {
+        ...flagAttributes,
+        ...Object.fromEntries(userProps),
+      };
       this.attributeAssignmentCb(span, attributes);
     }
 
@@ -112,12 +117,15 @@ export class EstuaryClient {
         'Content-Type': 'application/json; charset=utf-8',
       },
       body: JSON.stringify({
-        environment: environmentName,
+        environmentName,
         clientProps: this.clientProps,
       }),
     };
 
-    const response = await fetch(`${this.apiUrl}/api/fflags/caching`, fetchOptions);
+    const response = await fetch(
+      `${this.apiUrl}/api/fflags/caching`,
+      fetchOptions,
+    );
     if (!response.ok) {
       return false;
     }
@@ -160,7 +168,7 @@ export class EstuaryClient {
   // }
 
   private constructor(options: ClientOptions) {
-    this.environment = options.environment;
+    this.environmentName = options.environmentName;
     this.apiUrl = options.apiUrl;
     this.attributeAssignmentCb = options.attributeAssignmentCb;
     this.clientProps = options.clientProps;

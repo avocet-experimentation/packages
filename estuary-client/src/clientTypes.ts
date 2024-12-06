@@ -1,7 +1,7 @@
 import { ClientPropMapping } from '@estuary/types';
 
 export type ClientOptions = {
-  environment: string; // placeholder until API keys are implemented
+  environmentName: string; // placeholder until API keys are implemented
   autoRefresh: boolean;
   refreshIntervalInSeconds?: number;
   attributeAssignmentCb?: <SpanType>(
