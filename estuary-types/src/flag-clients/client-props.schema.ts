@@ -7,7 +7,12 @@ import { nonEmptyStringSchema } from '../helpers/bounded-primitives.js';
  */
 export const clientPropNameSchema = z.string().min(1);
 
-export const clientPropValueSchema = z.enum(['boolean', 'string', 'number']);
+export const clientPropValueSchema = z.union([
+  z.boolean(),
+  z.string(),
+  z.number(),
+]);
+
 export type ClientPropValue = z.infer<typeof clientPropValueSchema>;
 /**
  * Mapping of client property names to their values
