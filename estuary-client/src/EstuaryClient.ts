@@ -8,6 +8,8 @@ import { ClientOptions } from './clientTypes.js';
 
 const DEFAULT_DURATION_SEC = 5 * 60; // 5 minutes
 
+const APP_NAME = 'estuary-exp';
+
 export class EstuaryClient {
   attributeAssignmentCb?: <SpanType>(
     span: SpanType,
@@ -53,7 +55,7 @@ export class EstuaryClient {
    * for insertion into telemetry data.
    */
   getFlagAttributes(flagName: string): Record<string, string> | null {
-    const flag = this.getCachedFlagValue(flagName);
+    const flag = this.getCachedFlagData(flagName);
     if (!flag) return null;
 
     // const attributes: FlagAttributes = {
@@ -64,8 +66,8 @@ export class EstuaryClient {
     //  };
 
     const attributes = {
-      [`estuary-exp.${flagName}.variant`]: String(flag.value),
-      [`estuary-exp.${flagName}.hash`]: String(flag.hash),
+      [`${APP_NAME}.${flagName}.value`]: String(flag.value ?? null),
+      [`${APP_NAME}.${flagName}.metadata`]: String(flag.metadata ?? null),
     };
 
     return attributes;
@@ -81,20 +83,23 @@ export class EstuaryClient {
     flagName: string,
     span?: SpanType,
   ): null | boolean | number | string {
-    const flag = this.getCachedFlagValue(flagName);
-    if (!flag) return null;
+    const flagData = this.getCachedFlagData(flagName);
+    if (!flagData) return null;
 
     if (span && this.attributeAssignmentCb) {
-      const attributes = this.getFlagAttributes(flagName);
-      if (attributes === null) {
+      const flagAttributes = this.getFlagAttributes(flagName);
+      if (flagAttributes === null) {
         throw new Error(
           `Failed to retrieve cached attributes for flag "${flagName}!`,
         );
       }
+      const userProps = Object.entries(this.clientProps)
+        .map(([key, value]) => [`${APP_NAME}-client-prop-${key}`, String(value)]);
+      const attributes = { ...flagAttributes, ...Object.fromEntries(userProps) };
       this.attributeAssignmentCb(span, attributes);
     }
 
-    return flag.value;
+    return flagData.value;
   }
 
   /**
@@ -112,7 +117,7 @@ export class EstuaryClient {
       }),
     };
 
-    const response = await fetch(`${this.apiUrl}`, fetchOptions);
+    const response = await fetch(`${this.apiUrl}/api/fflags/caching`, fetchOptions);
     if (!response.ok) {
       return false;
     }
@@ -128,7 +133,7 @@ export class EstuaryClient {
   /**
    * Retrieve a copy of cached data for the specified flag
    */
-  private getCachedFlagValue(flagName: string): FlagClientValue | undefined {
+  private getCachedFlagData(flagName: string): FlagClientValue | undefined {
     const flagContent = this.flagMap[flagName];
     return { ...flagContent };
   }
