@@ -22,6 +22,7 @@
   "type": "module",
   "gitHead": "ceabdbee4a43938b1e1ef3bacf38db5f7e890141",
   "dependencies": {
+    "bcrypt": "^5.1.1",
     "zod": "^3.23.8"
   }
 }

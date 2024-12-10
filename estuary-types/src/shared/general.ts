@@ -1,8 +1,5 @@
 import { z } from 'zod';
-import {
-  ClientConnectionDraft,
-  clientConnectionDraftSchema,
-} from '../flag-clients/client-connections.schema.js';
+import { clientConnectionDraftSchema } from '../flag-clients/client-connections.schema.js';
 import { environmentDraftSchema } from '../environments/schema.js';
 import { experimentDraftSchema } from '../experiments/schema.js';
 import { featureFlagDraftSchema } from '../feature-flags/schema.js';
@@ -25,7 +22,10 @@ import { userDraftSchema } from '../users/schema.js';
 import { FeatureFlagDraft } from '../feature-flags/classes.js';
 import { ExperimentDraft } from '../experiments/classes.js';
 import { clientPropDefDraftSchema } from '../flag-clients/client-props.schema.js';
-import { ClientPropDefDraft } from '../flag-clients/classes.js';
+import {
+  ClientConnectionDraft,
+  ClientPropDefDraft,
+} from '../flag-clients/classes.js';
 import { UserDraft } from '../users/classes.js';
 import { EnvironmentDraft } from '../environments/classes.js';
 
