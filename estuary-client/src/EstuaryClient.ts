@@ -27,6 +27,19 @@ export class EstuaryClient {
 
   private clientProps: ClientPropMapping;
 
+  /** Not to be invoked directly. Use `.start()` instead */
+  private constructor(options: ClientOptions) {
+    this.environmentName = options.environmentName;
+    this.apiUrl = options.apiUrl;
+    this.attributeAssignmentCb = options.attributeAssignmentCb;
+    this.clientProps = options.clientProps;
+    if (options.autoRefresh === true) {
+      this.startPolling(
+        options.refreshIntervalInSeconds ?? DEFAULT_DURATION_SEC,
+      );
+    }
+  }
+
   /**
   * Static factory method (no constructor):
     - Allows for more meaningful name when creating the object
@@ -34,20 +47,8 @@ export class EstuaryClient {
   */
   static async start(options: ClientOptions): Promise<EstuaryClient> {
     const client = new EstuaryClient(options);
-    await client.refresh();
+    await client.load();
     return client;
-  }
-
-  // stop refreshing
-  stop() {
-    clearInterval(this.intervalId);
-  }
-
-  /**
-   * Refresh local flag data. Must call manually if `autoRefresh` is set to false
-   */
-  async refresh(): Promise<void> {
-    await this.load(this.environmentName);
   }
 
   /**
@@ -58,19 +59,21 @@ export class EstuaryClient {
     const flag = this.getCachedFlagData(flagName);
     if (!flag) return null;
 
-    // const attributes: FlagAttributes = {
-    //   'feature_flag.key': flagName,
-    //   'feature_flag.provider_name': 'estuary-exp',
-    //   'feature_flag.variant': String(flag.value),
-    //   'feature_flag.hash': String(flag.hash)
-    //  };
-
     const attributes = {
-      [`${APP_NAME}.${flagName}.value`]: String(flag.value ?? null),
-      [`${APP_NAME}.${flagName}.metadata`]: String(flag.metadata ?? null),
+      [`${APP_NAME}.feature-flag.${flagName}.value`]: String(flag.value),
+      [`${APP_NAME}.feature-flag.${flagName}.metadata`]: String(flag.metadata),
     };
 
     return attributes;
+  }
+
+  getClientProps(): Record<string, string> {
+    const userProps = Object.entries(this.clientProps).map(([key, value]) => [
+      `${APP_NAME}.client-prop.${key}`,
+      String(value),
+    ]);
+
+    return Object.fromEntries(userProps);
   }
 
   /**
@@ -110,14 +113,14 @@ export class EstuaryClient {
   /**
    * Returns a boolean indicating whether or not it fetched a FlagClientMapping
    */
-  private async load(environmentName: string) {
+  private async load() {
     const fetchOptions = {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json; charset=utf-8',
       },
       body: JSON.stringify({
-        environmentName,
+        environmentName: this.environmentName,
         clientProps: this.clientProps,
       }),
     };
@@ -149,40 +152,15 @@ export class EstuaryClient {
   /**
    * @returns a copy of all locally stored flags
    */
-  private getAllCachedFlags(): FlagClientMapping {
+  getAllCachedFlags(): FlagClientMapping {
     return { ...this.flagMap };
   }
 
-  // private async attemptAndHandleError<O, F extends (
-  // ) => O>(
-  //   cb: F,
-  //   cleanupCb?: () => void,
-  // ): Promise<O | undefined> {
-  //   try {
-  //     return cb();
-  //   } catch (error) {
-  //     console.error(`${new Date()}: ${error}`);
-  //   } finally {
-  //     cleanupCb?.();
-  //   }
-  // }
-
-  private constructor(options: ClientOptions) {
-    this.environmentName = options.environmentName;
-    this.apiUrl = options.apiUrl;
-    this.attributeAssignmentCb = options.attributeAssignmentCb;
-    this.clientProps = options.clientProps;
-    if (options.autoRefresh === true) {
-      this.startPolling(
-        options.refreshIntervalInSeconds ?? DEFAULT_DURATION_SEC,
-      );
-    }
+  private startPolling(intervalInSeconds: number) {
+    this.intervalId = setInterval(() => this.load(), intervalInSeconds * 1000);
   }
 
-  private startPolling(intervalInSeconds: number) {
-    this.intervalId = setInterval(
-      () => this.refresh(),
-      intervalInSeconds * 1000,
-    );
+  cancelPolling() {
+    clearInterval(this.intervalId);
   }
 }
