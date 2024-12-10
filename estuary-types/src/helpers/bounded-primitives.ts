@@ -27,6 +27,6 @@ export const bsonDateSchema = z.number().int();
 
 export const trueSchema = z.boolean().refine((data) => data === true);
 
-export const primitiveLabels = ['string', 'number', 'boolean'] as const;
-
-export type PrimitiveLabel = (typeof primitiveLabels)[number];
+export const primitiveTypeLabels = ['string', 'number', 'boolean'] as const;
+export const primitiveTypeLabelSchema = z.enum(primitiveTypeLabels);
+export type PrimitiveTypeLabel = (typeof primitiveTypeLabels)[number];
