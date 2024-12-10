@@ -85,7 +85,7 @@ export type SpanArrayAttribute = z.infer<typeof spanArrayAttributeSchema>;
 // Used to store flag and experiment data
 
 export const spanAttributeSchema = z.union([
-  spanArrayAttributeSchema,
+  // spanArrayAttributeSchema,
   spanStringAttributeSchema,
   spanIntAttributeSchema,
 ]);
