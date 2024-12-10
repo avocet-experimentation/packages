@@ -1,8 +1,48 @@
 import { z } from 'zod';
+import { nonNegativeIntegerSchema } from '../../helpers/bounded-primitives.js';
 
-/* TYPES FOR RAW OPENTELEMETRY DATA */
+/* TYPES FOR TRANSFORMED EVENTS AND DASHBOARD-DEFINED METRICS */
 
+// todo: decide if these are still needed, and remove if not
+
+/**
+ * Similar to Unix timestamps, except permitting negative numbers to denote
+ * dates before 1970.
+ * See https://cassandra.apache.org/doc/stable/cassandra/cql/types.html#dates
+ */
+export const cqlDateSchema = z.number().int();
+
+export const oTelEventSchema = z.object({
+  timestamp: cqlDateSchema,
+  name: z.string(),
+  attributes: z.record(z.string(), z.string()),
+});
+
+export interface OtelEvent extends z.infer<typeof oTelEventSchema> {}
+
+export const oTelLinkSchema = z.object({
+  traceid: z.string(),
+  spanid: z.string(),
+  tracestate: z.string(),
+  attributes: z.record(z.string(), z.string()),
+});
+
+export interface OTelLink extends z.infer<typeof oTelLinkSchema> {}
+
+export const spanCoreSchema = z.object({
+  duration: nonNegativeIntegerSchema,
+  events: z.array(oTelEventSchema),
+  spanname: z.string(),
+  timestamp: cqlDateSchema,
+  spanattributes: z.record(z.string(), z.string()),
+});
+
+export interface SpanCore
+  extends z.infer<
+    typeof spanCoreSchema
+  > {} /* TYPES FOR RAW OPENTELEMETRY DATA */
 // seems to be metadata (details of the instrumentation package)
+
 export const scopeSchema = z.object({
   name: z.string(),
   version: z.string(),
@@ -29,12 +69,10 @@ export const spanIntAttributeSchema = z.object({
 
 export interface SpanIntAttribute
   extends z.infer<typeof spanIntAttributeSchema> {}
-
 // export const spanPrimitiveAttributeSchema = z.union([
 //   spanStringAttributeSchema,
 //   spanIntAttributeSchema,
 // ]);
-
 // export type SpanPrimitiveAttribute = SpanStringAttribute | SpanIntAttribute;
 
 export const spanArrayAttributeSchema = z.union([
@@ -43,9 +81,9 @@ export const spanArrayAttributeSchema = z.union([
 ]);
 
 export type SpanArrayAttribute = z.infer<typeof spanArrayAttributeSchema>;
-
 // context for a span, such as the route followed, current configuration, etc
 // Used to store flag and experiment data
+
 export const spanAttributeSchema = z.union([
   spanArrayAttributeSchema,
   spanStringAttributeSchema,
@@ -53,8 +91,8 @@ export const spanAttributeSchema = z.union([
 ]);
 
 export type SpanAttribute = z.infer<typeof spanAttributeSchema>;
-
 // "span" is a catch-all term for units of work or operations. See [Observability primer | OpenTelemetry](https://opentelemetry.io/docs/concepts/observability-primer/)
+
 export const spanSchema = z.object({
   traceId: z.string(),
   spanId: z.string(),
@@ -93,18 +131,3 @@ export const spanTransformedAttributeSchema = z.object({
 
 export interface SpanTransformedAttribute
   extends z.infer<typeof spanTransformedAttributeSchema> {}
-
-export const transformedSpanSchema = spanSchema
-  .omit({ attributes: true })
-  .extend({
-    parentScope: scopeSchema,
-    attributes: z.array(spanTransformedAttributeSchema),
-  });
-
-export interface TransformedSpan
-  extends z.infer<typeof transformedSpanSchema> {}
-
-// spans, traces, etc
-export const eventTelemetrySchema = transformedSpanSchema; // or potentially more
-
-export interface EventTelemetry extends z.infer<typeof eventTelemetrySchema> {}

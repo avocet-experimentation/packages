@@ -9,9 +9,6 @@ export const positiveIntegerSchema = z.number().int().gte(1);
  */
 export const proportionSchema = z.number().gte(0).lte(1);
 
-/** .default might cause type inference problems */
-export const defaultEmptyStringSchema = z.string().default('');
-
 export const nonEmptyStringSchema = z.string().min(1);
 
 export const bsonObjectIdHexStringSchema = z.string().length(24);
