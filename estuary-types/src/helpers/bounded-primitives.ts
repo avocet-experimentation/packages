@@ -26,3 +26,7 @@ export const bsonObjectIdHexStringSchema = z.string().length(24);
 export const bsonDateSchema = z.number().int();
 
 export const trueSchema = z.boolean().refine((data) => data === true);
+
+export const primitiveLabels = ['string', 'number', 'boolean'] as const;
+
+export type PrimitiveLabel = (typeof primitiveLabels)[number];
