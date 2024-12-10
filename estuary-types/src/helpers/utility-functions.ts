@@ -52,6 +52,14 @@ export function isKeyOf<T extends GeneralRecord>(
   );
 }
 
+export function addProp<T extends object, K extends PropertyKey, V>(
+  obj: T,
+  key: K,
+  value: V,
+): asserts obj is T & { [P in K]: V } {
+  Object.assign(obj, { [key]: value });
+}
+
 function isObject(arg: unknown): arg is GeneralRecord {
   const passedChecks = typeof arg === 'object' && arg !== null && !Array.isArray(arg);
   return passedChecks;
