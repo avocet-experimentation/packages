@@ -8,8 +8,5 @@ export const clientConnectionDraftSchema = z.object({
   name: nonEmptyStringSchema,
   description: z.string().nullable(),
   environmentId: z.string(),
-  // clientKeyHash: z.string(), // TBD
+  clientKeyHash: z.string(),
 });
-
-export interface ClientConnectionDraft
-  extends z.infer<typeof clientConnectionDraftSchema> {}
