@@ -20,9 +20,9 @@ export const nullishOrTextPrimitiveArraySchema = z.union([
   z.array(booleanOrNullishSchema),
 ]);
 
-export type NullishOrTextPrimitiveArray = z.infer<
-  typeof nullishOrTextPrimitiveArraySchema
->;
+// export type NullishOrTextPrimitiveArray = z.infer<
+//   typeof nullishOrTextPrimitiveArraySchema
+// >;
 
 /**
  * See https://opentelemetry.io/docs/specs/otel/common/#attribute
