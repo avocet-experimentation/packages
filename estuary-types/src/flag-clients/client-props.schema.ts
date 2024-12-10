@@ -1,5 +1,8 @@
 import { z } from 'zod';
-import { nonEmptyStringSchema } from '../helpers/bounded-primitives.js';
+import {
+  nonEmptyStringSchema,
+  primitiveTypeLabelSchema,
+} from '../helpers/bounded-primitives.js';
 
 /**
  * Keys of the attributes passed into the client SDK when initialized and used
@@ -35,6 +38,6 @@ export type ClientPropEntries = z.infer<typeof clientPropEntriesSchema>;
 export const clientPropDefDraftSchema = z.object({
   name: nonEmptyStringSchema,
   description: z.string().nullable(),
-  dataType: clientPropValueSchema,
+  dataType: primitiveTypeLabelSchema,
   isIdentifier: z.boolean(),
 });
