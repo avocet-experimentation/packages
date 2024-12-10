@@ -1,3 +1,9 @@
+import { PrimitiveLabel } from '../helpers/bounded-primitives.js';
+import { TextPrimitive } from './otel/attributes.js';
+
+export type TransformedSpanAttributes = {
+  [key: string]: { type: PrimitiveLabel; value: string };
+};
 /**
  * (WIP) telemetry data structure expected by dashboard.
  * Based on OpenTelemetry's span structure, with transformations
@@ -11,5 +17,7 @@ export interface TransformedSpan {
   kind: number;
   startTimeUnixNano: string;
   endTimeUnixNano: string;
-  attributes: Record<string, { type: string; value: string }>;
+  attributes: TransformedSpanAttributes;
 }
+
+export type CoercedSpanAttributes = { [x: string]: TextPrimitive };
