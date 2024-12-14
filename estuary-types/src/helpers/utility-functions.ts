@@ -1,4 +1,4 @@
-import { GeneralRecord } from './utility-types.js';
+import { GeneralRecord, SafeOmit } from './utility-types.js';
 
 /**
  * Convert an array of objects of type `T` to `Record<T[K], T>`,
@@ -99,4 +99,16 @@ export function stripKeysWithUndefined(input: object) {
   };
 
   return rec(input);
+}
+
+export function pickKeys<T extends object, K extends keyof T>(
+  keys: readonly K[],
+  obj: T,
+): SafeOmit<T, (typeof keys)[number]> {
+  const output = keys.reduce(
+    (acc, key) => Object.assign(acc, { [key]: obj[key] }),
+    {} as SafeOmit<T, (typeof keys)[number]>,
+  );
+
+  return output;
 }
