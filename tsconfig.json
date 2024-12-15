@@ -1,9 +1,11 @@
 {
   "compilerOptions": {
     "strict": true,
+    "lib": ["ES2023"],
     "target": "ES2022",
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
+    "allowJs": false,
     "sourceMap": true,
     "declaration": true,
     "forceConsistentCasingInFileNames": true,
@@ -14,6 +16,6 @@
     "**/*.spec.ts",
     "**/*.test.ts",
     "**/*.mock.ts",
-    "./dist/**/*"
+    "*/dist/**/*"
   ]
 }
