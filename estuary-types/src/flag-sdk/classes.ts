@@ -3,7 +3,7 @@ import crypto from 'crypto';
 import { clientPropDefDraftSchema } from './client-props.schema.js';
 import { FlagValueTypeDef } from '../feature-flags/flag-value.js';
 import { RequireOnly } from '../helpers/utility-types.js';
-import { clientConnectionDraftSchema } from './client-connections.schema.js';
+import { sdkConnectionDraftSchema } from './client-connections.schema.js';
 
 /**
  * Definition of a client property visible server-side
@@ -37,8 +37,8 @@ implements z.infer<typeof clientPropDefDraftSchema> {
   }
 }
 
-export class ClientConnectionDraft
-implements z.infer<typeof clientConnectionDraftSchema> {
+export class SDKConnectionDraft
+implements z.infer<typeof sdkConnectionDraftSchema> {
   name: string;
 
   description: string | null;
@@ -47,7 +47,7 @@ implements z.infer<typeof clientConnectionDraftSchema> {
 
   clientKeyHash: string;
 
-  constructor(draft: ClientConnectionDraft) {
+  constructor(draft: SDKConnectionDraft) {
     this.name = draft.name;
     this.description = draft.description;
     this.environmentId = draft.environmentId;
@@ -55,14 +55,14 @@ implements z.infer<typeof clientConnectionDraftSchema> {
   }
 
   static template(
-    partialDraft: RequireOnly<ClientConnectionDraft, 'name' | 'environmentId'>,
+    partialDraft: RequireOnly<SDKConnectionDraft, 'name' | 'environmentId'>,
   ) {
     const defaults = {
       description: null,
       clientKeyHash: this.generateApiKey(),
     };
 
-    return new ClientConnectionDraft({ ...defaults, ...partialDraft });
+    return new SDKConnectionDraft({ ...defaults, ...partialDraft });
   }
 
   /**

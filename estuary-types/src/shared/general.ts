@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { clientConnectionDraftSchema } from '../flag-clients/client-connections.schema.js';
+import { sdkConnectionDraftSchema } from '../flag-sdk/client-connections.schema.js';
 import { environmentDraftSchema } from '../environments/schema.js';
 import { experimentDraftSchema } from '../experiments/schema.js';
 import { featureFlagDraftSchema } from '../feature-flags/schema.js';
@@ -13,19 +13,16 @@ import {
   environmentSchema,
   ClientPropDef,
   clientPropDefSchema,
-  ClientConnection,
-  clientConnectionSchema,
+  SDKConnection,
+  sdkConnectionSchema,
   userSchema,
   User,
 } from './imputed.js';
 import { userDraftSchema } from '../users/schema.js';
 import { FeatureFlagDraft } from '../feature-flags/classes.js';
 import { ExperimentDraft } from '../experiments/classes.js';
-import { clientPropDefDraftSchema } from '../flag-clients/client-props.schema.js';
-import {
-  ClientConnectionDraft,
-  ClientPropDefDraft,
-} from '../flag-clients/classes.js';
+import { clientPropDefDraftSchema } from '../flag-sdk/client-props.schema.js';
+import { SDKConnectionDraft, ClientPropDefDraft } from '../flag-sdk/classes.js';
 import { UserDraft } from '../users/classes.js';
 import { EnvironmentDraft } from '../environments/classes.js';
 
@@ -34,7 +31,7 @@ export const estuaryDraftSchema = z.union([
   experimentDraftSchema,
   environmentDraftSchema,
   clientPropDefDraftSchema,
-  clientConnectionDraftSchema,
+  sdkConnectionDraftSchema,
   userDraftSchema,
 ]);
 /**
@@ -45,7 +42,7 @@ export type EstuaryDraft =
   | ExperimentDraft
   | EnvironmentDraft
   | ClientPropDefDraft
-  | ClientConnectionDraft
+  | SDKConnectionDraft
   | UserDraft;
 
 export const estuaryMongoTypesSchema = z.union([
@@ -53,7 +50,7 @@ export const estuaryMongoTypesSchema = z.union([
   experimentSchema,
   environmentSchema,
   clientPropDefSchema,
-  clientConnectionSchema,
+  sdkConnectionSchema,
   userSchema,
 ]);
 /**
@@ -64,7 +61,7 @@ export type EstuaryMongoTypes =
   | Experiment
   | Environment
   | ClientPropDef
-  | ClientConnection
+  | SDKConnection
   | User; // later: users and event types
 
 // export type EstuaryMongoType<T extends EstuaryMongoTypes> = T;
@@ -81,8 +78,8 @@ export type EstuarySchema<T extends EstuaryMongoTypes> = T extends FeatureFlag
       ? typeof environmentSchema
       : T extends ClientPropDef
         ? typeof clientPropDefSchema
-        : T extends ClientConnection
-          ? typeof clientConnectionSchema
+        : T extends SDKConnection
+          ? typeof sdkConnectionSchema
           : T extends User
             ? typeof userSchema
             : never;
@@ -98,8 +95,8 @@ export type DraftRecord<T extends EstuaryMongoTypes> = T extends FeatureFlag
       ? EnvironmentDraft
       : T extends ClientPropDef
         ? ClientPropDefDraft
-        : T extends ClientConnection
-          ? ClientConnectionDraft
+        : T extends SDKConnection
+          ? SDKConnectionDraft
           : T extends User
             ? UserDraft
             : never;

@@ -1,8 +1,22 @@
 {
-  "name": "@estuary/client",
+  "name": "@avocet/sdk",
   "version": "0.0.17",
-  "description": "Client access for feature flags",
-  "author": "Adnan Shihabi <adnan@ashihabi.me>",
+  "description": "For using Avocet feature flags",
+  "author": "Avocet Team",
+  "contributors": [
+    {
+      "name": "Adnan Shihabi",
+      "email": "adnan@ashihabi.me"
+    },
+    {
+      "name": "Sean Mentele",
+      "email": "sean.a.mentele@gmail.com"
+    },
+    {
+      "name": "Gautam Panakkal",
+      "email": "gautampanakkal@gmail.com"
+    }
+  ],
   "homepage": "",
   "license": "ISC",
   "main": "dist/index.js",
@@ -20,8 +34,8 @@
     "test": "vitest run"
   },
   "type": "module",
+  "gitHead": "ceabdbee4a43938b1e1ef3bacf38db5f7e890141",
   "dependencies": {
-    "@estuary/types": "file:../estuary-types"
-  },
-  "gitHead": "ceabdbee4a43938b1e1ef3bacf38db5f7e890141"
+    "@avocet/core": "file:../estuary-types"
+  }
 }

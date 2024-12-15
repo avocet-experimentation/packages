@@ -4,7 +4,7 @@ import { nonEmptyStringSchema } from '../helpers/bounded-primitives.js';
 /**
  * For client app connections to the cattails feature flagging service
  */
-export const clientConnectionDraftSchema = z.object({
+export const sdkConnectionDraftSchema = z.object({
   name: nonEmptyStringSchema,
   description: z.string().nullable(),
   environmentId: z.string(),
