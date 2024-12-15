@@ -1,10 +1,10 @@
-import { FeatureFlag, FlagValueDef } from "@estuary/types";
+import { FeatureFlag, FlagValueDef } from '@avocet/core';
 
 export const flagEnvironmentInit = () => ({
-  prod: { name: 'prod', enabled: false, overrideRules: [], },
-  dev: { name: 'dev', enabled: false, overrideRules: [], },
-  testing: { name: 'testing', enabled: false, overrideRules: [], },
-  staging: { name: 'staging', enabled: false, overrideRules: [], },
+  prod: { name: 'prod', enabled: false, overrideRules: [] },
+  dev: { name: 'dev', enabled: false, overrideRules: [] },
+  testing: { name: 'testing', enabled: false, overrideRules: [] },
+  staging: { name: 'staging', enabled: false, overrideRules: [] },
 });
 
 export const getExampleFlag = (
@@ -16,7 +16,7 @@ export const getExampleFlag = (
   },
 ): Omit<FeatureFlag, 'id'> => {
   const currentTimeMs = Date.now();
-  
+
   const flag = {
     name,
     description,
@@ -24,7 +24,7 @@ export const getExampleFlag = (
     createdAt: currentTimeMs,
     updatedAt: currentTimeMs,
     environments: flagEnvironmentInit(),
-  }
+  };
 
   return flag;
 };
@@ -32,7 +32,7 @@ export const getExampleFlag = (
 export const exampleFlags = [
   getExampleFlag('testing flag'),
   getExampleFlag(
-    'live update', 
+    'live update',
     'refreshes charts automatically using server-sent events',
     {
       type: 'boolean',
@@ -49,7 +49,9 @@ export const staticFlags: FeatureFlag[] = [
     description: 'use new database',
     environments: {
       prod: { name: 'prod', enabled: false, overrideRules: [] },
-      dev: { name: 'dev', enabled: true, 
+      dev: {
+        name: 'dev',
+        enabled: true,
         overrideRules: [
           {
             id: '43328591069f921a07e5bd89',
@@ -61,37 +63,42 @@ export const staticFlags: FeatureFlag[] = [
               attributes: ['id'],
               proportion: 1,
             },
-          }
-        ] 
+          },
+        ],
       },
       testing: { name: 'testing', enabled: true, overrideRules: [] },
-      staging: { name: 'staging', enabled: false, overrideRules: [] }
+      staging: { name: 'staging', enabled: false, overrideRules: [] },
     },
     createdAt: 1731364209327,
-    updatedAt: 1731364209327
+    updatedAt: 1731364209327,
   },
   {
     id: '94328591069f921a07e5bd76',
     name: 'auto-update-ui',
     value: { type: 'boolean', default: false },
-    description: 'Automatically update the page as new data is fetched. Long-lived flag',
+    description:
+      'Automatically update the page as new data is fetched. Long-lived flag',
     environments: {
-      prod: { name: 'prod', enabled: false, overrideRules: [
-        {
-          id: '58343391069f921a07e5bd89',
-          type: 'ForcedValue',
-          description: 'Always sets this flag to true',
-          status: 'active',
-          value: true,
-          enrollment: {
-            attributes: ['id'],
-            proportion: 1,
+      prod: {
+        name: 'prod',
+        enabled: false,
+        overrideRules: [
+          {
+            id: '58343391069f921a07e5bd89',
+            type: 'ForcedValue',
+            description: 'Always sets this flag to true',
+            status: 'active',
+            value: true,
+            enrollment: {
+              attributes: ['id'],
+              proportion: 1,
+            },
           },
-        },
-      ] },
+        ],
+      },
       dev: { name: 'dev', enabled: true, overrideRules: [] },
       testing: { name: 'testing', enabled: true, overrideRules: [] },
-      staging: { name: 'staging', enabled: false, overrideRules: [] }
+      staging: { name: 'staging', enabled: false, overrideRules: [] },
     },
   },
 ];

@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-export const estuaryMongoCollectionNameSchema = z.enum([
+export const avocetMongoCollectionNameSchema = z.enum([
   'featureFlag',
   'experiment',
   'environment',
@@ -9,8 +9,8 @@ export const estuaryMongoCollectionNameSchema = z.enum([
   'user',
 ]);
 
-export type EstuaryMongoCollectionName = z.infer<
-  typeof estuaryMongoCollectionNameSchema
+export type AvocetMongoCollectionName = z.infer<
+  typeof avocetMongoCollectionNameSchema
 >;
 
 // might add more criteria later

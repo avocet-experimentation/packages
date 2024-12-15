@@ -6,17 +6,17 @@ import {
   afterAll,
   expect,
   afterEach,
-  beforeEach,
-} from "vitest";
-import { EstuaryClient } from "../src/index.js";
+  beforeEach
+} from 'vitest';
+import { AvocetClient } from '../src/index.js';
 import {
   EnvironmentName,
   flagAttributesSchema,
   FlagClientMapping,
-  FlagName,
-} from "@estuary/types";
-import { ClientOptions } from "../src/clientTypes.js";
-import { randomUUID } from "crypto";
+  FlagName
+} from '@avocet/core';
+import { ClientOptions } from '../src/clientTypes.js';
+import { randomUUID } from 'crypto';
 
 /**
  * todo:
@@ -33,12 +33,12 @@ const defaultClientOptions: ClientOptions = {
   autoRefresh: true,
   apiUrl: 'localhost:4444',
   clientProps: {
-    id: 'test-user-id',
+    id: 'test-user-id'
   }
-}
+};
 
-describe("EstuaryClient", () => {
-  describe("Refresh Interval", () => {
+describe('AvocetClient', () => {
+  describe('Refresh Interval', () => {
     const FIVE_SECONDS = 5000;
 
     let mockLoader;
@@ -61,12 +61,12 @@ describe("EstuaryClient", () => {
       vi.useRealTimers();
     });
 
-    test("Should call the loader according to the provided interval", async () => {
-      const client = await EstuaryClient.start({
+    test('Should call the loader according to the provided interval', async () => {
+      const client = await AvocetClient.start({
         ...defaultClientOptions,
-        environment: "staging",
+        environment: 'staging',
         autoRefresh: true,
-        refreshIntervalInSeconds: 5,
+        refreshIntervalInSeconds: 5
       });
 
       expect(mockLoader.mock.calls.length).eq(1); // vitest mock calls is an array of arrays containing all the arguments used for each call
@@ -77,11 +77,11 @@ describe("EstuaryClient", () => {
       client.stop();
     });
 
-    test("Should call the loader just once", async () => {
-      const client = await EstuaryClient.start({
+    test('Should call the loader just once', async () => {
+      const client = await AvocetClient.start({
         ...defaultClientOptions,
-        environment: "staging",
-        autoRefresh: false,
+        environment: 'staging',
+        autoRefresh: false
       });
 
       expect(mockLoader.mock.calls.length).eq(1);
@@ -91,37 +91,37 @@ describe("EstuaryClient", () => {
     });
   });
 
-  describe("Flag management", () => {
-    let client: EstuaryClient;
+  describe('Flag management', () => {
+    let client: AvocetClient;
 
     beforeAll(async () => {
-      client = await EstuaryClient.start({
+      client = await AvocetClient.start({
         ...defaultClientOptions,
-        environment: "staging",
-        autoRefresh: false,
+        environment: 'staging',
+        autoRefresh: false
       });
     });
 
-    describe("flagValue", () => {
-      test("Fails to get the flag for a non-existent flag", () => {
-        const actualFlag = client.flagValue("fake-feature-flag");
+    describe('flagValue', () => {
+      test('Fails to get the flag for a non-existent flag', () => {
+        const actualFlag = client.flagValue('fake-feature-flag');
         expect(actualFlag).toBeNull();
       });
 
-      test("Gets the value of a real flag", () => {
-        const actualFlag = client.flagValue("flagOne");
+      test('Gets the value of a real flag', () => {
+        const actualFlag = client.flagValue('flagOne');
         expect(actualFlag).toBeNull();
       });
     });
 
-    describe("getFlagAttributes", () => {
-      test("Returns null for a non-existent flag", () => {
-        const result = client.getFlagAttributes("fake-feature-flag");
+    describe('getFlagAttributes', () => {
+      test('Returns null for a non-existent flag', () => {
+        const result = client.getFlagAttributes('fake-feature-flag');
         expect(result).toBeNull();
       });
 
-      test("Returns a correctly formatted object for a real flag", () => {
-        const result = client.getFlagAttributes("flagOne");
+      test('Returns a correctly formatted object for a real flag', () => {
+        const result = client.getFlagAttributes('flagOne');
         expect(flagAttributesSchema.parse(result)).not.toThrow();
       });
     });

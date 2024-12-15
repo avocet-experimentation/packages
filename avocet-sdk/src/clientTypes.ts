@@ -1,4 +1,4 @@
-import { ClientPropMapping } from '@estuary/types';
+import { ClientPropMapping } from '@avocet/core';
 
 export type ClientOptions = {
   environmentName: string; // placeholder until API keys are implemented

@@ -26,7 +26,7 @@ import { SDKConnectionDraft, ClientPropDefDraft } from '../flag-sdk/classes.js';
 import { UserDraft } from '../users/classes.js';
 import { EnvironmentDraft } from '../environments/classes.js';
 
-export const estuaryDraftSchema = z.union([
+export const avocetDraftSchema = z.union([
   featureFlagDraftSchema,
   experimentDraftSchema,
   environmentDraftSchema,
@@ -37,7 +37,7 @@ export const estuaryDraftSchema = z.union([
 /**
  * Union of draft types
  */
-export type EstuaryDraft =
+export type AvocetDraft =
   | FeatureFlagDraft
   | ExperimentDraft
   | EnvironmentDraft
@@ -45,7 +45,7 @@ export type EstuaryDraft =
   | SDKConnectionDraft
   | UserDraft;
 
-export const estuaryMongoTypesSchema = z.union([
+export const avocetMongoTypesSchema = z.union([
   featureFlagSchema,
   experimentSchema,
   environmentSchema,
@@ -56,7 +56,7 @@ export const estuaryMongoTypesSchema = z.union([
 /**
  * Union of types stored in MongoDB
  */
-export type EstuaryMongoTypes =
+export type AvocetMongoTypes =
   | FeatureFlag
   | Experiment
   | Environment
@@ -64,13 +64,12 @@ export type EstuaryMongoTypes =
   | SDKConnection
   | User; // later: users and event types
 
-// export type EstuaryMongoType<T extends EstuaryMongoTypes> = T;
 /**
  * Mapping of MongoTypes to the types of their schema.
  * Useful for ensuring that the right schema is passed in
  * when passing in `T` as a generic type argument
  */
-export type EstuarySchema<T extends EstuaryMongoTypes> = T extends FeatureFlag
+export type AvocetSchema<T extends AvocetMongoTypes> = T extends FeatureFlag
   ? typeof featureFlagSchema
   : T extends Experiment
     ? typeof experimentSchema
@@ -87,7 +86,7 @@ export type EstuarySchema<T extends EstuaryMongoTypes> = T extends FeatureFlag
 /**
  * Mapping of records to drafts
  */
-export type DraftRecord<T extends EstuaryMongoTypes> = T extends FeatureFlag
+export type DraftRecord<T extends AvocetMongoTypes> = T extends FeatureFlag
   ? FeatureFlagDraft
   : T extends Experiment
     ? ExperimentDraft
@@ -104,8 +103,8 @@ export type DraftRecord<T extends EstuaryMongoTypes> = T extends FeatureFlag
 /**
  * Version that is complete but not yet assigned an ObjectId by MongoDB
  */
-export type BeforeId<T extends EstuaryDraft> = Omit<T, 'id' | '_id'>;
+export type BeforeId<T extends AvocetDraft> = Omit<T, 'id' | '_id'>;
 /**
  * Partial object used to update only the provided fields. Only the `id` field is required.
  */
-export type PartialUpdate<T extends EstuaryMongoTypes> = RequireOnly<T, 'id'>;
+export type PartialUpdate<T extends AvocetMongoTypes> = RequireOnly<T, 'id'>;
