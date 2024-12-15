@@ -1,8 +1,22 @@
 {
-  "name": "@estuary/types",
+  "name": "@avocet/core",
   "version": "0.0.17",
-  "description": "Types for Estuary",
-  "author": "Adnan Shihabi <adnan@ashihabi.me>",
+  "description": "Types, schema, and utility functions for Avocet",
+  "author": "Avocet Team",
+  "contributors": [
+    {
+      "name": "Adnan Shihabi",
+      "email": "adnan@ashihabi.me"
+    },
+    {
+      "name": "Sean Mentele",
+      "email": "sean.a.mentele@gmail.com"
+    },
+    {
+      "name": "Gautam Panakkal",
+      "email": "gautampanakkal@gmail.com"
+    }
+  ],
   "homepage": "",
   "license": "ISC",
   "main": "dist/index.js",

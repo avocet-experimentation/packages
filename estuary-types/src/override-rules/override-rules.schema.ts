@@ -3,7 +3,7 @@ import {
   nonNegativeIntegerSchema,
   proportionSchema,
 } from '../helpers/bounded-primitives.js';
-import { clientPropNameSchema } from '../flag-clients/client-props.schema.js';
+import { clientPropNameSchema } from '../flag-sdk/client-props.schema.js';
 import { environmentNameSchema } from '../helpers/names.js';
 
 export const ruleTypeSchema = z.enum(['Experiment', 'ForcedValue']);

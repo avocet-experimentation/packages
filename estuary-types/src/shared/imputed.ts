@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { featureFlagDraftSchema } from '../feature-flags/schema.js';
-import { clientConnectionDraftSchema } from '../flag-clients/client-connections.schema.js';
+import { sdkConnectionDraftSchema } from '../flag-sdk/client-connections.schema.js';
 import { environmentDraftSchema } from '../environments/schema.js';
 import {
   bsonObjectIdHexStringSchema,
@@ -8,7 +8,7 @@ import {
 } from '../helpers/bounded-primitives.js';
 import { experimentDraftSchema } from '../experiments/schema.js';
 import { userDraftSchema } from '../users/schema.js';
-import { clientPropDefDraftSchema } from '../flag-clients/client-props.schema.js';
+import { clientPropDefDraftSchema } from '../flag-sdk/client-props.schema.js';
 
 /* SCHEMA FOR TYPES WITH PROPERTIES IMPUTED BY CATTAILS */
 
@@ -54,12 +54,11 @@ export const clientPropDefSchema = clientPropDefDraftSchema.merge(imputedBaseSch
  */
 export interface ClientPropDef extends z.infer<typeof clientPropDefSchema> {}
 
-export const clientConnectionSchema = clientConnectionDraftSchema.merge(imputedBaseSchema);
+export const sdkConnectionSchema = sdkConnectionDraftSchema.merge(imputedBaseSchema);
 /**
  * For client app connections to the cattails feature flagging service
  */
-export interface ClientConnection
-  extends z.infer<typeof clientConnectionSchema> {}
+export interface SDKConnection extends z.infer<typeof sdkConnectionSchema> {}
 
 export const userSchema = userDraftSchema.merge(imputedBaseSchema);
 /**

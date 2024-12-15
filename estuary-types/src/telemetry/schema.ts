@@ -5,7 +5,7 @@ export type TransformedSpanAttributes = {
   [key: string]: { type: PrimitiveTypeLabel; value: string };
 };
 /**
- * (WIP) telemetry data structure expected by dashboard.
+ * Telemetry data structure expected by dashboard.
  * Based on OpenTelemetry's span structure, with transformations
  * to enable CQL searches by attribute name
  */
