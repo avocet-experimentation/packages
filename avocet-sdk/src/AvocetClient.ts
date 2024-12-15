@@ -1,31 +1,26 @@
 import {
-  flagClientMappingSchema,
-  FlagClientMapping,
+  clientSDKFlagMappingSchema,
+  ClientSDKFlagMapping,
   ClientPropMapping,
-  FlagClientValue,
+  ClientSDKFlagValue,
   GeneralRecord,
-} from '@estuary/types';
+} from '@avocet/core';
 import { AttributeCategoryPrefix, ClientOptions } from './clientTypes.js';
 
 const DEFAULT_DURATION_SEC = 5 * 60;
 
-// placeholder - either hardcode or remove
-const APP_NAME = 'estuary-exp';
-
-export class EstuaryClient {
+export class AvocetClient {
   private attributeAssignmentCb?: (
     attributes: Record<string, string>,
     ...args: unknown[]
   ) => void;
-
-  readonly #attributeAppPrefix: string;
 
   refreshIntervalInSeconds: number;
 
   readonly #environmentName: string; // placeholder until API keys
 
   // private readonly clientKey: string; // to replace .environmentName eventually
-  #flagMap: FlagClientMapping = {}; // represents cached data in memory
+  #flagMap: ClientSDKFlagMapping = {}; // represents cached data in memory
 
   readonly #apiUrl: string;
 
@@ -36,7 +31,6 @@ export class EstuaryClient {
   /** Not to be invoked directly. Use `.start()` instead */
   private constructor(options: ClientOptions) {
     this.attributeAssignmentCb = options.attributeAssignmentCb;
-    this.#attributeAppPrefix = options.attributePrefix ?? APP_NAME;
     this.refreshIntervalInSeconds = options.refreshIntervalInSeconds ?? DEFAULT_DURATION_SEC;
     this.#environmentName = options.environmentName;
     this.#apiUrl = options.apiUrl;
@@ -53,8 +47,8 @@ export class EstuaryClient {
     - Allows for more meaningful name when creating the object
     - Async operations, as our loader function will be reading from an external data store
   */
-  static async start(options: ClientOptions): Promise<EstuaryClient> {
-    const client = new EstuaryClient(options);
+  static async start(options: ClientOptions): Promise<AvocetClient> {
+    const client = new AvocetClient(options);
     await client.load();
     return client;
   }
@@ -70,12 +64,12 @@ export class EstuaryClient {
     attributeName: string | null,
     attributes: GeneralRecord,
   ): Record<string, string> {
-    const prefixes = [this.#attributeAppPrefix, categoryPrefix];
+    const prefixes: string[] = [categoryPrefix];
     if (attributeName) prefixes.push(attributeName);
     const fullPrefix = prefixes.join('.');
 
     const formattedPropEntries = Object.entries(attributes).map(
-      ([key, value]) => [`${fullPrefix}.${key}`, String(value)],
+      ([key, value]) => [`avocet.${fullPrefix}.${key}`, String(value)],
     );
 
     return Object.fromEntries(formattedPropEntries);
@@ -83,7 +77,7 @@ export class EstuaryClient {
 
   private formatFlagAttributes(
     flagName: string,
-    flag: FlagClientValue,
+    flag: ClientSDKFlagValue,
   ): Record<string, string> {
     return this.formatAttributes('feature-flag', flagName, flag);
     // const attributes = {
@@ -220,7 +214,7 @@ export class EstuaryClient {
         this.attributeAssignmentCb(attributes, span);
       }
       return flagData.value;
-    } catch (e) {
+    } catch (_e) {
       return null;
     }
   }
@@ -248,7 +242,7 @@ export class EstuaryClient {
       return false;
     }
     const data: unknown = await response.json();
-    const safeParseResult = flagClientMappingSchema.safeParse(data);
+    const safeParseResult = clientSDKFlagMappingSchema.safeParse(data);
     if (safeParseResult.success) {
       this.#flagMap = { ...this.#flagMap, ...safeParseResult.data };
       return true;
@@ -259,7 +253,7 @@ export class EstuaryClient {
   /**
    * Retrieve a copy of cached data for the specified flag
    */
-  private getCachedFlagData(flagName: string): FlagClientValue | undefined {
+  private getCachedFlagData(flagName: string): ClientSDKFlagValue | undefined {
     const flagContent = this.#flagMap[flagName];
     return { ...flagContent };
   }
@@ -267,7 +261,7 @@ export class EstuaryClient {
   /**
    * @returns a copy of all locally stored flags
    */
-  getAllCachedFlags(): FlagClientMapping {
+  getAllCachedFlags(): ClientSDKFlagMapping {
     return { ...this.#flagMap };
   }
 

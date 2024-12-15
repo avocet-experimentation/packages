@@ -19,7 +19,7 @@ export const imputedBaseSchema = z.object({
 });
 /**
  * Parent type for application documents after being fetched from MongoDB.
- * For the union of document types, see `EstuaryMongoTypes`
+ * For the union of document types, see `AvocetMongoTypes`
  */
 export interface ImputedBase extends z.infer<typeof imputedBaseSchema> {}
 
