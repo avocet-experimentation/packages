@@ -13,7 +13,7 @@ export class UserPermissions implements z.infer<typeof userPermissionsSchema> {
 
   clientPropDef: PermissionLevel;
 
-  clientConnection: PermissionLevel;
+  sdkConnection: PermissionLevel;
 
   environment: PermissionLevel;
 
@@ -23,7 +23,7 @@ export class UserPermissions implements z.infer<typeof userPermissionsSchema> {
     this.featureFlag = permissions.featureFlag;
     this.experiment = permissions.experiment;
     this.clientPropDef = permissions.clientPropDef;
-    this.clientConnection = permissions.clientConnection;
+    this.sdkConnection = permissions.sdkConnection;
     this.environment = permissions.environment;
     this.user = permissions.user;
   }
@@ -36,7 +36,7 @@ export class UserPermissions implements z.infer<typeof userPermissionsSchema> {
       featureFlag: level,
       experiment: level,
       clientPropDef: level,
-      clientConnection: level,
+      sdkConnection: level,
       environment: level,
       user: level,
     });

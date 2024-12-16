@@ -5,7 +5,7 @@ export const avocetMongoCollectionNameSchema = z.enum([
   'experiment',
   'environment',
   'clientPropDef',
-  'clientConnection',
+  'sdkConnection',
   'user',
 ]);
 
