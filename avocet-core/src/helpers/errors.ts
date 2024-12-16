@@ -33,8 +33,8 @@ export class DocumentNotFoundError extends Error {
 }
 
 export class DocumentUpdateFailedError extends Error {
-  constructor(id: string) {
-    super(`Failed to modify document with id ${id}`);
+  constructor(errorMessage: string) {
+    super(errorMessage);
     this.name = 'DocumentUpdateFailedError';
   }
 }
