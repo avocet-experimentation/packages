@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { flagNameSchema } from '../helpers/names.js';
 import { flagCurrentValueSchema } from '../feature-flags/flag-value.js';
+import { featureFlagSchema } from '../shared/imputed.js';
 
 /* CLIENT SDK */
 
@@ -38,7 +39,7 @@ export interface ServerSDKFlagValue
 
 export const serverSDKFlagMappingSchema = z.record(
   flagNameSchema,
-  serverSDKFlagValueSchema,
+  featureFlagSchema,
 );
 /**
  * (WIP) Mapping of flag names to their server-side data
