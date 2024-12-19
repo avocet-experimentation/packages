@@ -52,77 +52,6 @@ export default class AvocetSDKBase {
   }
 
   /**
-   * Static factory method that attempts to fetch flags before returning an
-   * instance
-   */
-  static async start(options: AvocetSDKOptions) {
-    const sdk = new AvocetSDKBase(options);
-    await sdk.fetchAllFlags();
-    return sdk;
-  }
-
-  // /**
-  //  * Get the cached value of a flag, saving attributes to a span if passed and
-  //  * if the SDK was instantiated with an attribute assignment callback.
-  //  * @param span a telemetry span object
-  //  */
-  // get<SpanType>(
-  //   flagName: string,
-  //   span?: SpanType,
-  //   clientProps?: ClientPropMapping,
-  // ): null | FlagCurrentValue {
-  //   const clientPropsToUse = clientProps ?? this.clientProps;
-  //   if (!clientPropsToUse) {
-  //     throw new TypeError(
-  //       'Client properties must be passed if not provided when initializing EstuaryClient',
-  //     );
-
-  //     if (!this.clientProps) {
-  //       return this.getLive(flagName, span, clientProps);
-  //     }
-  //   }
-  // }
-
-  // /**
-  //  * Get the cached value of a flag, saving attributes to a span if passed and
-  //  * if the SDK was instantiated with an attribute assignment callback.
-  //  * @param span a telemetry span object
-  //  */
-  // getCached<SpanType>(
-  //   flagName: string,
-  //   span?: SpanType,
-  // ): null | FlagCurrentValue {
-  //   // if (span) {
-  //   //   const clientPropsToUse = clientProps ?? this.clientProps;
-  //   //   if (!clientPropsToUse) {
-  //   //     throw new TypeError(
-  //   //       'Client properties must be passed if not provided when initializing EstuaryClient',
-  //   //     );
-  //   //   }
-
-  //   //   return this.getFlagValueAndAssignAttributes(flagName, span, clientProps);
-  //   // }
-
-  //   return this.getFlagValueAndAssignAttributes(flagName, span, null);
-  // }
-
-  // /**
-  //  * Fetch the latest value of a flag, saving attributes to a span if one is passed
-  //  * and if the client was instantiated with an attribute assignment callback.
-  //  * @param span a telemetry span object
-  //  * @param clientProps if passed, is used instead of  props
-  //  * @returns
-  //  */
-  // async getLive<SpanType>(
-  //   flagName: string,
-  //   span?: SpanType,
-  //   clientProps?: ClientPropMapping,
-  // ): Promise<null | FlagCurrentValue> {
-  //   await this.fetchFlag(flagName, clientProps);
-  //   return this.getFlagValueAndAssignAttributes(flagName, span, clientProps);
-  // }
-
-  /**
    * @returns a copy of all locally stored flags
    */
   getAllCachedFlags() {
@@ -140,48 +69,6 @@ export default class AvocetSDKBase {
   stopPolling() {
     clearInterval(this.intervalId);
   }
-
-  // /**
-  //  * Get cached data for the specified flag.
-  //  * If a span is passed and an attribute assignment callback is defined, the
-  //  * callback is invoked, passing in an attributes object containing the flag's
-  //  * attributes.
-  //  *
-  //  * If client properties are passed, they are also added to the attributes
-  //  * object passed into the callback.
-  //  *
-  //  * @param span A telemetry span to pass into the attribute assignment calback
-  //  * @param clientProps An object of client properties to assign to the span, or
-  //  * `null` if client props stored on the instance should be used instead.
-  //  * @returns The value of the flag, or null if no matching flag is found
-  //  */
-  // protected getFlagValueAndAssignAttributes<SpanType>(
-  //   flagName: string,
-  //   span?: SpanType,
-  //   clientProps?: ClientPropMapping | null,
-  // ): null | FlagCurrentValue {
-  //   try {
-  //     const flagData = this.getCachedFlagData(flagName);
-  //     if (!flagData) throw new Error(`No cached data for flag "${flagName}"`);
-
-  //     if (span && this.attributeAssignmentCb) {
-  //       const attributes = {
-  //         ...AvocetSDKBase.formatFlagAttributes(flagName, flagData),
-  //       };
-  //       const rawClientProps = clientProps === null ? this.clientProps : clientProps;
-  //       if (rawClientProps) {
-  //         Object.assign(
-  //           attributes,
-  //           AvocetSDKBase.formatClientProps(rawClientProps),
-  //         );
-  //       }
-  //       this.attributeAssignmentCb(attributes, span);
-  //     }
-  //     return flagData.value;
-  //   } catch (_e) {
-  //     return null;
-  //   }
-  // }
 
   /**
    * Returns a flat attributes object formatted for insertion into telemetry data

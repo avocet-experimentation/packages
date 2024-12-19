@@ -23,16 +23,16 @@ export class AvocetClient extends AvocetSDKBase {
     this.clientProps = withDefaults.clientProps;
   }
 
-  // /**
-  // * Static factory method (no constructor):
-  //   - Allows for more meaningful name when creating the object
-  //   - Async operations, as our loader function will be reading from an external data store
-  // */
-  // static async start(options: AvocetClientOptions): Promise<AvocetClient> {
-  //   const client = new AvocetClient(options);
-  //   await client.fetchAllFlags();
-  //   return client;
-  // }
+  /**
+  * Static factory method (no constructor):
+    - Allows for more meaningful name when creating the object
+    - Async operations, as our loader function will be reading from an external data store
+  */
+  static async start(options: AvocetClientOptions): Promise<AvocetClient> {
+    const client = new AvocetClient(options);
+    await client.fetchAllFlags();
+    return client;
+  }
 
   /**
    * Get the cached value of a flag, saving attributes to a span if passed and
