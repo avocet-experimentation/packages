@@ -47,11 +47,14 @@ implements z.infer<typeof sdkConnectionDraftSchema> {
 
   clientKeyHash: string;
 
+  allowedOrigins: string[];
+
   constructor(draft: SDKConnectionDraft) {
     this.name = draft.name;
     this.description = draft.description;
     this.environmentId = draft.environmentId;
     this.clientKeyHash = draft.clientKeyHash;
+    this.allowedOrigins = draft.allowedOrigins;
   }
 
   static template(
@@ -60,6 +63,7 @@ implements z.infer<typeof sdkConnectionDraftSchema> {
     const defaults = {
       description: null,
       clientKeyHash: this.generateApiKey(),
+      allowedOrigins: [],
     };
 
     return new SDKConnectionDraft({ ...defaults, ...partialDraft });
