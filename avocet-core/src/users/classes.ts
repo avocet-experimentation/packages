@@ -53,16 +53,16 @@ export class UserPermissions implements z.infer<typeof userPermissionsSchema> {
 }
 
 export class UserDraft implements z.infer<typeof userDraftSchema> {
-  email: string;
+  identifier: string;
 
   permissions: UserPermissions;
 
   constructor(draft: UserDraft) {
-    this.email = draft.email;
+    this.identifier = draft.identifier;
     this.permissions = draft.permissions;
   }
 
-  static templateAdmin(partial: RequireOnly<UserDraft, 'email'>) {
+  static templateAdmin(partial: RequireOnly<UserDraft, 'identifier'>) {
     const defaults = {
       permissions: UserPermissions.templateFull(),
     };
@@ -70,7 +70,7 @@ export class UserDraft implements z.infer<typeof userDraftSchema> {
     return new UserDraft({ ...defaults, ...partial });
   }
 
-  static templateViewOnly(partial: RequireOnly<UserDraft, 'email'>) {
+  static templateViewOnly(partial: RequireOnly<UserDraft, 'identifier'>) {
     const defaults = {
       permissions: UserPermissions.templateLevel('view'),
     };
