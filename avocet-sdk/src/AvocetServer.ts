@@ -24,27 +24,21 @@ export default class AvocetServer extends AvocetSDKBase {
   protected constructor(options: AvocetServerOptions) {
     const withDefaults = { ...DEFAULT_OPTIONS, ...options };
     super(withDefaults);
-
-    // this.attributeAssignmentCb = withDefaults.attributeAssignmentCb;
-    // this.discardStaleFlags = withDefaults.discardStaleFlags;
-    // this.autoRefreshInterval = withDefaults.autoRefreshInterval;
-    // this.apiUrl = withDefaults.apiUrl;
-    // this.clientProps = withDefaults.clientProps;
     if (withDefaults.autoRefresh) {
       this.startPolling(this.autoRefreshInterval);
     }
   }
 
-  // /**
-  // * Static factory method (no constructor):
-  //   - Allows for more meaningful name when creating the object
-  //   - Async operations, as our loader function will be reading from an external data store
-  // */
-  // static async start(options: AvocetServerOptions): Promise<AvocetServer> {
-  //   const client = new AvocetServer(options);
-  //   await client.fetchAllFlags();
-  //   return client;
-  // }
+  /**
+  * Static factory method (no constructor):
+    - Allows for more meaningful name when creating the object
+    - Async operations, as our loader function will be reading from an external data store
+  */
+  static async start(options: AvocetServerOptions): Promise<AvocetServer> {
+    const client = new AvocetServer(options);
+    await client.fetchAllFlags();
+    return client;
+  }
 
   /** (WIP)
    * Get the cached value of a flag, saving attributes to a span if passed and
@@ -66,7 +60,6 @@ export default class AvocetServer extends AvocetSDKBase {
    * Fetch the latest value of a flag, saving attributes to a span if one is passed
    * and if the client was instantiated with an attribute assignment callback.
    * @param span a telemetry span object
-   * @param clientProps if passed, is used instead of  props
    * @returns
    */
   async getLive<SpanType>(
