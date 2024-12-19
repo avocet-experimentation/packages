@@ -17,7 +17,7 @@ export const userPermissionsSchema = z
 
 export const userDraftSchema = z.object({
   // name: z.string(),
-  email: z.string(),
+  identifier: z.string(),
   // passwordHash: z.string(), // todo: clecan up once deciding on user auth system
   permissions: userPermissionsSchema,
 });
