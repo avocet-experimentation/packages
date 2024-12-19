@@ -72,6 +72,20 @@ export class ExperimentDraft implements z.infer<typeof experimentDraftSchema> {
       : safeParseResult.error;
   }
 
+  /**
+   * Returns true if an experiment has at least one group with two treatments
+   * or two groups with one treatment each; returns false otherwise.
+   */
+  static isReadyToStart(experiment: ExperimentDraft): boolean {
+    const groupCount = experiment.groups.length;
+    if (groupCount === 0) return false;
+    if (groupCount === 1) {
+      return experiment.groups[0].sequence.length >= 2;
+    }
+
+    return experiment.groups.every((group) => group.sequence.length >= 1);
+  }
+
   static groupTreatments(
     experiment: ExperimentDraft | Experiment,
     groupId: string,
