@@ -30,3 +30,12 @@ export const trueSchema = z.boolean().refine((data) => data === true);
 export const primitiveTypeLabels = ['string', 'number', 'boolean'] as const;
 export const primitiveTypeLabelSchema = z.enum(primitiveTypeLabels);
 export type PrimitiveTypeLabel = (typeof primitiveTypeLabels)[number];
+
+export type AnyPrimitive =
+  | string
+  | number
+  | bigint
+  | symbol
+  | boolean
+  | null
+  | undefined;
