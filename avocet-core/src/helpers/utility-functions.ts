@@ -117,10 +117,11 @@ export function stripKeysWithValues(
     const compareSet = new Set<unknown>(matchValues);
 
     Object.keys(result).forEach((key) => {
+      const value = result[key];
       if (compareSet.has(result[key])) {
         delete result[key];
-      } else if (isObjectWithProps(result[key])) {
-        result[key] = rec(result[key]);
+      } else if (isObjectWithProps(value)) {
+        result[key] = rec(value);
       }
     });
 
