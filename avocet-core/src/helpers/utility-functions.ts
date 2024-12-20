@@ -1,3 +1,4 @@
+import { AnyPrimitive } from './bounded-primitives.js';
 import { GeneralRecord, SafeOmit } from './utility-types.js';
 
 /**
@@ -100,6 +101,34 @@ export function stripKeysWithUndefined(input: object) {
 
   return rec(input);
 }
+/**
+ * Returns a copy of the input object with any keys containing `undefined`
+ *  removed. Throws if the input isn't an object.
+ */
+export function stripKeysWithValues(
+  input: object,
+  ...matchValues: AnyPrimitive[]
+) {
+  assertObject(input);
+
+  const rec = (obj: GeneralRecord) => {
+    const result = { ...obj };
+
+    const compareSet = new Set<unknown>(matchValues);
+
+    Object.keys(result).forEach((key) => {
+      if (compareSet.has(result[key])) {
+        delete result[key];
+      } else if (isObjectWithProps(result[key])) {
+        result[key] = rec(result[key]);
+      }
+    });
+
+    return result;
+  };
+
+  return rec(input);
+}
 
 export function pickKeys<T extends object, K extends keyof T>(
   keys: readonly K[],
@@ -111,4 +140,28 @@ export function pickKeys<T extends object, K extends keyof T>(
   );
 
   return output;
+}
+
+/**
+ * Executes many asynchronous operations in parallel and returns once all of
+ * the promises resolve or any one of them rejects.
+ * @param cb any function that returns a `Promise`
+ * @param argumentSets an array of tuples of arguments to pass into `cb`
+ * @param promiseTransform an optional transform operation
+ * @returns
+ */
+export async function parallelAsync<P, A extends Array<unknown>>(
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  cb: (...args: A) => Promise<P>,
+  argumentSets: A[],
+) {
+  const promises: Promise<P>[] = [];
+
+  for (let i = 0; i < argumentSets.length; i += 1) {
+    const args = argumentSets[i];
+    const promise = cb(...args);
+    promises.push(promise);
+  }
+
+  return Promise.all(promises);
 }
