@@ -234,10 +234,7 @@ export class AvocetClient {
       }),
     };
 
-    const response = await fetch(
-      `${this.#apiUrl}/api/fflags/caching`,
-      fetchOptions,
-    );
+    const response = await fetch(`${this.#apiUrl}/api/fflags`, fetchOptions);
     if (!response.ok) {
       return false;
     }
