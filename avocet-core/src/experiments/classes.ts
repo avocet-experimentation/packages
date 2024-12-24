@@ -161,6 +161,23 @@ export class ExperimentDraft implements z.infer<typeof experimentDraftSchema> {
     const { definedTreatments } = experiment;
     definedTreatments[treatment.id] = treatment;
   }
+
+  static addGroup(experiment: ExperimentDraft | Experiment) {
+    const groupNamePrefix = 'New Group';
+    const groupNames = new Set(experiment.groups.map((group) => group.name));
+    let counter = 1;
+    let newGroupName = `${groupNamePrefix} ${counter}`;
+    while (groupNames.has(newGroupName)) {
+      counter += 1;
+      newGroupName = `${groupNamePrefix} ${counter}`;
+    }
+
+    const newGroup = ExperimentGroup.template({
+      name: newGroupName,
+    });
+
+    experiment.groups.push(newGroup);
+  }
   // #endregion
 
   // #region Templates
