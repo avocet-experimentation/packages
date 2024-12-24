@@ -73,10 +73,31 @@ export class ExperimentDraft implements z.infer<typeof experimentDraftSchema> {
   }
 
   /**
-   * Returns true if an experiment has at least one group with two treatments
-   * or two groups with one treatment each; returns false otherwise.
+   * Returns true if an experiment has all of the following:
+   * - at least one feature flag
+   * - no feature flags disabled in its environment
+   * - either:
+   *   - at least one group with two treatments
+   *   - at least two groups with one treatment each
+   *
+   * Returns false otherwise.
    */
-  static isReadyToStart(experiment: ExperimentDraft): boolean {
+  static isReadyToStart(
+    experiment: ExperimentDraft,
+    flags: FeatureFlag[],
+  ): boolean {
+    if (experiment.flagIds.length === 0) return false;
+
+    const expFlagIdSet = new Set(experiment.flagIds);
+    const experimentFlags = flags.filter((flag) => expFlagIdSet.has(flag.id));
+    if (experimentFlags.length !== experiment.flagIds.length) return false;
+
+    if (
+      !experimentFlags.every(
+        (flag) => experiment.environmentName in flag.environmentNames,
+      )
+    ) return false;
+
     const groupCount = experiment.groups.length;
     if (groupCount === 0) return false;
     if (groupCount === 1) {
