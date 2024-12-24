@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import crypto from 'crypto';
+// import * as crypto from 'node:crypto';
 import { clientPropDefDraftSchema } from './client-props.schema.js';
 import { FlagValueTypeDef } from '../feature-flags/flag-value.js';
 import { RequireOnly } from '../helpers/utility-types.js';
@@ -75,6 +75,10 @@ implements z.infer<typeof sdkConnectionDraftSchema> {
    * @returns A base64-encoded API key string.
    */
   static generateApiKey(length = 32) {
-    return crypto.randomBytes(length).toString('base64').replace(/[=+/]/g, '');
+    return crypto.randomUUID();
+    // return [...crypto.getRandomValues(new Uint8Array(length))].toString(
+    //   'base64',
+    // );
+    // return crypto.randomBytes(length).toString('base64').replace(/[=+/]/g, '');
   }
 }
