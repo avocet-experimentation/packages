@@ -107,9 +107,20 @@ export function stripKeysWithUndefined(input: object) {
  */
 export function stripKeysWithValues(
   input: object,
-  ...matchValues: AnyPrimitive[]
+  matchValues: AnyPrimitive[],
+  options: {
+    /** Maximum recursion depth. Defaults to 1 (no recursion) */
+    maxDepth?: number;
+  },
 ) {
   assertObject(input);
+
+  const defaultOptions = {
+    maxDepth: 1,
+  };
+
+  const mergedOptions = { ...defaultOptions, ...options };
+  let currentDepth = 1;
 
   const rec = (obj: GeneralRecord) => {
     const result = { ...obj };
@@ -121,6 +132,8 @@ export function stripKeysWithValues(
       if (compareSet.has(result[key])) {
         delete result[key];
       } else if (isObjectWithProps(value)) {
+        if (currentDepth === mergedOptions.maxDepth) return;
+        currentDepth += 1;
         result[key] = rec(value);
       }
     });
