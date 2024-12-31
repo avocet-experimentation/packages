@@ -152,15 +152,20 @@ export class ExperimentDraft implements z.infer<typeof experimentDraftSchema> {
    * Returns a portion of an Experiment, removing all flag states and the
    * reference for the specified flag ID. Non-mutating.
    */
-  static removeFlag(experiment: ExperimentDraft | Experiment, flagId: string) {
+  static removeFlag(
+    experiment: ExperimentDraft | Experiment,
+    flagId: string,
+  ): Pick<Experiment, 'flagIds' | 'definedTreatments'> {
     const flagIds = experiment.flagIds.filter((id) => id !== flagId);
     const treatmentArr = Object.entries(experiment.definedTreatments);
     const filteredTreatmentArr = treatmentArr.map(([id, treatment]) => [
       id,
-      treatment.flagStates.filter((state) => state.id !== flagId),
+      {
+        ...treatment,
+        flagStates: treatment.flagStates.filter((state) => state.id !== flagId),
+      },
     ]);
     const definedTreatments = Object.fromEntries(filteredTreatmentArr);
-
     return {
       flagIds,
       definedTreatments,
