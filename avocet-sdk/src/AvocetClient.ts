@@ -17,9 +17,10 @@ export class AvocetClient {
 
   refreshIntervalInSeconds: number;
 
-  readonly #environmentName: string; // placeholder until API keys
+  // readonly #environmentName: string; // placeholder until API keys
 
-  // private readonly clientKey: string; // to replace .environmentName eventually
+  readonly #apiKey: string; // to replace .environmentName eventually
+
   #flagMap: ClientSDKFlagMapping = {}; // represents cached data in memory
 
   readonly #apiUrl: string;
@@ -32,7 +33,7 @@ export class AvocetClient {
   private constructor(options: ClientOptions) {
     this.attributeAssignmentCb = options.attributeAssignmentCb;
     this.refreshIntervalInSeconds = options.refreshIntervalInSeconds ?? DEFAULT_DURATION_SEC;
-    this.#environmentName = options.environmentName;
+    this.#apiKey = options.apiKey;
     this.#apiUrl = options.apiUrl;
     this.#clientProps = options.clientProps;
     if (options.autoRefresh === true) {
@@ -229,7 +230,7 @@ export class AvocetClient {
         'Content-Type': 'application/json; charset=utf-8',
       },
       body: JSON.stringify({
-        environmentName: this.#environmentName,
+        apiKey: this.#apiKey,
         clientProps: this.#clientProps,
       }),
     };

@@ -1,7 +1,7 @@
 import { ClientPropMapping } from '@avocet/core';
 
 export type ClientOptions = {
-  environmentName: string; // placeholder until API keys are implemented
+  apiKey: string; // placeholder until API keys are implemented
   autoRefresh: boolean;
   refreshIntervalInSeconds?: number;
   attributeAssignmentCb?: (
