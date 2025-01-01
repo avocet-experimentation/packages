@@ -4,11 +4,18 @@ import { nonEmptyStringSchema } from '../helpers/bounded-primitives.js';
 import { flagValueDefSchema } from './flag-value.js';
 import { overrideRuleUnionSchema } from '../override-rules/override-rule-union.schema.js';
 
+export const flagEnvironmentNamesSchema = z
+  .record(z.string(), z.unknown())
+  .transform((arg) =>
+    Object.fromEntries(
+      Object.entries(arg).filter(([_, value]) => value === true),
+    ));
+
 export const featureFlagDraftSchema = z.object({
   name: nonEmptyStringSchema,
   description: z.string().nullable(),
   value: flagValueDefSchema,
-  environmentNames: z.record(z.string(), z.literal(true)),
+  environmentNames: flagEnvironmentNamesSchema,
   overrideRules: z.array(overrideRuleUnionSchema),
 });
 
