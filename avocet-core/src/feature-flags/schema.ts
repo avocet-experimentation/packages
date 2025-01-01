@@ -9,7 +9,8 @@ export const flagEnvironmentNamesSchema = z
   .transform((arg) =>
     Object.fromEntries(
       Object.entries(arg).filter(([_, value]) => value === true),
-    ));
+    ))
+  .pipe(z.record(z.string(), z.literal(true)));
 
 export const featureFlagDraftSchema = z.object({
   name: nonEmptyStringSchema,
