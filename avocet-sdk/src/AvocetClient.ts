@@ -17,15 +17,13 @@ export class AvocetClient {
 
   refreshIntervalInSeconds: number;
 
-  // readonly #environmentName: string; // placeholder until API keys
+  readonly #apiKey: string;
 
-  readonly #apiKey: string; // to replace .environmentName eventually
-
-  #flagMap: ClientSDKFlagMapping = {}; // represents cached data in memory
+  #flagMap: ClientSDKFlagMapping = {};
 
   readonly #apiUrl: string;
 
-  #intervalId: NodeJS.Timeout | undefined; // necessary for setting/clearing interval
+  #intervalId: NodeJS.Timeout | undefined;
 
   #clientProps: ClientPropMapping;
 
@@ -44,10 +42,8 @@ export class AvocetClient {
   }
 
   /**
-  * Static factory method (no constructor):
-    - Allows for more meaningful name when creating the object
-    - Async operations, as our loader function will be reading from an external data store
-  */
+   * Async factory method that fetches and caches flag data before returning
+   */
   static async start(options: ClientOptions): Promise<AvocetClient> {
     const client = new AvocetClient(options);
     await client.load();
@@ -55,10 +51,10 @@ export class AvocetClient {
   }
 
   /**
-   * Returns a flat attributes object formatted for insertion into telemetry data
-   * @param attributes
-   * @param attributeName An optional name to insert between the category prefix and the key
-   * @returns
+   * @param attributeName An optional name to insert between the category
+   * prefix and each attribute key
+   * @returns a flat attributes object formatted for insertion into telemetry
+   * data
    */
   private formatAttributes(
     categoryPrefix: AttributeCategoryPrefix,
@@ -81,63 +77,13 @@ export class AvocetClient {
     flag: ClientSDKFlagValue,
   ): Record<string, string> {
     return this.formatAttributes('feature-flag', flagName, flag);
-    // const attributes = {
-    //   [`${this.#attributeAppPrefix}.feature-flag.${flagName}.value`]: String(
-    //     flag.value,
-    //   ),
-    //   [`${this.#attributeAppPrefix}.feature-flag.${flagName}.metadata`]: String(
-    //     flag.metadata,
-    //   ),
-    // };
-
-    // return attributes;
   }
-
-  /**
-   * Generates an object of attributes for a given flag
-   * for insertion into telemetry data.
-   */
-  // getFlagAttributes(flagName: string): Record<string, string> | null {
-  //   const flagData = this.getCachedFlagData(flagName);
-  //   if (!flagData) return null;
-
-  //   return this.formatFlagAttributes(flagName, flagData);
-  // }
 
   private formatClientProps(
     clientProps: ClientPropMapping,
   ): Record<string, string> {
     return this.formatAttributes('client-prop', null, clientProps);
-    // const userProps = Object.entries(clientProps).map(([key, value]) => [
-    //   `${this.#attributeAppPrefix}.client-prop.${key}`,
-    //   String(value),
-    // ]);
-
-    // return Object.fromEntries(userProps);
   }
-
-  // get clientProps(): Record<string, string> {
-  //   return this.formatClientProps(this.#clientProps);
-  // }
-
-  // getAllAttributes(flagName: string): Record<string, string> {
-  //   const flagAttributes = this.getFlagAttributes(flagName);
-  //   if (flagAttributes === null) {
-  //     throw new Error(
-  //       `Failed to retrieve cached attributes for flag "${flagName}!`,
-  //     );
-  //   }
-  //   const userProps = Object.entries(this.clientProps).map(([key, value]) => [
-  //     `${this.attributePrefix}.client-prop.${key}`,
-  //     String(value),
-  //   ]);
-  //   const attributes = {
-  //     ...flagAttributes,
-  //     ...(Object.fromEntries(userProps) as Record<string, string>),
-  //   };
-
-  //   return attributes;
-  // }
 
   /**
    * Get the last cached value of a flag, saving attributes to a span if one is passed
@@ -150,18 +96,6 @@ export class AvocetClient {
     span?: SpanType,
   ): null | boolean | number | string {
     return this.#getFlagValueAndAttributes(flagName, span, null);
-    // try {
-    //   const flagData = this.getCachedFlagData(flagName);
-    //   if (!flagData) throw new Error(`No cached data for flag "${flagName}"`);
-
-    //   if (span && this.attributeAssignmentCb) {
-    //     const attributes = this.getAllAttributes(flagName);
-    //     this.attributeAssignmentCb(attributes, span);
-    //   }
-    //   return flagData.value;
-    // } catch (e) {
-    //   return null;
-    // }
   }
 
   /** (WIP) get a flag value, passing in client properties instead of using pre-defined ones
@@ -176,18 +110,6 @@ export class AvocetClient {
     span?: SpanType,
   ): null | boolean | number | string {
     return this.#getFlagValueAndAttributes(flagName, span, clientProps);
-    // try {
-    //   const flagData = this.getCachedFlagData(flagName);
-    //   if (!flagData) throw new Error(`No cached data for flag "${flagName}"`);
-
-    //   if (span && this.attributeAssignmentCb) {
-    //     const attributes = this.getAllAttributes(flagName);
-    //     this.attributeAssignmentCb(attributes, span);
-    //   }
-    //   return flagData.value;
-    // } catch (e) {
-    //   return null;
-    // }
   }
 
   /**
