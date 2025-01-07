@@ -1,7 +1,12 @@
 import { z } from 'zod';
 import { FlagState, experimentDraftSchema } from './schema.js';
-import { Metric } from '../metrics/schema.js';
-import { Enrollment, ExperimentGroup, Treatment } from './child-classes.js';
+import {
+  Enrollment,
+  ExperimentGroup,
+  Hypothesis,
+  Metric,
+  Treatment,
+} from './child-classes.js';
 import {
   Experiment,
   FeatureFlag,
@@ -38,9 +43,11 @@ export class ExperimentDraft implements z.infer<typeof experimentDraftSchema> {
 
   flagIds: string[];
 
+  definedTreatments: Record<string, Treatment>;
+
   dependents: Metric[];
 
-  definedTreatments: Record<string, Treatment>;
+  hypotheses: Hypothesis[];
 
   constructor(experimentDraft: Omit<ExperimentDraft, 'type'>) {
     this.name = experimentDraft.name;
@@ -55,6 +62,7 @@ export class ExperimentDraft implements z.infer<typeof experimentDraftSchema> {
     this.flagIds = experimentDraft.flagIds;
     this.dependents = experimentDraft.dependents;
     this.definedTreatments = experimentDraft.definedTreatments;
+    this.hypotheses = experimentDraft.hypotheses;
 
     this.type = 'Experiment';
   }
@@ -86,6 +94,7 @@ export class ExperimentDraft implements z.infer<typeof experimentDraftSchema> {
     experiment: ExperimentDraft,
     flags: FeatureFlag[],
   ): boolean {
+    if (experiment.hypotheses.length === 0) return false;
     if (experiment.flagIds.length === 0) return false;
 
     const expFlagIdSet = new Set(experiment.flagIds);
@@ -217,8 +226,9 @@ export class ExperimentDraft implements z.infer<typeof experimentDraftSchema> {
       groups: [],
       enrollment: Enrollment.template(),
       flagIds: [],
-      dependents: [],
       definedTreatments: {},
+      dependents: [],
+      hypotheses: [],
     };
 
     return new ExperimentDraft({ ...defaults, ...partialDraft });
@@ -261,10 +271,12 @@ export class ExperimentDraft implements z.infer<typeof experimentDraftSchema> {
     const groups = [
       ExperimentGroup.template({
         name: 'Control Group',
+        proportion: 0.5,
         sequence: [treatments[0].id],
       }),
       ExperimentGroup.template({
         name: 'Experimental Group',
+        proportion: 0.5,
         sequence: [treatments[1].id],
       }),
     ];
