@@ -31,6 +31,13 @@ export const primitiveTypeLabels = ['string', 'number', 'boolean'] as const;
 export const primitiveTypeLabelSchema = z.enum(primitiveTypeLabels);
 export type PrimitiveTypeLabel = (typeof primitiveTypeLabels)[number];
 
+export const primitiveTypeSchema = z.union([
+  z.string(),
+  z.number(),
+  z.boolean(),
+]);
+export type PrimitiveType = z.infer<typeof primitiveTypeSchema>;
+
 export type AnyPrimitive =
   | string
   | number

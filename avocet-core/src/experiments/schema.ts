@@ -5,9 +5,18 @@ import {
   nonEmptyStringSchema,
   nonNegativeIntegerSchema,
   positiveIntegerSchema,
+  primitiveTypeLabelSchema,
+  primitiveTypeSchema,
 } from '../helpers/bounded-primitives.js';
-import { metricSchema } from '../metrics/schema.js';
 import { flagCurrentValueSchema } from '../feature-flags/flag-value.js';
+
+/**
+ * Dependent variables embedded into Experiments
+ */
+export const metricSchema = z.object({
+  fieldName: z.string(),
+  type: primitiveTypeLabelSchema,
+});
 
 export const flagStateSchema = z.object({
   id: bsonObjectIdHexStringSchema,
@@ -36,14 +45,42 @@ export const experimentGroupSchema = z.object({
   cycles: positiveIntegerSchema,
 });
 
+export const conditionSchema = z
+  .tuple([experimentGroupSchema.shape.id, treatmentIdSchema])
+  .readonly();
+/**
+ * A combination of a group and treatment
+ */
+export interface Condition extends z.infer<typeof conditionSchema> {}
+
+export const hypothesisSchema = z.object({
+  id: z.string(),
+  dependentName: z.string(),
+  analysis: z.string(), // reference to an analysis technique; todo: correct this as needed
+  compareValue: primitiveTypeSchema,
+  compareOperator: z.string(),
+  baseCondition: conditionSchema,
+  deltaCondition: conditionSchema,
+});
+
 export const experimentDraftSchema = overrideRuleSchema.extend({
   name: nonEmptyStringSchema,
   hypothesis: z.string().nullable(),
   type: z.literal('Experiment'),
-  groups: z.array(experimentGroupSchema),
+  groups: z.array(experimentGroupSchema).transform((groups) => {
+    const proportionSum = groups.reduce(
+      (sum, group) => sum + group.proportion,
+      0,
+    );
+    return groups.map((group) => ({
+      ...group,
+      proportion: group.proportion / proportionSum,
+    }));
+  }),
   flagIds: z.array(z.string()),
-  dependents: z.array(metricSchema),
   definedTreatments: z.record(treatmentIdSchema, treatmentSchema),
+  dependents: z.array(metricSchema),
+  hypotheses: z.array(hypothesisSchema),
 });
 
 export const experimentReferenceSchema = overrideRuleSchema.extend({

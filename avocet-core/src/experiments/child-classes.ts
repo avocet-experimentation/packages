@@ -4,12 +4,79 @@ import {
   experimentGroupSchema,
   treatmentSchema,
   experimentReferenceSchema,
+  metricSchema,
+  Condition,
+  hypothesisSchema,
 } from './schema.js';
 import {
   enrollmentSchema,
   RuleStatus,
 } from '../override-rules/override-rules.schema.js';
 import { RequireOnly } from '../helpers/utility-types.js';
+import { PrimitiveTypeLabel } from '../helpers/bounded-primitives.js';
+
+export class Metric implements z.infer<typeof metricSchema> {
+  fieldName: string;
+
+  type: PrimitiveTypeLabel;
+
+  constructor(obj: Metric) {
+    this.fieldName = obj.fieldName;
+    this.type = obj.type;
+  }
+
+  static template(partialDraft: Partial<Metric>) {
+    const defaults = {
+      fieldName: '',
+      type: 'number' as const,
+    };
+
+    return new Metric({ ...defaults, ...partialDraft });
+  }
+}
+/**
+ * A formal hypothesis definition
+ */
+export class Hypothesis implements z.infer<typeof hypothesisSchema> {
+  id: string;
+
+  dependentName: string;
+
+  analysis: string;
+
+  compareValue: string | number | boolean;
+
+  compareOperator: string;
+
+  baseCondition: Condition;
+
+  deltaCondition: Condition;
+
+  constructor(hypothesis: Hypothesis) {
+    this.id = hypothesis.id;
+    this.dependentName = hypothesis.dependentName;
+    this.analysis = hypothesis.analysis;
+    this.compareValue = hypothesis.compareValue;
+    this.compareOperator = hypothesis.compareOperator;
+    this.baseCondition = hypothesis.baseCondition;
+    this.deltaCondition = hypothesis.deltaCondition;
+  }
+
+  static template(
+    partial: RequireOnly<
+    Hypothesis,
+    'dependentName' | 'baseCondition' | 'deltaCondition' | 'analysis'
+    >,
+  ) {
+    const defaults = {
+      id: crypto.randomUUID(),
+      compareValue: 0,
+      compareOperator: '=',
+    };
+
+    return new Hypothesis({ ...defaults, ...partial });
+  }
+}
 
 export class Enrollment implements z.infer<typeof enrollmentSchema> {
   attributes: string[];

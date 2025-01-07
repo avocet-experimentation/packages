@@ -3,7 +3,6 @@ export * from './experiments/index.js';
 export * from './feature-flags/index.js';
 export * from './flag-sdk/index.js';
 export * from './helpers/index.js';
-export * from './metrics/index.js';
 export * from './override-rules/index.js';
 export * from './shared/index.js';
 export * from './telemetry/index.js';
