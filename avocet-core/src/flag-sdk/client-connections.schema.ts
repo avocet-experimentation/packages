@@ -8,6 +8,6 @@ export const sdkConnectionDraftSchema = z.object({
   name: nonEmptyStringSchema,
   description: z.string().nullable(),
   environmentId: z.string(),
-  clientKeyHash: z.string(),
+  apiKeyHash: z.string(),
   allowedOrigins: z.array(z.string()),
 });
