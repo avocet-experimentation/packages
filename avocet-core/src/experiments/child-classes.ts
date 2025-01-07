@@ -50,7 +50,7 @@ export class Hypothesis implements z.infer<typeof hypothesisSchema> {
 
   baseCondition: Condition;
 
-  deltaCondition: Condition;
+  testCondition: Condition;
 
   constructor(hypothesis: Hypothesis) {
     this.id = hypothesis.id;
@@ -59,13 +59,13 @@ export class Hypothesis implements z.infer<typeof hypothesisSchema> {
     this.compareValue = hypothesis.compareValue;
     this.compareOperator = hypothesis.compareOperator;
     this.baseCondition = hypothesis.baseCondition;
-    this.deltaCondition = hypothesis.deltaCondition;
+    this.testCondition = hypothesis.testCondition;
   }
 
   static template(
     partial: RequireOnly<
     Hypothesis,
-    'dependentName' | 'baseCondition' | 'deltaCondition' | 'analysis'
+    'dependentName' | 'baseCondition' | 'testCondition' | 'analysis'
     >,
   ) {
     const defaults = {

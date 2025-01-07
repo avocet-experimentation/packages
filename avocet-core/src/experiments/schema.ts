@@ -60,7 +60,7 @@ export const hypothesisSchema = z.object({
   compareValue: primitiveTypeSchema,
   compareOperator: z.string(),
   baseCondition: conditionSchema,
-  deltaCondition: conditionSchema,
+  testCondition: conditionSchema,
 });
 
 export const experimentDraftSchema = overrideRuleSchema.extend({
