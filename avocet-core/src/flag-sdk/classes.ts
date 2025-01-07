@@ -44,7 +44,7 @@ implements z.infer<typeof sdkConnectionDraftSchema> {
 
   environmentId: string;
 
-  clientKeyHash: string;
+  apiKeyHash: string;
 
   allowedOrigins: string[];
 
@@ -52,7 +52,7 @@ implements z.infer<typeof sdkConnectionDraftSchema> {
     this.name = draft.name;
     this.description = draft.description;
     this.environmentId = draft.environmentId;
-    this.clientKeyHash = draft.clientKeyHash;
+    this.apiKeyHash = draft.apiKeyHash;
     this.allowedOrigins = draft.allowedOrigins;
   }
 
@@ -61,7 +61,7 @@ implements z.infer<typeof sdkConnectionDraftSchema> {
   ) {
     const defaults = {
       description: null,
-      clientKeyHash: this.generateApiKey(),
+      apiKeyHash: this.generateApiKey(),
       allowedOrigins: [],
     };
 
@@ -73,6 +73,7 @@ implements z.infer<typeof sdkConnectionDraftSchema> {
    * @param length The number of bytes for the API key (default is 32 bytes).
    * @returns A base64-encoded API key string.
    */
+
   static generateApiKey(length = 32) {
     const randomBytes = globalThis.crypto.getRandomValues(
       new Uint8Array(length),
