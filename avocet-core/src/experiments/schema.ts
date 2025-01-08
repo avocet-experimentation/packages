@@ -45,9 +45,19 @@ export const experimentGroupSchema = z.object({
   cycles: positiveIntegerSchema,
 });
 
-export const conditionSchema = z
+export const conditionReferenceSchema = z
   .tuple([experimentGroupSchema.shape.id, treatmentIdSchema])
   .readonly();
+/**
+ * A pair of IDs of the elements of a condition, stored on hypotheses
+ */
+export interface ConditionReference
+  extends z.infer<typeof conditionReferenceSchema> {}
+
+export const conditionSchema = z.tuple([
+  experimentGroupSchema,
+  treatmentSchema,
+]);
 /**
  * A combination of a group and treatment
  */
@@ -59,8 +69,8 @@ export const hypothesisSchema = z.object({
   analysis: z.string(), // reference to an analysis technique; todo: correct this as needed
   compareValue: primitiveTypeSchema,
   compareOperator: z.string(),
-  baseCondition: conditionSchema,
-  testCondition: conditionSchema,
+  baseConditionRef: conditionReferenceSchema,
+  testConditionRef: conditionReferenceSchema,
 });
 
 export const experimentDraftSchema = overrideRuleSchema.extend({
