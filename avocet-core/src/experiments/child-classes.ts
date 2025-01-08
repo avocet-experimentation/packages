@@ -5,7 +5,7 @@ import {
   treatmentSchema,
   experimentReferenceSchema,
   metricSchema,
-  Condition,
+  ConditionReference,
   hypothesisSchema,
 } from './schema.js';
 import {
@@ -48,9 +48,9 @@ export class Hypothesis implements z.infer<typeof hypothesisSchema> {
 
   compareOperator: string;
 
-  baseCondition: Condition;
+  baseConditionRef: ConditionReference;
 
-  testCondition: Condition;
+  testConditionRef: ConditionReference;
 
   constructor(hypothesis: Hypothesis) {
     this.id = hypothesis.id;
@@ -58,14 +58,14 @@ export class Hypothesis implements z.infer<typeof hypothesisSchema> {
     this.analysis = hypothesis.analysis;
     this.compareValue = hypothesis.compareValue;
     this.compareOperator = hypothesis.compareOperator;
-    this.baseCondition = hypothesis.baseCondition;
-    this.testCondition = hypothesis.testCondition;
+    this.baseConditionRef = hypothesis.baseConditionRef;
+    this.testConditionRef = hypothesis.testConditionRef;
   }
 
   static template(
     partial: RequireOnly<
     Hypothesis,
-    'dependentName' | 'baseCondition' | 'testCondition' | 'analysis'
+    'dependentName' | 'baseConditionRef' | 'testConditionRef' | 'analysis'
     >,
   ) {
     const defaults = {

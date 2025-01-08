@@ -1,5 +1,10 @@
 import { z } from 'zod';
-import { FlagState, experimentDraftSchema } from './schema.js';
+import {
+  Condition,
+  ConditionReference,
+  FlagState,
+  experimentDraftSchema,
+} from './schema.js';
 import {
   Enrollment,
   ExperimentGroup,
@@ -116,8 +121,8 @@ export class ExperimentDraft implements z.infer<typeof experimentDraftSchema> {
     return experiment.groups.every((group) => group.sequence.length >= 1);
   }
 
-  static groupTreatments(
-    experiment: ExperimentDraft | Experiment,
+  static getGroupTreatments(
+    experiment: ExperimentDraft,
     groupId: string,
   ): Treatment[] | null {
     const matchingGroup = experiment.groups.find(
@@ -130,11 +135,53 @@ export class ExperimentDraft implements z.infer<typeof experimentDraftSchema> {
     );
   }
 
+  static getAllExperimentConditions(experiment: ExperimentDraft): Condition[] {
+    return experiment.groups.reduce((acc: Condition[], group) => {
+      const groupConditions: Condition[] = group.sequence.map((treatmentId) => {
+        const treatment = experiment.definedTreatments[treatmentId];
+        return [group, treatment];
+      });
+
+      return [...acc, ...groupConditions];
+    }, []);
+  }
+
+  /**
+   * @param conditionRef a tuple [groupId, treatmentId]
+   * @returns the group and treatment referenced, or `null` if the IDs
+   * are invalid
+   */
+  static getConditionFromRef(
+    experiment: ExperimentDraft,
+    conditionRef: ConditionReference,
+  ): [ExperimentGroup, Treatment] | null {
+    const [targetGroupId, targetTreatmentId] = conditionRef;
+    const targetGroup = experiment.groups.find(
+      (group) => group.id === targetGroupId,
+    );
+    if (!targetGroup) return null;
+
+    const groupTreatments = ExperimentDraft.getGroupTreatments(
+      experiment,
+      targetGroupId,
+    );
+
+    if (!groupTreatments) return null;
+
+    const targetTreatment = groupTreatments.find(
+      (treatment) => treatment.id === targetTreatmentId,
+    );
+
+    if (!targetTreatment) return null;
+
+    return [targetGroup, targetTreatment];
+  }
+
   /**
    * Mutates the passed Experiment, adding a FlagState to each Treatment.
    * Uses the flag's default value.
    */
-  static addFlag(experiment: ExperimentDraft | Experiment, flag: FeatureFlag) {
+  static addFlag(experiment: ExperimentDraft, flag: FeatureFlag) {
     if (experiment.flagIds.includes(flag.id)) {
       throw new Error(
         `Flag "${flag.name}" already exists on experiment "${experiment.name}"`,
@@ -162,7 +209,7 @@ export class ExperimentDraft implements z.infer<typeof experimentDraftSchema> {
    * reference for the specified flag ID. Non-mutating.
    */
   static removeFlag(
-    experiment: ExperimentDraft | Experiment,
+    experiment: ExperimentDraft,
     flagId: string,
   ): Pick<Experiment, 'flagIds' | 'definedTreatments'> {
     const flagIds = experiment.flagIds.filter((id) => id !== flagId);
@@ -182,7 +229,7 @@ export class ExperimentDraft implements z.infer<typeof experimentDraftSchema> {
   }
 
   static addTreatment(
-    experiment: ExperimentDraft | Experiment,
+    experiment: ExperimentDraft,
     flags: FeatureFlag[],
     treatmentName: string,
   ) {
@@ -195,7 +242,7 @@ export class ExperimentDraft implements z.infer<typeof experimentDraftSchema> {
     definedTreatments[treatment.id] = treatment;
   }
 
-  static addGroup(experiment: ExperimentDraft | Experiment) {
+  static addGroup(experiment: ExperimentDraft) {
     const groupNamePrefix = 'New Group';
     const groupNames = new Set(experiment.groups.map((group) => group.name));
     let counter = 1;
