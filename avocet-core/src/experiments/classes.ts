@@ -135,7 +135,19 @@ export class ExperimentDraft implements z.infer<typeof experimentDraftSchema> {
     );
   }
 
-  static getAllExperimentConditions(experiment: ExperimentDraft): Condition[] {
+  static getAllConditionRefs(
+    experiment: ExperimentDraft,
+  ): ConditionReference[] {
+    return experiment.groups.reduce((acc: ConditionReference[], group) => {
+      const groupConditions: ConditionReference[] = group.sequence.map(
+        (treatmentId) => [group.id, treatmentId],
+      );
+
+      return [...acc, ...groupConditions];
+    }, []);
+  }
+
+  static getAllConditions(experiment: ExperimentDraft): Condition[] {
     return experiment.groups.reduce((acc: Condition[], group) => {
       const groupConditions: Condition[] = group.sequence.map((treatmentId) => {
         const treatment = experiment.definedTreatments[treatmentId];
@@ -175,6 +187,64 @@ export class ExperimentDraft implements z.infer<typeof experimentDraftSchema> {
     if (!targetTreatment) return null;
 
     return [targetGroup, targetTreatment];
+  }
+
+  static getHypothesisConditions(
+    experiment: ExperimentDraft,
+    hypothesis: Hypothesis,
+  ) {
+    const errorMessage = (conditionType: string) =>
+      `Couldn't find ${conditionType} condition for hypothesis `
+      + `${JSON.stringify(hypothesis)}`;
+
+    const baseCondition = ExperimentDraft.getConditionFromRef(
+      experiment,
+      hypothesis.baseConditionRef,
+    );
+    if (!baseCondition) throw new TypeError(errorMessage('base'));
+
+    const testCondition = ExperimentDraft.getConditionFromRef(
+      experiment,
+      hypothesis.testConditionRef,
+    );
+    if (!testCondition) throw new TypeError(errorMessage('test'));
+    return { baseCondition, testCondition };
+  }
+
+  /** Create a string of condition IDs */
+  static conditionRefToString(conditionRef: ConditionReference): string {
+    const [groupId, treatmentId] = conditionRef;
+    return `${groupId}+${treatmentId}`;
+  }
+
+  /** (WIP) Get the IDs from a string and return a tuple */
+  static conditionRefFromString(refString: string): ConditionReference {
+    // todo: validate the string
+    const [groupId, treatmentId] = refString.split('+');
+    return [groupId, treatmentId];
+  }
+
+  /** Create a string of the condition group and treatment name */
+  static conditionRefToDisplayString(
+    experiment: Experiment,
+    conditionRef: ConditionReference,
+  ): string {
+    const [groupId, treatmentId] = conditionRef;
+    const group = experiment.groups.find((el) => el.id === groupId);
+    if (!group) {
+      throw new Error(
+        `Group ${groupId} not found on experiment ${experiment.id}`,
+      );
+    }
+
+    const treatment = experiment.definedTreatments[treatmentId];
+    if (!treatment) {
+      throw new Error(
+        `Treatment ${treatmentId} not found on experiment ${experiment.id}`,
+      );
+    }
+
+    return `${group.name}: ${treatment.name}`;
   }
 
   /**
