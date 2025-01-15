@@ -1,0 +1,42 @@
+{
+  "name": "@avocet/mongo-client",
+  "version": "1.0.0",
+  "description": "MongoDB data mappers for Avocet",
+  "author": "Avocet Team",
+  "contributors": [
+    {
+      "name": "Adnan Shihabi",
+      "email": "adnan@ashihabi.me"
+    },
+    {
+      "name": "Sean Mentele",
+      "email": "sean.a.mentele@gmail.com"
+    },
+    {
+      "name": "Gautam Panakkal",
+      "email": "gautampanakkal@gmail.com"
+    }
+  ],
+  "homepage": "",
+  "license": "MIT",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "directories": {
+    "lib": "dist",
+    "test": "tests"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "npm i && rm -rf ./dist && tsc",
+    "rebuild": "rm -rf ./dist && tsc",
+    "test": "vitest run"
+  },
+  "type": "module",
+  "dependencies": {
+    "@avocet/core": "file:../avocet-core",
+    "deepmerge": "^4.3.1",
+    "mongodb": "^6.10.0"
+  }
+}
