@@ -1,9 +1,8 @@
 import { z } from 'zod';
 import { forcedValueSchema } from './forced-value.schema.js';
-import { RuleStatus } from './override-rules.schema.js';
 import { FlagCurrentValue } from '../feature-flags/flag-value.js';
 import { Enrollment } from '../experiments/child-classes.js';
-import { RequireOnly } from '../helpers/utility-types.js';
+import { RequireOnly, SafeOmit } from '../helpers/utility-types.js';
 
 /**
  * A value forced for all users. Permits a blanket override of a flag's default value
@@ -14,7 +13,7 @@ export class ForcedValue implements z.infer<typeof forcedValueSchema> {
 
   type: 'ForcedValue';
 
-  status: RuleStatus;
+  status: 'active';
 
   description: string | null;
 
@@ -28,10 +27,10 @@ export class ForcedValue implements z.infer<typeof forcedValueSchema> {
 
   enrollment: Enrollment;
 
-  constructor(forcedValue: ForcedValue) {
+  constructor(forcedValue: SafeOmit<ForcedValue, 'status' | 'type'>) {
     this.id = forcedValue.id;
-    this.type = forcedValue.type;
-    this.status = forcedValue.status;
+    this.type = 'ForcedValue';
+    this.status = 'active';
     this.description = forcedValue.description;
     this.startTimestamp = forcedValue.startTimestamp;
     this.endTimestamp = forcedValue.endTimestamp;
@@ -48,8 +47,6 @@ export class ForcedValue implements z.infer<typeof forcedValueSchema> {
   ) {
     const defaults = {
       id: crypto.randomUUID(),
-      type: 'ForcedValue' as const,
-      status: 'draft' as RuleStatus,
       description: null,
       startTimestamp: null,
       endTimestamp: null,
