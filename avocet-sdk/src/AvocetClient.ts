@@ -1,44 +1,47 @@
 import {
   clientSDKFlagMappingSchema,
-  ClientSDKFlagMapping,
   ClientPropMapping,
   ClientSDKFlagValue,
   GeneralRecord,
+  FlagCurrentValue,
 } from '@avocet/core';
+import QuickLRU from 'quick-lru';
 import { AttributeCategoryPrefix, ClientOptions } from './clientTypes.js';
 
-const DEFAULT_DURATION_SEC = 5 * 60;
+const DEFAULTS = {
+  REFRESH_INTERVAL_SEC: 5 * 60,
+  USE_STALE: true,
+};
 
 export class AvocetClient {
-  private attributeAssignmentCb?: (
+  readonly #apiKey: string;
+
+  readonly #apiUrl: string;
+
+  protected attributeAssignmentCb?: (
     attributes: Record<string, string>,
     ...args: unknown[]
   ) => void;
 
-  refreshIntervalInSeconds: number;
-
-  readonly #apiKey: string;
-
-  #flagMap: ClientSDKFlagMapping = {};
-
-  readonly #apiUrl: string;
-
-  #intervalId: NodeJS.Timeout | undefined;
+  #cache: QuickLRU<string, ClientSDKFlagValue>;
 
   #clientProps: ClientPropMapping;
 
+  #intervalId: NodeJS.Timeout | undefined;
+
+  refreshIntervalSec: number;
+
+  #useStale: boolean;
+
   /** Not to be invoked directly. Use `.start()` instead */
-  private constructor(options: ClientOptions) {
-    this.attributeAssignmentCb = options.attributeAssignmentCb;
-    this.refreshIntervalInSeconds = options.refreshIntervalInSeconds ?? DEFAULT_DURATION_SEC;
+  protected constructor(options: ClientOptions) {
     this.#apiKey = options.apiKey;
     this.#apiUrl = options.apiUrl;
+    this.attributeAssignmentCb = options.attributeAssignmentCb;
+    this.#cache = new QuickLRU(options.cacheOptions);
     this.#clientProps = options.clientProps;
-    if (options.autoRefresh === true) {
-      this.startPolling(
-        options.refreshIntervalInSeconds ?? DEFAULT_DURATION_SEC,
-      );
-    }
+    this.refreshIntervalSec = options.refreshIntervalInSeconds ?? DEFAULTS.REFRESH_INTERVAL_SEC;
+    this.#useStale = options.useStale ?? DEFAULTS.USE_STALE;
   }
 
   /**
@@ -46,8 +49,122 @@ export class AvocetClient {
    */
   static async start(options: ClientOptions): Promise<AvocetClient> {
     const client = new AvocetClient(options);
-    await client.load();
+    await client.fetchAllFlags();
+    if (options.autoRefresh === true) {
+      client.startPolling();
+    }
     return client;
+  }
+
+  /**
+   * Get the cached value of a flag, saving attributes to a span if one is
+   * passed and if the client was instantiated with an attribute assignment
+   * callback.
+   * @param span A telemetry span to pass into the attribute assignment calback
+   * @param clientProps An object of client properties to assign to the span
+   * @returns The value of the flag, or null if no matching flag is found
+   */
+  get<SpanType>(flagName: string, span?: SpanType): null | FlagCurrentValue {
+    try {
+      const flagData = this.#cache.get(flagName);
+      if (!flagData) throw new Error(`No cached data for flag "${flagName}"`);
+
+      if (span && this.attributeAssignmentCb) {
+        const attributes = this.getAttributes(flagName, flagData);
+        this.attributeAssignmentCb(attributes, span);
+      }
+      return flagData.value;
+    } catch (_e) {
+      return null;
+    }
+  }
+
+  /**
+   * Asynchronously get the latest value of a flag
+   */
+  async getLive<SpanType>(
+    flagName: string,
+    span?: SpanType,
+  ): Promise<null | FlagCurrentValue> {
+    await this.fetchFlag(flagName);
+    return this.get(flagName, span);
+  }
+
+  startPolling(intervalInSeconds?: number) {
+    if (intervalInSeconds) this.refreshIntervalSec = intervalInSeconds;
+    const refreshIntervalMs = this.refreshIntervalSec * 1000;
+    this.#intervalId = setInterval(
+      () => this.fetchAllFlags(),
+      refreshIntervalMs,
+    );
+  }
+
+  stopPolling() {
+    clearInterval(this.#intervalId);
+  }
+
+  getAttributes(flagName: string, flagData: ClientSDKFlagValue) {
+    return {
+      ...AvocetClient.formatFlagAttributes(flagName, flagData),
+      ...AvocetClient.formatClientProps(this.#clientProps),
+    };
+  }
+
+  protected async fetchFlag(flagName: string) {
+    return this.fetchAndCache(
+      {
+        apiKey: this.#apiKey,
+        clientProps: this.#clientProps,
+        flagName,
+      },
+      'api/fflag',
+    );
+  }
+
+  protected async fetchAllFlags() {
+    return this.fetchAndCache(
+      {
+        apiKey: this.#apiKey,
+        clientProps: this.#clientProps,
+      },
+      'api/fflags',
+    );
+  }
+
+  /**
+   * Helper for fetching, parsing, and caching flag data.
+   * @returns a boolean indicating whether or not it fetched valid data
+   */
+  protected async fetchAndCache(
+    body: { apiKey: string; clientProps: ClientPropMapping; flagName?: string },
+    path: string,
+  ) {
+    if (!this.#useStale) {
+      if (body.flagName !== undefined) this.#cache.delete(body.flagName);
+      else this.#cache.clear();
+    }
+
+    const fetchOptions = {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json; charset=utf-8',
+      },
+      body: JSON.stringify(body),
+    };
+
+    try {
+      const response = await fetch(`${this.#apiUrl}/${path}`, fetchOptions);
+      if (!response.ok) return false;
+
+      const parsedBody: unknown = await response.json();
+      const flagMapping = clientSDKFlagMappingSchema.parse(parsedBody);
+
+      Object.entries(flagMapping).forEach(([flagName, data]) =>
+        this.#cache.set(flagName, data));
+      return true;
+    } catch (_e) {
+      return false;
+    }
   }
 
   /**
@@ -56,7 +173,7 @@ export class AvocetClient {
    * @returns a flat attributes object formatted for insertion into telemetry
    * data
    */
-  private formatAttributes(
+  protected static formatAttributes(
     categoryPrefix: AttributeCategoryPrefix,
     attributeName: string | null,
     attributes: GeneralRecord,
@@ -72,125 +189,16 @@ export class AvocetClient {
     return Object.fromEntries(formattedPropEntries);
   }
 
-  private formatFlagAttributes(
+  protected static formatFlagAttributes(
     flagName: string,
     flag: ClientSDKFlagValue,
   ): Record<string, string> {
-    return this.formatAttributes('feature-flag', flagName, flag);
+    return AvocetClient.formatAttributes('feature-flag', flagName, flag);
   }
 
-  private formatClientProps(
+  protected static formatClientProps(
     clientProps: ClientPropMapping,
   ): Record<string, string> {
-    return this.formatAttributes('client-prop', null, clientProps);
-  }
-
-  /**
-   * Get the last cached value of a flag, saving attributes to a span if one is passed
-   * and if the client was instantiated with an attribute assignment callback.
-   * @param span a telemetry span object
-   * @returns
-   */
-  get<SpanType>(
-    flagName: string,
-    span?: SpanType,
-  ): null | boolean | number | string {
-    return this.#getFlagValueAndAttributes(flagName, span, null);
-  }
-
-  /** (WIP) get a flag value, passing in client properties instead of using pre-defined ones
-   * Useful for server-side SDK instances that serve multiple clients
-   * Saves flag attributes to a span if any is passed
-   * and if the SDK was instantiated with an attribute assignment callback.
-   * @param span a telemetry span
-   */
-  getWithProps<SpanType>(
-    flagName: string,
-    clientProps: ClientPropMapping,
-    span?: SpanType,
-  ): null | boolean | number | string {
-    return this.#getFlagValueAndAttributes(flagName, span, clientProps);
-  }
-
-  /**
-   * @param span A telemetry span to pass into the attribute assignment calback
-   * @param clientProps An object of client properties to assign to the span
-   * @returns The value of the flag, or null if no matching flag is found
-   */
-  #getFlagValueAndAttributes<SpanType>(
-    flagName: string,
-    span?: SpanType,
-    clientProps?: ClientPropMapping | null,
-  ): null | boolean | number | string {
-    try {
-      const flagData = this.getCachedFlagData(flagName);
-      if (!flagData) throw new Error(`No cached data for flag "${flagName}"`);
-
-      if (span && this.attributeAssignmentCb) {
-        const flagAttributes = this.formatFlagAttributes(flagName, flagData);
-        const attributes = { ...flagAttributes };
-        const rawClientProps = clientProps === null ? this.#clientProps : clientProps;
-        if (rawClientProps) {
-          const formattedClientProps = this.formatClientProps(rawClientProps);
-          Object.assign(attributes, formattedClientProps);
-        }
-        this.attributeAssignmentCb(attributes, span);
-      }
-      return flagData.value;
-    } catch (_e) {
-      return null;
-    }
-  }
-
-  /**
-   * Returns a boolean indicating whether or not it fetched a FlagClientMapping
-   */
-  private async load() {
-    const fetchOptions = {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json; charset=utf-8',
-      },
-      body: JSON.stringify({
-        apiKey: this.#apiKey,
-        clientProps: this.#clientProps,
-      }),
-    };
-
-    const response = await fetch(`${this.#apiUrl}/api/fflags`, fetchOptions);
-    if (!response.ok) {
-      return false;
-    }
-    const data: unknown = await response.json();
-    const safeParseResult = clientSDKFlagMappingSchema.safeParse(data);
-    if (safeParseResult.success) {
-      this.#flagMap = { ...this.#flagMap, ...safeParseResult.data };
-      return true;
-    }
-    return false;
-  }
-
-  /**
-   * Retrieve a copy of cached data for the specified flag
-   */
-  private getCachedFlagData(flagName: string): ClientSDKFlagValue | undefined {
-    const flagContent = this.#flagMap[flagName];
-    return { ...flagContent };
-  }
-
-  /**
-   * @returns a copy of all locally stored flags
-   */
-  getAllCachedFlags(): ClientSDKFlagMapping {
-    return { ...this.#flagMap };
-  }
-
-  private startPolling(intervalInSeconds?: number) {
-    const refreshIntervalMs = (intervalInSeconds ?? this.refreshIntervalInSeconds) * 1000;
-    this.#intervalId = setInterval(() => this.load(), refreshIntervalMs);
-  }
-
-  cancelPolling() {
-    clearInterval(this.#intervalId);
+    return AvocetClient.formatAttributes('client-prop', null, clientProps);
   }
 }

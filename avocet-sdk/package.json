@@ -36,6 +36,7 @@
   "type": "module",
   "gitHead": "ceabdbee4a43938b1e1ef3bacf38db5f7e890141",
   "dependencies": {
-    "@avocet/core": "file:../avocet-core"
+    "@avocet/core": "file:../avocet-core",
+    "quick-lru": "^7.0.0"
   }
 }
