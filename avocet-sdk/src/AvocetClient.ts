@@ -38,7 +38,9 @@ export class AvocetClient {
     this.#apiKey = options.apiKey;
     this.#apiUrl = options.apiUrl;
     this.attributeAssignmentCb = options.attributeAssignmentCb;
-    this.#cache = new QuickLRU(options.cacheOptions);
+    this.#cache = new QuickLRU({
+      maxSize: 10,
+    });
     this.#clientProps = options.clientProps;
     this.refreshIntervalSec = options.refreshIntervalInSeconds ?? DEFAULTS.REFRESH_INTERVAL_SEC;
     this.#useStale = options.useStale ?? DEFAULTS.USE_STALE;
@@ -158,7 +160,10 @@ export class AvocetClient {
 
       const parsedBody: unknown = await response.json();
       const flagMapping = clientSDKFlagMappingSchema.parse(parsedBody);
-
+      const entries = Object.entries(flagMapping);
+      if (this.#cache.maxSize < entries.length) {
+        this.#cache.resize(entries.length);
+      }
       Object.entries(flagMapping).forEach(([flagName, data]) =>
         this.#cache.set(flagName, data));
       return true;
