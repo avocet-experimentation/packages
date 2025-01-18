@@ -5,5 +5,6 @@ import { overrideRuleSchema } from './override-rules.schema.js';
 export const forcedValueSchema = overrideRuleSchema.extend({
   id: z.string(),
   type: z.literal('ForcedValue'),
+  status: z.literal('active'),
   value: flagCurrentValueSchema,
 });
