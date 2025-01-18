@@ -68,23 +68,15 @@ export default class Hash {
       ? sortByKey([...assignmentOptions], 'id')
       : assignmentOptions;
 
-    // map to weight + prev weight
-    // iterating upwards, find the first one larger than the calculated hash
-    const positionedOptions = options.reduce(
-      (acc: { id: string; hash: number }[], option, i, arr) => {
-        const previousWeight = i > 0 ? arr[i - 1].weight : 0;
-        const newElement = {
-          id: option.id,
-          hash: option.weight + previousWeight,
-        };
-        acc.push(newElement);
-        return acc;
+    let hashModulo = hash % weightSum;
+    const selected = options.find(
+      (option) => {
+        if (option.weight >= hashModulo) {
+          return true;
+        }
+        hashModulo -= option.weight;
+        return false;
       },
-      [],
-    );
-    const hashModulo = hash % weightSum;
-    const selected = positionedOptions.find(
-      (option) => option.hash >= hashModulo,
     );
     if (!selected) {
       throw new Error(
