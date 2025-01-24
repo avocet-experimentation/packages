@@ -33,9 +33,6 @@ import type {
 /**
  * Parent class for type-specific CRUD operations in Mongo.
  * Use subclasses instead of instantiating this directly.
- *
- * todo:
- * - solve filter type problem and remove the `as Filter...` assertions
  */
 export default class MongoRepository<T extends AvocetMongoTypes> {
   manager: IRepositoryManager;
@@ -59,7 +56,6 @@ export default class MongoRepository<T extends AvocetMongoTypes> {
     const { _id, ...rest } = document;
     // eslint-disable-next-line no-underscore-dangle
     const morphed = { id: document._id.toHexString(), ...rest };
-    // todo: find a better solution for type checking without throwing
     return morphed as unknown as T;
   }
 
@@ -364,7 +360,7 @@ export default class MongoRepository<T extends AvocetMongoTypes> {
   }
 
   /**
-   * (WIP) Updates an element on an array inside a record
+   * Updates an element on an array inside a record
    * @param searchObj An object of properties to filter elements by
    * @param updateObj A partial object of properties to overwrite on the
    * @returns true if the query was successful

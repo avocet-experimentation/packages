@@ -36,9 +36,6 @@ export default class ExperimentRepository extends MongoRepository<Experiment> {
     });
   }
 
-  /**
-   * WIP
-   */
   async pause(experimentId: string) {
     return this.update({
       id: experimentId,
@@ -46,9 +43,6 @@ export default class ExperimentRepository extends MongoRepository<Experiment> {
     });
   }
 
-  /**
-   * WIP
-   */
   async complete(experimentId: string) {
     return this.update({
       id: experimentId,
@@ -57,9 +51,8 @@ export default class ExperimentRepository extends MongoRepository<Experiment> {
     });
   }
 
-  /** WIP
+  /**
    * Store an ExperimentReference on any flags referenced in an experiment
-   * todo: maybe return the result and let errors bubble to indicate failure
    */
   async createEmbeds(newExperiment: Experiment): Promise<boolean> {
     try {
@@ -87,10 +80,8 @@ export default class ExperimentRepository extends MongoRepository<Experiment> {
     }
   }
 
-  /** WIP
+  /**
    * Updates all ExperimentReferences on any flags referenced by an experiment
-   *
-   * todo: preserve position in override rules array
    */
   async updateEmbeds(
     partialExperiment: PartialWithStringId<Experiment>,
@@ -134,7 +125,7 @@ export default class ExperimentRepository extends MongoRepository<Experiment> {
     }
   }
 
-  /** WIP
+  /**
    * Deletes all ExperimentReferences on any flags referenced by an experiment
    */
   async deleteEmbeds(experimentId: string): Promise<boolean> {
@@ -159,7 +150,7 @@ export default class ExperimentRepository extends MongoRepository<Experiment> {
   }
 
   /**
-   * (WIP) Get an array of documents containing embeds matching the passed ID
+   * Get an array of documents containing embeds matching the passed ID
    */
   async getDocumentsWithEmbeds(experimentId: string) {
     const flagsWithEmbed = await this.manager.featureFlag.findMany({
