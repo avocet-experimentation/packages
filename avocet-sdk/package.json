@@ -1,24 +1,36 @@
 {
   "name": "@avocet/sdk",
-  "version": "0.0.17",
-  "description": "For using Avocet feature flags",
-  "author": "Avocet Team",
+  "version": "1.0.0",
+  "description": "SDK for fetching feature flags from Avocet",
+  "keywords": [
+    "feature flag",
+    "experiment"
+  ],
+  "homepage": "https://avocet-experimentation.github.io",
+  "author": "Avocet Team (https://avocet-experimentation.github.io)",
   "contributors": [
     {
-      "name": "Adnan Shihabi",
-      "email": "adnan@ashihabi.me"
+      "name": "Gautam Panakkal",
+      "email": "gautampanakkal@gmail.com",
+      "url": "https://github.com/gpanakkal"
+    },
+    {
+      "name": "Adnan O. Shihabi",
+      "email": "adnan@ashihabi.me",
+      "url": "https://ashihabi.me"
     },
     {
       "name": "Sean Mentele",
-      "email": "sean.a.mentele@gmail.com"
-    },
-    {
-      "name": "Gautam Panakkal",
-      "email": "gautampanakkal@gmail.com"
+      "email": "sean.a.mentele@gmail.com",
+      "url": "https://www.linkedin.com/in/sean-mentele-58481417a"
     }
   ],
-  "homepage": "",
-  "license": "ISC",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/avocet-experimentation/packages.git",
+    "directory": "mongo-client"
+  },
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "directories": {
@@ -34,9 +46,12 @@
     "test": "vitest run"
   },
   "type": "module",
-  "gitHead": "ceabdbee4a43938b1e1ef3bacf38db5f7e890141",
   "dependencies": {
-    "@avocet/core": "file:../avocet-core",
+    "@avocet/core": "^1.0.0",
     "quick-lru": "^7.0.0"
+  },
+  "devDependencies": {},
+  "bugs": {
+    "url": "https://github.com/avocet-experimentation/packages/issues"
   }
 }
