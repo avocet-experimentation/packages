@@ -32,7 +32,7 @@ export default class FeatureFlagRepository extends MongoRepository<FeatureFlag> 
   }
 
   /**
-   * (WIP) Remove an override rule given part of its shape, and optionally a flag
+   * Remove an override rule given part of its shape, and optionally a flag
    * filter to remove from specific flags only
    */
   async removeRule(
@@ -45,7 +45,7 @@ export default class FeatureFlagRepository extends MongoRepository<FeatureFlag> 
   }
 
   /**
-   * (WIP) Remove an override rule from a flag given the flag's id=
+   * Remove an override rule from a flag given the flag's id
    */
   async removeRuleFromId(ruleId: string, flagId: string) {
     const ruleMatcher = {
