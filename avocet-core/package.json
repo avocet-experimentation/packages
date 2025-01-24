@@ -1,24 +1,36 @@
 {
-  "name": "@avocet/core",
-  "version": "0.0.17",
+  "name": "core",
+  "version": "1.0.0",
   "description": "Types, schema, and utility functions for Avocet",
-  "author": "Avocet Team",
+  "keywords": [
+    "feature flag",
+    "experiment"
+  ],
+  "homepage": "https://avocet-experimentation.github.io",
+  "author": "Avocet Team (https://avocet-experimentation.github.io)",
   "contributors": [
     {
-      "name": "Adnan Shihabi",
-      "email": "adnan@ashihabi.me"
+      "name": "Gautam Panakkal",
+      "email": "gautampanakkal@gmail.com",
+      "url": "https://github.com/gpanakkal"
+    },
+    {
+      "name": "Adnan O. Shihabi",
+      "email": "adnan@ashihabi.me",
+      "url": "https://ashihabi.me"
     },
     {
       "name": "Sean Mentele",
-      "email": "sean.a.mentele@gmail.com"
-    },
-    {
-      "name": "Gautam Panakkal",
-      "email": "gautampanakkal@gmail.com"
+      "email": "sean.a.mentele@gmail.com",
+      "url": "https://www.linkedin.com/in/sean-mentele-58481417a"
     }
   ],
-  "homepage": "",
-  "license": "ISC",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/avocet-experimentation/packages.git",
+    "directory": "core"
+  },
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "directories": {
