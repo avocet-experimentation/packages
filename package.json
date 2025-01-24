@@ -2,8 +2,8 @@
   "name": "root",
   "private": true,
   "scripts": {
-    "build": "npm i && npm run --prefix ./avocet-core build && npm run --prefix ./avocet-sdk build",
-    "rebuild": "npm run --prefix ./avocet-core rebuild && npm run --prefix ./avocet-sdk rebuild"
+    "build": "npm i && npm run --prefix ./avocet-core build && npm run --prefix ./avocet-sdk build && npm run --prefix ./mongo-client build",
+    "rebuild": "npm run --prefix ./avocet-core rebuild && npm run --prefix ./avocet-sdk rebuild && npm run --prefix ./mongo-client rebuild"
   },
   "workspaces": [
     "*"
