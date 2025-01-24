@@ -1,7 +1,7 @@
 {
   "name": "@avocet/sdk",
   "version": "1.0.0",
-  "description": "SDK for fetching feature flags from Avocet",
+  "description": "JavaScript SDK for fetching feature flags from Avocet",
   "keywords": [
     "feature flag",
     "experiment"
@@ -29,7 +29,7 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/avocet-experimentation/packages.git",
-    "directory": "mongo-client"
+    "directory": "avocet-sdk"
   },
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
