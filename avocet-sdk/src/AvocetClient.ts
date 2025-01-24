@@ -105,7 +105,18 @@ export class AvocetClient {
     clearInterval(this.#intervalId);
   }
 
-  getAttributes(flagName: string, flagData: ClientSDKFlagValue) {
+  getWithAttributes(
+    flagName: string,
+  ): { value: FlagCurrentValue; attributes: Record<string, string> } | null {
+    const flagData = this.#cache.get(flagName);
+    if (!flagData || !flagData.value) return null;
+    return {
+      value: flagData.value,
+      attributes: this.getAttributes(flagName, flagData),
+    };
+  }
+
+  protected getAttributes(flagName: string, flagData: ClientSDKFlagValue) {
     return {
       ...AvocetClient.formatFlagAttributes(flagName, flagData),
       ...AvocetClient.formatClientProps(this.#clientProps),

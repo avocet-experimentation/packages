@@ -3,12 +3,13 @@ import { ClientPropMapping } from '@avocet/core';
 export type ClientOptions = {
   apiKey: string;
   apiUrl: string;
-  autoRefresh: boolean;
   attributeAssignmentCb?: (
     attributes: Record<string, string>,
     ...args: unknown[]
   ) => void;
+  autoRefresh: boolean;
   clientProps: ClientPropMapping;
+  /** Default `300` (5 minutes) */
   refreshIntervalInSeconds?: number;
   /** Whether to keep or discard flag values when fetching. Default `true` */
   useStale?: boolean;
