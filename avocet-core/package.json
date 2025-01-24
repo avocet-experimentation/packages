@@ -1,5 +1,5 @@
 {
-  "name": "core",
+  "name": "@avocet/core",
   "version": "1.0.0",
   "description": "Types, schema, and utility functions for Avocet",
   "keywords": [
@@ -28,7 +28,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/avocet-experimentation/packages.git",
+    "url": "git+https://github.com/avocet-experimentation/packages.git",
     "directory": "core"
   },
   "main": "dist/index.js",
@@ -46,12 +46,14 @@
     "test": "vitest run"
   },
   "type": "module",
-  "gitHead": "ceabdbee4a43938b1e1ef3bacf38db5f7e890141",
   "dependencies": {
     "bcrypt": "^5.1.1",
     "zod": "^3.23.8"
   },
   "devDependencies": {
     "@types/bcrypt": "^5.0.2"
+  },
+  "bugs": {
+    "url": "https://github.com/avocet-experimentation/packages/issues"
   }
 }

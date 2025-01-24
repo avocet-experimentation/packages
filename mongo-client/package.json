@@ -1,24 +1,32 @@
 {
   "name": "@avocet/mongo-client",
   "version": "1.0.0",
-  "description": "MongoDB data mappers for Avocet",
-  "author": "Avocet Team",
+  "description": "MongoDB data mappers for internal use in Avocet",
+  "homepage": "https://avocet-experimentation.github.io",
+  "author": "Avocet Team (https://avocet-experimentation.github.io)",
   "contributors": [
     {
-      "name": "Adnan Shihabi",
-      "email": "adnan@ashihabi.me"
+      "name": "Gautam Panakkal",
+      "email": "gautampanakkal@gmail.com",
+      "url": "https://github.com/gpanakkal"
+    },
+    {
+      "name": "Adnan O. Shihabi",
+      "email": "adnan@ashihabi.me",
+      "url": "https://ashihabi.me"
     },
     {
       "name": "Sean Mentele",
-      "email": "sean.a.mentele@gmail.com"
-    },
-    {
-      "name": "Gautam Panakkal",
-      "email": "gautampanakkal@gmail.com"
+      "email": "sean.a.mentele@gmail.com",
+      "url": "https://www.linkedin.com/in/sean-mentele-58481417a"
     }
   ],
-  "homepage": "",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/avocet-experimentation/packages.git",
+    "directory": "mongo-client"
+  },
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "directories": {
@@ -35,8 +43,11 @@
   },
   "type": "module",
   "dependencies": {
-    "@avocet/core": "file:../avocet-core",
+    "@avocet/core": "^1.0.0",
     "deepmerge": "^4.3.1",
     "mongodb": "^6.10.0"
+  },
+  "bugs": {
+    "url": "https://github.com/avocet-experimentation/packages/issues"
   }
 }

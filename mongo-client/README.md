@@ -1,3 +1,3 @@
 # `mongo-client`
 
-MongoDB data mappers for Avocet.
+MongoDB data mappers for internal use in [Avocet](https://avocet-experimentation.github.io).
