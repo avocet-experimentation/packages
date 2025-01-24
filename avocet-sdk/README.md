@@ -1,11 +1,12 @@
 # `avocet-sdk`
 
-JavaScript SDK for fetching feature flags from [Avocet](https://avocet-experimentation.github.io).
+JavaScript SDK for fetching feature flags from [Avocet](https://avocet-experimentation.github.io), an open-source feature flagging and software experimentation platform.
 
-## Usage
+## Setup
 
 1. From the Avocet dashboard, create an SDK connection to generate an API key, or select an existing one.
-2. Initialize the SDK in the application in which you wish to add feature flags:
+2. Install the package: `npm install @avocet/sdk`.
+3. Initialize the SDK in the application in which you wish to add feature flags:
 
 ```ts
 import { AvocetClient } from '@avocet/sdk';
@@ -19,15 +20,24 @@ const avocetClient = AvocetClient.start({
   }, // an optional callback defining how to save flag attributes onto telemetry data
   autoRefresh: true, // if true, periodically fetches data for all flags in the environment
   refreshIntervalInSeconds: 300, // defaults to 300 seconds (5 minutes)
-  useStale: true // defaults to true. If set to true, cached flag data will be retained when refreshing
+  useStale: true, // defaults to true. If set to true, cached flag data will be retained when refreshing
+  clientProps: {
+    // client properties will be formatted and included in the attributes argument to the assignment callback
+    id: 'my-user-id'
+  }
 });
 
 export default avocetClient;
 ```
 
-3. Use flags to guide control flow, either with synchronous checks:
+## Usage
+
+1. Define flags in the Avocet dashboard.
+2. Use them to guide control flow, either with synchronous checks:
 
 ```ts
+import avocetClient from './feature-flagging.ts';
+
 if (avocetClient.get('my-boolean-flag') === true) {
   // feature logic
 } else {
@@ -58,7 +68,7 @@ if (avocetClient.get('my-boolean-flag', currentSpan) === true) {
 }
 ```
 
-To enable or disable flag refreshing:
+Enable or disable flag refreshing:
 
 ```ts
 avocetClient.startPolling();
