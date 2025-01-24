@@ -187,7 +187,7 @@ export default class MongoRepository<T extends AvocetMongoTypes> {
 
   /**
    * Find a document from any of its properties.
-   * @param query A MongoDB query. An empty object matches any document. To find by name, pass { name: documentName }. See [the documentation](https://www.mongodb.com/docs/drivers/node/current/fundamentals/crud/query-document/#std-label-node-fundamentals-query-document) for more
+   * @param query A MongoDB query. An empty object matches any document.
    */
   async findOne<Q extends Filter<BeforeId<T>>>(query: Q): Promise<T | null> {
     const result = await this.collection.findOne(query);
@@ -198,7 +198,7 @@ export default class MongoRepository<T extends AvocetMongoTypes> {
 
   /**
    * Find all documents matching a query object.
-   * @param query A MongoDB query. An empty object matches any document. To find by name, pass { name: documentName }. See [the documentation](https://www.mongodb.com/docs/drivers/node/current/fundamentals/crud/query-document/#std-label-node-fundamentals-query-document) for more
+   * @param query A MongoDB query. An empty object matches any document.
    */
   async findMany(query: Filter<BeforeId<T>>, maxCount?: number): Promise<T[]> {
     const resultCursor = this.collection.find(query);
