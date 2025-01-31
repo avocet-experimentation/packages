@@ -1,5 +1,8 @@
 import { z } from 'zod';
-import { overrideRuleSchema } from '../override-rules/override-rules.schema.js';
+import {
+  overrideRuleSchema,
+  ruleStatusSchema,
+} from '../override-rules/override-rules.schema.js';
 import {
   bsonObjectIdHexStringSchema,
   nonEmptyStringSchema,
@@ -77,6 +80,7 @@ export const experimentDraftSchema = overrideRuleSchema.extend({
   name: nonEmptyStringSchema,
   hypothesis: z.string().nullable(),
   type: z.literal('Experiment'),
+  status: ruleStatusSchema,
   groups: z.array(experimentGroupSchema).transform((groups) => {
     const proportionSum = groups.reduce(
       (sum, group) => sum + group.proportion,
@@ -96,5 +100,6 @@ export const experimentDraftSchema = overrideRuleSchema.extend({
 export const experimentReferenceSchema = overrideRuleSchema.extend({
   id: bsonObjectIdHexStringSchema,
   type: z.literal('Experiment'),
+  status: ruleStatusSchema,
   name: nonEmptyStringSchema,
 });

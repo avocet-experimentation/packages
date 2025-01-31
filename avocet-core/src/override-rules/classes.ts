@@ -13,8 +13,6 @@ export class ForcedValue implements z.infer<typeof forcedValueSchema> {
 
   type: 'ForcedValue';
 
-  status: 'active';
-
   description: string | null;
 
   startTimestamp: number | null;
@@ -27,10 +25,9 @@ export class ForcedValue implements z.infer<typeof forcedValueSchema> {
 
   enrollment: Enrollment;
 
-  constructor(forcedValue: SafeOmit<ForcedValue, 'status' | 'type'>) {
+  constructor(forcedValue: SafeOmit<ForcedValue, 'type'>) {
     this.id = forcedValue.id;
     this.type = 'ForcedValue';
-    this.status = 'active';
     this.description = forcedValue.description;
     this.startTimestamp = forcedValue.startTimestamp;
     this.endTimestamp = forcedValue.endTimestamp;
