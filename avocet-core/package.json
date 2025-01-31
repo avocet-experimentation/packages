@@ -1,6 +1,6 @@
 {
   "name": "@avocet/core",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Types, schema, and utility functions for Avocet",
   "keywords": [
     "feature flag",

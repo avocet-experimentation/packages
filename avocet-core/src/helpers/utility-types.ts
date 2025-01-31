@@ -92,3 +92,5 @@ export type InferFromSchema<Z extends z.ZodTypeAny> = z.infer<Z>;
  */
 export type InferFromObjectSchema<S extends z.AnyZodObject> =
   InferFromSchema<S>;
+
+export type NonEmptyArray<T> = [T, ...T[]];
