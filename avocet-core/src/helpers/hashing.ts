@@ -59,7 +59,6 @@ export class Hash {
     if (proportion === 0) return false;
     const hash = this.hashIdentifiers(parsedIds);
     const compareValue = proportion * HASH_MAX;
-    console.log({ hash, proportion, identifiers });
     return hash < compareValue;
   }
 
