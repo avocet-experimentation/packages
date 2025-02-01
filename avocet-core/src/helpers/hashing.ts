@@ -1,83 +1,124 @@
 /* eslint-disable no-bitwise */
-import { randomUUID } from 'node:crypto';
+import { z } from 'zod';
 import {
   ClientPropEntries,
   ClientPropValue,
+  clientPropValueSchema,
 } from '../flag-sdk/client-props.schema.js';
 import { sortByKey } from './utility-functions.js';
+import { NonEmptyArray } from './utility-types.js';
+import { nonEmptyStringSchema } from './bounded-primitives.js';
+
+const identifierSchema = z.tuple([z.string(), clientPropValueSchema]);
+const identifierArraySchema = z.array(identifierSchema).min(1);
+
+const assignmentOptionSchema = z.object({
+  id: nonEmptyStringSchema,
+  weight: z.number().gte(0),
+});
+
+const assignmentOptionArraySchema = z
+  .array(assignmentOptionSchema)
+  .min(1)
+  .refine((val) => val.reduce((acc, el) => acc + el.weight, 0) > 0);
+
+export const HASH_MAX = 2 ** 32 - 1;
 
 /**
- * (WIP) Generates unsigned hash values as unsigned integers of up to the
- * passed number of bits.
- *
- * todo:
- * - revise hashStringDJB2 to return 32-bit units
- * - then revise for customizable bit count (up to 32)
+ * (WIP) Generates hash values as 32-bit unsigned integers
+ * Methods can throw; implement error handling when using them
  */
-export default class Hash {
-  bits: number;
-
-  constructor(bits: number) {
-    this.bits = bits;
+export class Hash {
+  /**
+   * Randomly assign to a passed option, using a hash of client identifiers to
+   * ensure consistent assignment to the same option
+   * @param identifiers An array of ID entries that uniquely identifies a client
+   * @returns the ID of one of the passed options
+   */
+  static andAssign(
+    identifiers: NonEmptyArray<[string, ClientPropValue]>,
+    assignmentOptions: NonEmptyArray<{ id: string; weight: number }>,
+  ): string {
+    const parsedIds = identifierArraySchema.parse(identifiers);
+    const { options, weightSum } = this.parsedOptionsAndSum(assignmentOptions);
+    const hash = this.hashIdentifiers(parsedIds) % weightSum;
+    return this.selectOption(hash, options);
   }
 
   /**
-   * DJB2 Hash function.
-   * @param input
-   * @returns a signed 32-bit integer
+   * Test a client for assignment against a proportion.
+   * @param identifiers An array of ID entries that uniquely identifies a client
+   * @param proportion A number between 0 and 1, inclusive
+   * @returns
    */
-  private static hashStringDJB2(input: string) {
-    const str = input.length === 0 ? randomUUID() : input;
+  static andCompare(
+    identifiers: [string, ClientPropValue][],
+    proportion: number,
+  ): boolean {
+    const parsedIds = identifierArraySchema.parse(identifiers);
+    if (proportion === 0) return false;
+    const hash = this.hashIdentifiers(parsedIds);
+    const compareValue = proportion * HASH_MAX;
+    console.log({ hash, proportion, identifiers });
+    return hash < compareValue;
+  }
+
+  static strings(strings: readonly string[]) {
+    return this.generate(strings.toSorted().join(''));
+  }
+
+  /**
+   * Hash a string to a 32-bit uint using DJB2
+   */
+  static generate(input: string) {
     let hash = 0;
-    for (let i = 0; i < str.length; i += 1) {
-      hash = (hash << 5) - hash + str.charCodeAt(i);
-      hash |= 0;
+    for (let i = 0; i < input.length; i += 1) {
+      hash = (hash << 5) - hash + input.charCodeAt(i);
+      hash >>>= 0;
     }
 
     return hash;
   }
 
-  static hashIdentifiers(identifiers: ClientPropEntries, sort: boolean = true) {
-    const sortedIdentifiers = sort ? identifiers.toSorted() : identifiers;
-    let string = '';
-
-    sortedIdentifiers.forEach(([name, value]) => {
-      string += name + value;
-    });
-
-    return this.hashStringDJB2(string);
+  /**
+   * Verifies that at least one assignment option is passed and that their
+   * weights sum to a positive value
+   * @returns the sorted options and the sum of weights
+   */
+  protected static parsedOptionsAndSum(
+    assignmentOptions: NonEmptyArray<{ id: string; weight: number }>,
+  ) {
+    const validOptions = assignmentOptionArraySchema.parse(assignmentOptions);
+    const options = sortByKey(validOptions, 'id') as NonEmptyArray<{
+      id: string;
+      weight: number;
+    }>;
+    const weightSum = options.reduce((acc, option) => acc + option.weight, 0);
+    return { options, weightSum };
   }
 
-  /**
-   * Hash identifiers for pseudo-random assignment to one of many options
-   * @param identifiers An array of values to use collectively as a unique identifier for the client
-   * @returns one of the options passed in
-   */
-  static hashAndAssign(
-    identifiers: [string, ClientPropValue][],
-    assignmentOptions: readonly { id: string; weight: number }[],
-    sort: boolean = true,
-  ): string {
-    const hash = this.hashIdentifiers(identifiers, sort);
-    //
-    const weightSum = assignmentOptions.reduce(
-      (acc, option) => acc + option.weight,
-      0,
+  protected static hashIdentifiers(identifiers: ClientPropEntries) {
+    const sortedIds = identifiers.toSorted();
+    const idString = sortedIds.reduce(
+      (acc, [name, value]) => acc + name + value,
+      '',
     );
-    const options = sort
-      ? sortByKey([...assignmentOptions], 'id')
-      : assignmentOptions;
 
-    let hashModulo = hash % weightSum;
-    const selected = options.find(
-      (option) => {
-        if (option.weight >= hashModulo) {
-          return true;
-        }
-        hashModulo -= option.weight;
-        return false;
-      },
-    );
+    return this.generate(idString);
+  }
+
+  protected static selectOption(
+    hashValue: number,
+    options: NonEmptyArray<{ id: string; weight: number }>,
+  ) {
+    let hash = hashValue;
+    const selected = options.find((option) => {
+      if (option.weight >= hash) return true;
+
+      hash -= option.weight;
+      return false;
+    });
+
     if (!selected) {
       throw new Error(
         "The hash modulo was larger than all the options' hashes."
@@ -85,30 +126,5 @@ export default class Hash {
       );
     }
     return selected.id;
-  }
-
-  static hashAndCompare(
-    identifiers: [string, ClientPropValue][],
-    proportion: number,
-  ): boolean {
-    if (proportion === 0) return false;
-    const hash = this.hashIdentifiers(identifiers);
-    const compareValue = proportion * 2 ** 32 - 2 ** 31 - 1;
-    return hash < compareValue;
-  }
-
-  /**
-   * Combines a collection of strings presumed to be unique IDs.
-   * Used for creating a hash of experiment, group, and block ID for sending to client
-   */
-  static sortAndCombineIds(ids: readonly string[]): string {
-    const sortedIds = ids.toSorted();
-    const combined = sortedIds.join('');
-    return combined;
-  }
-
-  static hashStringSet(strings: readonly string[]) {
-    const combined = this.sortAndCombineIds(strings);
-    return this.hashStringDJB2(combined);
   }
 }
