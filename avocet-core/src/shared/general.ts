@@ -22,7 +22,8 @@ import { userDraftSchema } from '../users/schema.js';
 import { FeatureFlagDraft } from '../feature-flags/classes.js';
 import { ExperimentDraft } from '../experiments/classes.js';
 import { clientPropDefDraftSchema } from '../flag-sdk/client-props.schema.js';
-import { SDKConnectionDraft, ClientPropDefDraft } from '../flag-sdk/classes.js';
+import { ClientPropDefDraft } from '../flag-sdk/ClientPropDefDraft.js';
+import { SDKConnectionDraft } from '../flag-sdk/SDKConnectionDraft.js';
 import { UserDraft } from '../users/classes.js';
 import { EnvironmentDraft } from '../environments/classes.js';
 
