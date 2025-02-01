@@ -36,8 +36,6 @@ export class ExperimentDraft implements z.infer<typeof experimentDraftSchema> {
 
   description: string | null;
 
-  hypothesis: string | null;
-
   startTimestamp: number | null;
 
   endTimestamp: number | null;
@@ -59,7 +57,6 @@ export class ExperimentDraft implements z.infer<typeof experimentDraftSchema> {
     this.environmentName = experimentDraft.environmentName;
     this.status = experimentDraft.status;
     this.description = experimentDraft.description;
-    this.hypothesis = experimentDraft.hypothesis;
     this.startTimestamp = experimentDraft.startTimestamp;
     this.endTimestamp = experimentDraft.endTimestamp;
     this.groups = experimentDraft.groups;
@@ -98,27 +95,46 @@ export class ExperimentDraft implements z.infer<typeof experimentDraftSchema> {
   static isReadyToStart(
     experiment: ExperimentDraft,
     flags: FeatureFlag[],
-  ): boolean {
-    if (experiment.hypotheses.length === 0) return false;
-    if (experiment.flagIds.length === 0) return false;
+  ): { isReady: boolean; errors: string[] } {
+    const errors: string[] = [];
+    if (experiment.flagIds.length === 0) errors.push('At least one feature flag must be selected.');
+    if (experiment.hypotheses.length === 0) errors.push('At least one hypothesis must be defined.');
+    if (experiment.enrollment.proportion === 0) errors.push('Enrollment proportion must be greater than zero.');
 
     const expFlagIdSet = new Set(experiment.flagIds);
     const experimentFlags = flags.filter((flag) => expFlagIdSet.has(flag.id));
-    if (experimentFlags.length !== experiment.flagIds.length) return false;
-
-    if (
-      !experimentFlags.every(
-        (flag) => experiment.environmentName in flag.environmentNames,
-      )
-    ) return false;
-
-    const groupCount = experiment.groups.length;
-    if (groupCount === 0) return false;
-    if (groupCount === 1) {
-      return experiment.groups[0].sequence.length >= 2;
+    if (experimentFlags.length !== experiment.flagIds.length) {
+      throw new Error(
+        'Not all flags on the experiment were found in the flag array!',
+      );
     }
 
-    return experiment.groups.every((group) => group.sequence.length >= 1);
+    experimentFlags.forEach((flag) => {
+      if (!(experiment.environmentName in flag.environmentNames)) {
+        errors.push(
+          `Flag "${flag.name}" is not enabled in the ${experiment.environmentName} environment.`,
+        );
+      }
+    });
+
+    const groupCount = experiment.groups.length;
+    if (groupCount === 0) errors.push('At least one group must be defined.');
+    else if (groupCount === 1) {
+      if (experiment.groups[0].sequence.length < 2) {
+        errors.push(
+          'Either add more treatments to the group, or add another group.',
+        );
+      }
+      // if (experiment.groups.some((group) => group.sequence.length < 1))
+    } else {
+      experiment.groups.forEach((group) => {
+        if (group.sequence.length < 1) {
+          errors.push(`Group "${group.name}" must be assigned a treatment`);
+        }
+      });
+    }
+
+    return { isReady: errors.length === 0, errors };
   }
 
   static getGroupTreatments(

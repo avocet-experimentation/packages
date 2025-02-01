@@ -22,7 +22,10 @@ export default class ExperimentRepository extends MongoRepository<Experiment> {
       this.getIdMatcher(experimentDoc.flagIds),
     );
 
-    const isReady = ExperimentDraft.isReadyToStart(experimentDoc, linkedFlags);
+    const { isReady } = ExperimentDraft.isReadyToStart(
+      experimentDoc,
+      linkedFlags,
+    );
     if (!isReady) {
       throw new Error(
         `Experiment "${experimentDoc.name}" is not ready to start`,

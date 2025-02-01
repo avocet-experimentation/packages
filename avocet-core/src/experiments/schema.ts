@@ -78,7 +78,6 @@ export const hypothesisSchema = z.object({
 
 export const experimentDraftSchema = overrideRuleSchema.extend({
   name: nonEmptyStringSchema,
-  hypothesis: z.string().nullable(),
   type: z.literal('Experiment'),
   status: ruleStatusSchema,
   groups: z.array(experimentGroupSchema).transform((groups) => {
