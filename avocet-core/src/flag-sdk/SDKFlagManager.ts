@@ -1,4 +1,4 @@
-import { Hash } from '../helpers/hashing.js';
+import { Hash } from '../helpers/Hash.js';
 import { NonEmptyArray } from '../helpers/utility-types.js';
 import { ForcedValue } from '../override-rules/classes.js';
 import { OverrideRuleUnion } from '../override-rules/override-rule-union.schema.js';
