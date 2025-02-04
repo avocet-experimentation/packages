@@ -154,7 +154,7 @@ export default class MongoRepository<T extends AvocetMongoTypes> {
   /**
    * A placeholder to be overridden on sub-classes
    */
-  protected async createEmbeds(newDocument: T): Promise<boolean> {
+  async createEmbeds(newDocument: T): Promise<boolean> {
     return !!newDocument;
   }
 
@@ -171,13 +171,14 @@ export default class MongoRepository<T extends AvocetMongoTypes> {
   }
 
   /**
+   * Throws if no matching record is found.
    * @param documentId a hex string representing an ObjectId
    */
   async get(documentId: string): Promise<T> {
     const docId = ObjectId.createFromHexString(documentId);
-    // seems like Filter doesn't infer correctly on generics
-    const result = await this.findOne({ _id: docId } as Filter<BeforeId<T>>);
-    if (result === null) throw new DocumentNotFoundError({ _id: docId });
+    const filter = { _id: docId } as Filter<BeforeId<T>>;
+    const result = await this.findOne(filter);
+    if (result === null) throw new DocumentNotFoundError(filter);
     return result;
   }
 
@@ -185,7 +186,7 @@ export default class MongoRepository<T extends AvocetMongoTypes> {
    * Find a document from any of its properties.
    * @param query A MongoDB query. An empty object matches any document.
    */
-  async findOne<Q extends Filter<BeforeId<T>>>(query: Q): Promise<T | null> {
+  async findOne(query: Filter<BeforeId<T>>): Promise<T | null> {
     const result = await this.collection.findOne(query);
     if (result === null) return null;
 
@@ -248,7 +249,7 @@ export default class MongoRepository<T extends AvocetMongoTypes> {
     return result;
   }
 
-  protected async updateEmbeds(
+  async updateEmbeds(
     partialEntry: PartialWithStringId<T>,
   ): Promise<boolean> {
     return !!partialEntry;
@@ -422,7 +423,7 @@ export default class MongoRepository<T extends AvocetMongoTypes> {
   /**
    * A placeholder to be overridden on sub-classes
    */
-  protected async deleteEmbeds(documentId: string): Promise<boolean> {
+  async deleteEmbeds(documentId: string): Promise<boolean> {
     return !!documentId;
   }
 

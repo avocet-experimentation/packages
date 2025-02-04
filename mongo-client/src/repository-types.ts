@@ -1,17 +1,12 @@
-import {
-  AvocetMongoTypes,
-  BeforeId,
-  RequireOnly,
-  FeatureFlag,
-  Experiment,
-  ClientPropDef,
-  Environment,
-  SDKConnection,
-  User,
-} from '@avocet/core';
+/* eslint-disable import/no-cycle */
+import { AvocetMongoTypes, BeforeId, RequireOnly } from '@avocet/core';
 import { MongoClient, WithId } from 'mongodb';
-// eslint-disable-next-line import/no-cycle
-import MongoRepository from './repository/MongoRepository.js';
+import ExperimentRepository from './repository/ExperimentRepository.js';
+import FeatureFlagRepository from './repository/FeatureFlagRepository.js';
+import ClientPropDefRepository from './repository/ClientPropDefRepository.js';
+import EnvironmentRepository from './repository/EnvironmentRepository.js';
+import SDKConnectionRepository from './repository/SDKConnectionRepository.js';
+import UserRepository from './repository/UserRepository.js';
 
 /* TYPE DEFINITIONS FOR WORKING WITH MONGO RECORDS */
 
@@ -27,10 +22,10 @@ T,
 export interface IRepositoryManager {
   client: MongoClient;
 
-  featureFlag: MongoRepository<FeatureFlag>;
-  experiment: MongoRepository<Experiment>;
-  clientPropDef: MongoRepository<ClientPropDef>;
-  environment: MongoRepository<Environment>;
-  sdkConnection: MongoRepository<SDKConnection>;
-  user: MongoRepository<User>;
+  featureFlag: FeatureFlagRepository;
+  experiment: ExperimentRepository;
+  clientPropDef: ClientPropDefRepository;
+  environment: EnvironmentRepository;
+  sdkConnection: SDKConnectionRepository;
+  user: UserRepository;
 }

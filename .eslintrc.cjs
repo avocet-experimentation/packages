@@ -22,6 +22,7 @@ module.exports = {
     'no-unused-vars': 'off', // handled by TS
     'implicit-arrow-linebreak': 'off',
     'import/prefer-default-export': 'off',
+    'import/no-extraneous-dependencies': 'off',
     'max-classes-per-file': 'off',
     '@typescript-eslint/no-unused-vars': [
       'error',

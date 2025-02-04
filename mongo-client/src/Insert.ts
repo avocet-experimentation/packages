@@ -25,10 +25,12 @@ export class Insert {
   constructor(connectionString: string) {
     this.manager = new RepositoryManager(connectionString);
     this.db = this.manager.client.db();
+    this.eraseCollection = this.eraseCollection.bind(this);
+    this.eraseTestData = this.eraseTestData.bind(this);
   }
 
   async eraseCollection(collectionName: AvocetMongoCollectionName) {
-    this.db.dropCollection(collectionName);
+    await this.db.dropCollection(collectionName);
   }
 
   async eraseTestData() {
@@ -37,6 +39,7 @@ export class Insert {
     await this.eraseCollection('clientPropDef');
     await this.eraseCollection('environment');
     await this.eraseCollection('sdkConnection');
+    await this.eraseCollection('user');
   }
 
   async featureFlags(obj: FeatureFlagDraft[]) {

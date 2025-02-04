@@ -6,7 +6,7 @@ import {
   experimentSchema,
 } from '@avocet/core';
 import MongoRepository from './MongoRepository.js';
-import {
+import type {
   IRepositoryManager,
   PartialWithStringId,
 } from '../repository-types.js';
@@ -22,14 +22,12 @@ export default class ExperimentRepository extends MongoRepository<Experiment> {
       this.getIdMatcher(experimentDoc.flagIds),
     );
 
-    const { isReady } = ExperimentDraft.isReadyToStart(
+    const { isReady, errors } = ExperimentDraft.isReadyToStart(
       experimentDoc,
       linkedFlags,
     );
     if (!isReady) {
-      throw new Error(
-        `Experiment "${experimentDoc.name}" is not ready to start`,
-      );
+      throw new Error(errors.join('\n'));
     }
 
     return this.update({
