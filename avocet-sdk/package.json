@@ -1,5 +1,6 @@
 {
   "name": "@avocet/sdk",
+  "type": "module",
   "version": "1.0.1",
   "description": "JavaScript SDK for fetching feature flags from Avocet",
   "keywords": [
@@ -31,11 +32,14 @@
     "url": "git+https://github.com/avocet-experimentation/packages.git",
     "directory": "avocet-sdk"
   },
+  "bugs": {
+    "url": "https://github.com/avocet-experimentation/packages/issues"
+  },
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "directories": {
     "lib": "dist",
-    "test": "__tests__"
+    "test": "tests"
   },
   "files": [
     "dist"
@@ -43,15 +47,14 @@
   "scripts": {
     "build": "npm i && rm -rf ./dist && tsc",
     "rebuild": "rm -rf ./dist && tsc",
-    "test": "vitest run"
+    "test": "vitest",
+    "publish": "npm run rebuild && npm publish"
   },
-  "type": "module",
   "dependencies": {
-    "@avocet/core": "^1.0.0",
+    "@avocet/core": "^1.1.0",
     "quick-lru": "^7.0.0"
   },
-  "devDependencies": {},
-  "bugs": {
-    "url": "https://github.com/avocet-experimentation/packages/issues"
+  "devDependencies": {
+    "vitest": "^2.1.9"
   }
 }

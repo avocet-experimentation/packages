@@ -39,7 +39,7 @@
   "types": "dist/index.d.ts",
   "directories": {
     "lib": "dist",
-    "test": "__tests__"
+    "test": "tests"
   },
   "files": [
     "dist"
@@ -47,7 +47,8 @@
   "scripts": {
     "build": "npm i && rm -rf ./dist && tsc",
     "rebuild": "rm -rf ./dist && tsc",
-    "test": "vitest"
+    "test": "vitest",
+    "publish": "npm run rebuild && npm publish"
   },
   "dependencies": {
     "bcrypt": "^5.1.1",

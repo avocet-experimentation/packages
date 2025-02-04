@@ -6,7 +6,7 @@ import {
   afterAll,
   expect,
   afterEach,
-  beforeEach
+  beforeEach,
 } from 'vitest';
 import { AvocetClient } from '../src/index.js';
 import {
@@ -16,7 +16,6 @@ import {
   FlagName
 } from '@avocet/core';
 import { ClientOptions } from '../src/clientTypes.js';
-import { randomUUID } from 'crypto';
 
 /**
  * todo:
@@ -29,7 +28,6 @@ import { randomUUID } from 'crypto';
 const TESTING_ENVIRONMENT = 'testing';
 
 const defaultClientOptions: ClientOptions = {
-  environment: TESTING_ENVIRONMENT,
   autoRefresh: true,
   apiUrl: 'localhost:4444',
   clientProps: {
@@ -74,13 +72,12 @@ describe('AvocetClient', () => {
       expect(mockLoader.mock.calls.length).eq(2); // length of the mock calls array is the number of times it has been called (we are using 1 arg)
       vi.advanceTimersByTime(FIVE_SECONDS);
       expect(mockLoader.mock.calls.length).eq(3);
-      client.stop();
+      client.stopPolling();
     });
 
     test('Should call the loader just once', async () => {
       const client = await AvocetClient.start({
         ...defaultClientOptions,
-        environment: 'staging',
         autoRefresh: false
       });
 
@@ -104,25 +101,25 @@ describe('AvocetClient', () => {
 
     describe('flagValue', () => {
       test('Fails to get the flag for a non-existent flag', () => {
-        const actualFlag = client.flagValue('fake-feature-flag');
+        const actualFlag = client.get('fake-feature-flag');
         expect(actualFlag).toBeNull();
       });
 
       test('Gets the value of a real flag', () => {
-        const actualFlag = client.flagValue('flagOne');
+        const actualFlag = client.get('flagOne');
         expect(actualFlag).toBeNull();
       });
     });
 
     describe('getFlagAttributes', () => {
       test('Returns null for a non-existent flag', () => {
-        const result = client.getFlagAttributes('fake-feature-flag');
+        const result = client.getWithAttributes('fake-feature-flag');
         expect(result).toBeNull();
       });
 
       test('Returns a correctly formatted object for a real flag', () => {
-        const result = client.getFlagAttributes('flagOne');
-        expect(flagAttributesSchema.parse(result)).not.toThrow();
+        const { value, attributes } = client.getWithAttributes('flagOne');
+        expect(() => flagAttributesSchema.parse(attributes)).not.toThrow();
       });
     });
 
