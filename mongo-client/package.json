@@ -55,6 +55,6 @@
   "devDependencies": {
     "dotenv": "^16.4.7",
     "envalid": "^8.0.0",
-    "vitest": "^2.1.9"
+    "vitest": ">=2.1.9"
   }
 }

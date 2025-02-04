@@ -55,6 +55,6 @@
     "quick-lru": "^7.0.0"
   },
   "devDependencies": {
-    "vitest": "^2.1.9"
+    "vitest": ">=2.1.9"
   }
 }
