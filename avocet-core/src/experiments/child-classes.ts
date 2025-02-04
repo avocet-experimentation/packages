@@ -91,7 +91,7 @@ export class Enrollment implements z.infer<typeof enrollmentSchema> {
   static template(partialEnrollment?: Partial<Enrollment>) {
     const defaults = {
       attributes: [],
-      proportion: 0,
+      proportion: 1,
     };
 
     return new Enrollment({ ...defaults, ...partialEnrollment });
