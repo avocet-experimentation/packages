@@ -10,6 +10,7 @@ import {
   positiveIntegerSchema,
   primitiveTypeLabelSchema,
   primitiveTypeSchema,
+  UUIDv4,
 } from '../helpers/bounded-primitives.js';
 import { flagCurrentValueSchema } from '../feature-flags/flag-value.js';
 
@@ -30,7 +31,7 @@ export const flagStateSchema = z.object({
  */
 export interface FlagState extends z.infer<typeof flagStateSchema> {}
 
-const treatmentIdSchema = z.string();
+const treatmentIdSchema = z.string().uuid();
 
 export const treatmentSchema = z.object({
   id: treatmentIdSchema,
@@ -40,7 +41,7 @@ export const treatmentSchema = z.object({
 });
 
 export const experimentGroupSchema = z.object({
-  id: z.string(),
+  id: z.string().uuid(),
   name: nonEmptyStringSchema,
   description: z.string().nullable(),
   proportion: z.number(),
@@ -57,6 +58,8 @@ export const conditionReferenceSchema = z
 export interface ConditionReference
   extends z.infer<typeof conditionReferenceSchema> {}
 
+export type ConditionReferenceString = `${UUIDv4}+${UUIDv4}`;
+
 export const conditionSchema = z.tuple([
   experimentGroupSchema,
   treatmentSchema,
@@ -67,7 +70,7 @@ export const conditionSchema = z.tuple([
 export interface Condition extends z.infer<typeof conditionSchema> {}
 
 export const hypothesisSchema = z.object({
-  id: z.string(),
+  id: z.string().uuid(),
   dependentName: z.string(),
   analysis: z.string(), // reference to an analysis technique; todo: correct this as needed
   compareValue: primitiveTypeSchema,

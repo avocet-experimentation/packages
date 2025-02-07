@@ -2,6 +2,7 @@ import { z } from 'zod';
 import {
   Condition,
   ConditionReference,
+  ConditionReferenceString,
   FlagState,
   experimentDraftSchema,
 } from './schema.js';
@@ -21,6 +22,7 @@ import { RuleStatus } from '../override-rules/override-rules.schema.js';
 import { RequireOnly } from '../helpers/utility-types.js';
 import { idMap } from '../helpers/utility-functions.js';
 import { FeatureFlagDraft } from '../feature-flags/classes.js';
+import { uuidV4Schema } from '../helpers/bounded-primitives.js';
 
 /**
  * Creates a full ExperimentDraft
@@ -228,19 +230,25 @@ export class ExperimentDraft implements z.infer<typeof experimentDraftSchema> {
   }
 
   /** Create a string of condition IDs */
-  static conditionRefToString(conditionRef: ConditionReference): string {
+  static conditionRefToString(
+    conditionRef: ConditionReference,
+  ): ConditionReferenceString {
     const [groupId, treatmentId] = conditionRef;
     return `${groupId}+${treatmentId}`;
   }
 
-  /** (WIP) Get the IDs from a string and return a tuple */
-  static conditionRefFromString(refString: string): ConditionReference {
-    // todo: validate the string
+  /**
+   * Get the IDs from a string and return a tuple.
+   * Throws if the input string does not contain two UUIDs.
+   */
+  static conditionRefFromString(
+    refString: ConditionReferenceString,
+  ): ConditionReference {
     const [groupId, treatmentId] = refString.split('+');
-    return [groupId, treatmentId];
+    return [uuidV4Schema.parse(groupId), uuidV4Schema.parse(treatmentId)];
   }
 
-  /** Create a string of the condition group and treatment name */
+  /** Create a string of the names of a condition's group and treatment */
   static conditionRefToDisplayString(
     experiment: Experiment,
     conditionRef: ConditionReference,

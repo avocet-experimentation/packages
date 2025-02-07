@@ -13,7 +13,7 @@ import {
   RuleStatus,
 } from '../override-rules/override-rules.schema.js';
 import { RequireOnly } from '../helpers/utility-types.js';
-import { PrimitiveTypeLabel } from '../helpers/bounded-primitives.js';
+import { PrimitiveTypeLabel, UUIDv4 } from '../helpers/bounded-primitives.js';
 
 export class Metric implements z.infer<typeof metricSchema> {
   fieldName: string;
@@ -38,7 +38,7 @@ export class Metric implements z.infer<typeof metricSchema> {
  * A formal hypothesis definition
  */
 export class Hypothesis implements z.infer<typeof hypothesisSchema> {
-  id: string;
+  id: UUIDv4;
 
   dependentName: string;
 
@@ -102,7 +102,7 @@ export class Enrollment implements z.infer<typeof enrollmentSchema> {
  * A time interval in which a specific combination of flag states is to be applied to subjects
  */
 export class Treatment implements z.infer<typeof treatmentSchema> {
-  id: string;
+  id: UUIDv4;
 
   name: string;
 
@@ -132,7 +132,7 @@ export class Treatment implements z.infer<typeof treatmentSchema> {
  * a grouping of users who will receive the same sequences of experiment treatments
  */
 export class ExperimentGroup implements z.infer<typeof experimentGroupSchema> {
-  id: string;
+  id: UUIDv4;
 
   name: string;
 

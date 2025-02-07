@@ -11,7 +11,7 @@ const stringOrNullishSchema = z.string().nullish();
 const numberOrNullishSchema = z
   .number()
   .nullish()
-  .refine((val) => !Number.isNaN(val));
+  .refine((val) => val === null || val === undefined || !Number.isNaN(val));
 const booleanOrNullishSchema = z.boolean().nullish();
 
 export const nullishOrTextPrimitiveArraySchema = z.union([

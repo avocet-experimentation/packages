@@ -19,6 +19,9 @@ export const nonEmptyStringSchema = z.string().min(1);
 
 export const bsonObjectIdHexStringSchema = z.string().length(24);
 
+export const uuidV4Schema = z.string().uuid();
+export type UUIDv4 = z.infer<typeof uuidV4Schema>;
+
 /**
  * Similar to Unix timestamp, but also accepts negative values indicating dates before 1970.
  * See https://www.mongodb.com/docs/manual/reference/bson-types/#std-label-document-bson-type-date
