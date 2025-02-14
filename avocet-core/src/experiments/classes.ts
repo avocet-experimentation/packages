@@ -157,11 +157,11 @@ export class ExperimentDraft implements z.infer<typeof experimentDraftSchema> {
     experiment: ExperimentDraft,
   ): ConditionReference[] {
     return experiment.groups.reduce((acc: ConditionReference[], group) => {
-      const groupConditions: ConditionReference[] = group.sequence.map(
+      const groupConditionRefs: ConditionReference[] = group.sequence.map(
         (treatmentId) => [group.id, treatmentId],
       );
 
-      return [...acc, ...groupConditions];
+      return [...acc, ...groupConditionRefs];
     }, []);
   }
 

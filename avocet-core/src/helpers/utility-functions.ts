@@ -149,7 +149,7 @@ export function pickKeys<T extends object, K extends keyof T>(
   obj: T,
 ): SafeOmit<T, (typeof keys)[number]> {
   const output = keys.reduce(
-    (acc, key) => Object.assign(acc, { [key]: obj[key] }),
+    (acc, key) => Object.assign(acc, key in obj ? { [key]: obj[key] } : {}),
     {} as SafeOmit<T, (typeof keys)[number]>,
   );
 
