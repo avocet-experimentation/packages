@@ -12,7 +12,7 @@ export type TransformedSpanAttributes = {
 export const transformedSpanSchema = z.object({
   traceId: z.string(),
   spanId: z.string(),
-  parentSpanId: z.string(),
+  parentSpanId: z.string().nullable(),
   name: z.string(),
   kind: z.number(),
   startTimeUnixNano: z.string(),

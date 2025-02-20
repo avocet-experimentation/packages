@@ -1,5 +1,5 @@
 import { AnyPrimitive } from './bounded-primitives.js';
-import { GeneralRecord, SafeOmit } from './utility-types.js';
+import { GeneralRecord, NonEmptyArray, SafeOmit } from './utility-types.js';
 
 /**
  * Convert an array of objects of type `T` to `Record<T[K], T>`,
@@ -156,26 +156,9 @@ export function pickKeys<T extends object, K extends keyof T>(
   return output;
 }
 
-/**
- * Executes many asynchronous operations in parallel and returns once all of
- * the promises resolve or any one of them rejects.
- * @param cb any function that returns a `Promise`
- * @param argumentSets an array of tuples of arguments to pass into `cb`
- * @param promiseTransform an optional transform operation
- * @returns
- */
-export async function parallelAsync<P, A extends Array<unknown>>(
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  cb: (...args: A) => Promise<P>,
-  argumentSets: A[],
-) {
-  const promises: Promise<P>[] = [];
-
-  for (let i = 0; i < argumentSets.length; i += 1) {
-    const args = argumentSets[i];
-    const promise = cb(...args);
-    promises.push(promise);
-  }
-
-  return Promise.all(promises);
+export function assertNonEmptyArray<T>(
+  arr: T[],
+  errorMessage?: string,
+): asserts arr is NonEmptyArray<T> {
+  if (arr.length === 0) throw new TypeError(errorMessage ?? 'Array is empty');
 }
